@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aetheros"
+version = "1.1.0"
+description = "AetherOS — userspace AI control plane for Linux resource observation"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "psutil>=6.0.0",
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0.0"]
+
+[project.scripts]
+aetheros = "aetheros.dashboard.app:main"
+aetheros-dashboard = "aetheros.dashboard.app:main"
+aetheros-monitor = "aetheros.cli.monitor:main"
+aetheros-policy = "aetheros.cli.policy_demo:main"
+aetheros-safety = "aetheros.cli.safety_demo:main"
+aetheros-decision = "aetheros.cli.decision_demo:main"
+aetheros-intent = "aetheros.cli.intent_demo:main"
+aetheros-research = "aetheros.cli.research_demo:main"
+aetheros-sdk = "aetheros.cli.sdk_demo:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["aetheros*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

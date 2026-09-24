@@ -8,7 +8,7 @@ from __future__ import annotations
 import sqlite3
 from collections import deque
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from aetheros.observatory.models import SystemEvent, TelemetryPoint, TimelineWindow
@@ -162,7 +162,9 @@ class HistoryRecorder:
             last_hour=self.get_last_minutes(60),
         )
 
-    def series(self, metric: str, points: tuple[TelemetryPoint, ...] | None = None) -> tuple[float, ...]:
+    def series(
+        self, metric: str, points: tuple[TelemetryPoint, ...] | None = None
+    ) -> tuple[float, ...]:
         """Extract a metric series from points (default: all memory)."""
 
         source = points if points is not None else self.points()
@@ -192,7 +194,7 @@ class HistoryRecorder:
             return ()
         newest = self._points[-1].timestamp
         if newest.tzinfo is None:
-            newest = newest.replace(tzinfo=timezone.utc)
+            newest = newest.replace(tzinfo=UTC)
         cutoff = newest - delta
         return tuple(p for p in self._points if _aware(p.timestamp) >= cutoff)
 
@@ -201,5 +203,5 @@ def _aware(value: datetime) -> datetime:
     """Ensure a datetime is timezone-aware UTC."""
 
     if value.tzinfo is None:
-        return value.replace(tzinfo=timezone.utc)
+        return value.replace(tzinfo=UTC)
     return value

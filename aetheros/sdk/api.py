@@ -7,7 +7,7 @@ filesystem roots, or process control primitives.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from aetheros.sdk.plugin import (
@@ -144,4 +144,4 @@ class PluginAPI:
     def stamp(self) -> str:
         """Return a UTC timestamp string for plugin logging (text only)."""
 
-        return datetime.now(timezone.utc).isoformat()
+        return datetime.now(UTC).isoformat()

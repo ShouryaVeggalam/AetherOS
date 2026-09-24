@@ -15,17 +15,27 @@ build/
 .mypy_cache/
 .ruff_cache/
 .coverage
+.coverage.*
 htmlcov/
+coverage.xml
+*.cover
 
 # OS / editor
 .DS_Store
 .idea/
 .vscode/
 *.swp
+*~
 
-# AetherOS local data (Phase 2+)
+# AetherOS local data
 *.db
 data/
 
 # Generated research reports (keep directory via .gitkeep)
 reports/*.md
+
+# Packaging / tools
+.tox/
+.nox/
+.cache/
+site/

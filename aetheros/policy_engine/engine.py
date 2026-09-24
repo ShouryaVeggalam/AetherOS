@@ -40,7 +40,9 @@ class PolicyEngine:
     def __init__(self, rules: Sequence[RuleFn] | None = None) -> None:
         """Store the rule pipeline used by evaluate / evaluate_all."""
 
-        self._rules: tuple[RuleFn, ...] = tuple(rules) if rules is not None else DEFAULT_RULES
+        self._rules: tuple[RuleFn, ...] = (
+            tuple(rules) if rules is not None else DEFAULT_RULES
+        )
 
     def evaluate(self, snapshot: TelemetrySnapshot) -> PolicyRecommendation | None:
         """Return the single most severe recommendation, if any.

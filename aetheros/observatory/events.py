@@ -5,7 +5,7 @@ Analysis only — no rendering, no OS mutation.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from aetheros.observatory.models import SystemEvent, TelemetryPoint
 
@@ -47,7 +47,7 @@ def research_completed_event(*, winner: str, score: float) -> SystemEvent:
     """Build a research-completed event from pipeline results."""
 
     return SystemEvent(
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
         type="research_completed",
         severity="info",
         title="Research Completed",
@@ -59,7 +59,7 @@ def safety_blocked_event(*, title: str, reason: str) -> SystemEvent:
     """Build a safety-blocked event when a recommendation is rejected."""
 
     return SystemEvent(
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
         type="safety_blocked",
         severity="warning",
         title="Safety Blocked",

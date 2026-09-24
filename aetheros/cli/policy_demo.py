@@ -60,7 +60,9 @@ def render_report(
     """Print system status and recommendations to the terminal."""
 
     console = Console()
-    console.print(Panel(format_status(snapshot), title="System Status", border_style="cyan"))
+    console.print(
+        Panel(format_status(snapshot), title="System Status", border_style="cyan")
+    )
 
     issues = [r for r in recommendations if r.level in ("warning", "critical")]
     if not issues:

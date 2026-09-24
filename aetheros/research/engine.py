@@ -6,7 +6,7 @@ Never executes OS commands. Never modifies the real operating system.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from aetheros.intent.models import IntentProfile
@@ -53,12 +53,14 @@ class ResearchEngine:
             A ResearchReport with ranked strategies and optional file path.
         """
 
-        resolved_patterns = patterns if patterns is not None else self.learning.get_patterns()
+        resolved_patterns = (
+            patterns if patterns is not None else self.learning.get_patterns()
+        )
         candidates = generate_strategies(snapshot, intent, resolved_patterns)
         evaluated = self.evaluator.evaluate_all(candidates, snapshot, intent)
         ranked = rank_strategies(evaluated)
         winner = ranked[0] if ranked else None
-        created_at = datetime.now(timezone.utc)
+        created_at = datetime.now(UTC)
 
         report = ResearchReport(
             created_at=created_at,
@@ -72,7 +74,9 @@ class ResearchEngine:
         )
 
         if write_report:
-            path = save_report(report, reports_dir=self.reports_dir, created_at=created_at)
+            path = save_report(
+                report, reports_dir=self.reports_dir, created_at=created_at
+            )
             report = ResearchReport(
                 created_at=report.created_at,
                 snapshot=report.snapshot,

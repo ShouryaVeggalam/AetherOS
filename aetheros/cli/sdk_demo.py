@@ -29,7 +29,10 @@ def run_demo(*, state_path: Path) -> None:
 
     console = Console()
     console.print(
-        Panel(Text("Developer Console", style="bold blue", justify="center"), border_style="blue")
+        Panel(
+            Text("Developer Console", style="bold blue", justify="center"),
+            border_style="blue",
+        )
     )
     table = Table(title="Installed Plugins", expand=True)
     table.add_column("Plugin")
@@ -56,7 +59,9 @@ def run_demo(*, state_path: Path) -> None:
             border_style="green" if summary["unsafe"] == 0 else "red",
         )
     )
-    console.print("[dim]Plugins cannot execute shell commands or modify the kernel.[/dim]")
+    console.print(
+        "[dim]Plugins cannot execute shell commands or modify the kernel.[/dim]"
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:

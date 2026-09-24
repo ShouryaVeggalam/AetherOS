@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import sqlite3
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from aetheros.intent.profiles import DEFAULT_INTENT
@@ -67,7 +67,7 @@ class IntentStorage:
     def save(self, name: str) -> None:
         """Persist the selected intent name (single-row upsert)."""
 
-        stamp = datetime.now(timezone.utc).isoformat()
+        stamp = datetime.now(UTC).isoformat()
         with self._connect() as conn:
             conn.execute(_UPSERT_SQL, (name, stamp))
             conn.commit()

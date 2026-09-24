@@ -6,7 +6,11 @@ clamped to 0–100. Pure functions — no OS side effects.
 
 from __future__ import annotations
 
-from aetheros.policy_engine.models import PolicyRecommendation, SeverityLevel, TelemetrySnapshot
+from aetheros.policy_engine.models import (
+    PolicyRecommendation,
+    SeverityLevel,
+    TelemetrySnapshot,
+)
 
 # Severity base weights.
 SEVERITY_POINTS: dict[SeverityLevel, int] = {

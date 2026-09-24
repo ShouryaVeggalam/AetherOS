@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -25,7 +25,7 @@ def _snap(
     """Build a minimal TelemetrySnapshot for tests."""
 
     return TelemetrySnapshot(
-        timestamp=datetime(2026, 1, 1, tzinfo=timezone.utc),
+        timestamp=datetime(2026, 1, 1, tzinfo=UTC),
         cpu_percent=cpu,
         memory_percent=memory,
         disk_percent=disk,

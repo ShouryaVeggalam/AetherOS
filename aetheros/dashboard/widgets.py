@@ -26,7 +26,9 @@ def level_style(percent: float, *, warn: float = 85.0, critical: float = 95.0) -
     return "bold green"
 
 
-def metric_bar(label: str, percent: float, *, warn: float = 85.0, critical: float = 95.0) -> Table:
+def metric_bar(
+    label: str, percent: float, *, warn: float = 85.0, critical: float = 95.0
+) -> Table:
     """Build a labeled progress bar for one resource metric."""
 
     style = level_style(percent, warn=warn, critical=critical)
@@ -177,7 +179,10 @@ class SafetyPanel:
             ),
             Text.assemble(
                 ("Cooldown: ", "bold"),
-                (f"{self.cooldown_seconds:.0f}s", "yellow" if self.cooldown_seconds else "green"),
+                (
+                    f"{self.cooldown_seconds:.0f}s",
+                    "yellow" if self.cooldown_seconds else "green",
+                ),
             ),
             Text(""),
             Text("Last Audit Entry:", style="bold"),
@@ -314,10 +319,15 @@ class HelpPanel:
             "[bold]H[/bold]  Toggle this help overlay\n"
             "[bold]A[/bold]  Run autonomous research\n"
             "[bold]D[/bold]  Developer Console (plugins)\n"
+            "[bold]W[/bold]  Workload Planner (orchestrator)\n"
+            "[bold]][/bold]  Cycle selected workload\n"
+            "[bold]C[/bold]  Cluster (multi-device overview)\n"
+            "[bold]P[/bold]  Predictive Intelligence (forecasts)\n"
+            "[bold]E[/bold]  Explainability (evidence + confidence)\n"
             "[bold]O[/bold]  Observatory (graphs + timeline)\n"
             "[bold]←[/bold]  Scroll observatory history\n"
             "[bold]T[/bold]  Toggle CPU / Memory / Disk graph\n"
-            "[bold]ESC[/bold]  Leave Observatory / overlays\n\n"
+            "[bold]ESC[/bold]  Leave overlays\n\n"
             "[bold]1–6[/bold]  Switch intent profile\n"
             "  1 Coding · 2 Gaming · 3 Editing\n"
             "  4 Battery · 5 AI · 6 Balanced\n\n"

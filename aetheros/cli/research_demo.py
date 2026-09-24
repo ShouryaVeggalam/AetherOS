@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from rich.console import Console
@@ -21,7 +21,7 @@ def _snapshot_from_args(cpu: float, memory: float, disk: float) -> TelemetrySnap
     """Build a TelemetrySnapshot for the demo."""
 
     return TelemetrySnapshot(
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
         cpu_percent=cpu,
         memory_percent=memory,
         disk_percent=disk,
@@ -43,7 +43,9 @@ def run_demo(
     """Run autonomous research and print a Rich summary."""
 
     console = Console()
-    console.print(Panel(Text("Autonomous Research", style="bold cyan"), border_style="cyan"))
+    console.print(
+        Panel(Text("Autonomous Research", style="bold cyan"), border_style="cyan")
+    )
     console.print("[dim]Generating Strategies...[/dim]")
 
     intent = IntentEngine(storage=IntentStorage(intent_db), initial=intent_name)

@@ -117,7 +117,9 @@ def run_monitor(interval_seconds: float = 1.0) -> None:
             for snapshot in engine.stream():
                 live.update(render_snapshot(snapshot))
         except KeyboardInterrupt:
-            console.print("\n[dim]Stopped. Telemetry was read-only — nothing was changed.[/dim]")
+            console.print(
+                "\n[dim]Stopped. Telemetry was read-only — nothing was changed.[/dim]"
+            )
 
 
 def build_parser() -> argparse.ArgumentParser:

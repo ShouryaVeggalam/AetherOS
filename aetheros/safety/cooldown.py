@@ -9,7 +9,6 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 
-
 # Default cool-downs keyed by recommendation category (seconds).
 DEFAULT_COOLDOWNS_SECONDS: dict[str, float] = {
     "cpu": 60.0,

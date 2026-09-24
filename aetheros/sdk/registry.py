@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from aetheros.sdk.api import PluginAPI
-from aetheros.sdk.loader import LoadedPlugin, PluginLoader, RejectedPlugin
+from aetheros.sdk.loader import PluginLoader, RejectedPlugin
 from aetheros.sdk.plugin import AetherPlugin
 from aetheros.sdk.sandbox import SandboxResult
 
@@ -110,8 +110,10 @@ class PluginRegistry:
                 continue
 
             plugin = result.plugin
-            enabled = state[plugin.name] if plugin.name in state else bool(
-                getattr(plugin, "default_enabled", True)
+            enabled = (
+                state[plugin.name]
+                if plugin.name in state
+                else bool(getattr(plugin, "default_enabled", True))
             )
             record = PluginRecord(
                 name=plugin.name,

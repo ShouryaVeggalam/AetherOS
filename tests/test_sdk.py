@@ -60,7 +60,7 @@ def test_sandbox_allows_safe_plugin(tmp_path: Path) -> None:
     plugin_dir = tmp_path / "safe_plugin"
     plugin_dir.mkdir()
     (plugin_dir / "plugin.py").write_text(
-        '''
+        """
 from aetheros.sdk import AetherPlugin, PluginAPI, PluginTelemetrySample
 
 class SafePlugin(AetherPlugin):
@@ -75,7 +75,7 @@ class SafePlugin(AetherPlugin):
         )
 
 PLUGIN = SafePlugin()
-''',
+""",
         encoding="utf-8",
     )
     result = PluginSandbox().validate_path(plugin_dir)
@@ -85,7 +85,9 @@ PLUGIN = SafePlugin()
 def test_loader_loads_battery_plugin() -> None:
     """Bundled battery plugin should load after sandbox checks."""
 
-    path = Path(__file__).resolve().parents[1] / "aetheros" / "plugins" / "battery_plugin"
+    path = (
+        Path(__file__).resolve().parents[1] / "aetheros" / "plugins" / "battery_plugin"
+    )
     loaded = PluginLoader().load_from_directory(path)
     assert not hasattr(loaded, "reason") or getattr(loaded, "plugin", None) is not None
     from aetheros.sdk.loader import LoadedPlugin

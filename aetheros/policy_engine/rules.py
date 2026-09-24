@@ -121,7 +121,10 @@ def detect_idle_state(snapshot: TelemetrySnapshot) -> PolicyRecommendation | Non
         A normal-level idle recommendation, or None if the system is busy.
     """
 
-    if snapshot.cpu_percent < IDLE_CPU_MAX and snapshot.memory_percent < IDLE_MEMORY_MAX:
+    if (
+        snapshot.cpu_percent < IDLE_CPU_MAX
+        and snapshot.memory_percent < IDLE_MEMORY_MAX
+    ):
         return PolicyRecommendation(
             level="normal",
             title="Idle System",

@@ -7,7 +7,7 @@ policy recommendations. It is advice only — never an OS command.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Literal
 
 SeverityLevel = Literal["normal", "warning", "critical"]
@@ -47,4 +47,4 @@ class Decision:
 def utc_now() -> datetime:
     """Return the current UTC time as a timezone-aware datetime."""
 
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)

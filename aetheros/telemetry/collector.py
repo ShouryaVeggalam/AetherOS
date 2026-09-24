@@ -7,7 +7,7 @@ disk, battery, and process information from the OS via userspace APIs.
 from __future__ import annotations
 
 import os
-from typing import Sequence
+from collections.abc import Sequence
 
 import psutil
 
@@ -69,7 +69,9 @@ class TelemetryCollector:
         """Read overall and per-core CPU usage plus load average."""
 
         overall = float(psutil.cpu_percent(interval=None))
-        per_core = tuple(float(v) for v in psutil.cpu_percent(interval=None, percpu=True))
+        per_core = tuple(
+            float(v) for v in psutil.cpu_percent(interval=None, percpu=True)
+        )
         try:
             load_1, load_5, load_15 = os.getloadavg()
             load_avg = (float(load_1), float(load_5), float(load_15))

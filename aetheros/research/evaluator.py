@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from aetheros.intent.models import IntentProfile
 from aetheros.policy_engine.models import TelemetrySnapshot
 from aetheros.research.models import CandidateStrategy, EvaluatedStrategy
-from aetheros.simulation import SimulationEngine, SimulatableStrategy
+from aetheros.simulation import SimulatableStrategy, SimulationEngine
 
 
 @dataclass

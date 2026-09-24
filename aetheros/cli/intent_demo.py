@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from rich.console import Console
@@ -22,7 +22,7 @@ def _demo_snapshot() -> TelemetrySnapshot:
     """Mild healthy snapshot for a predictable intent demo."""
 
     return TelemetrySnapshot(
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
         cpu_percent=24.0,
         memory_percent=51.0,
         disk_percent=38.0,

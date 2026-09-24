@@ -4,17 +4,45 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aetheros"
-version = "1.1.0"
-description = "AetherOS — userspace AI control plane for Linux resource observation"
+version = "1.5.0a1"
+description = "AetherOS — explainable operating intelligence platform (userspace, recommendation-only)"
 readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Shourya Veggalam" },
+]
 requires-python = ">=3.12"
+keywords = ["aetheros", "telemetry", "explainability", "rich", "observability"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Monitoring",
+]
 dependencies = [
     "psutil>=6.0.0",
     "rich>=13.0.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/shouryaveggalam/AetherOS"
+Documentation = "https://github.com/shouryaveggalam/AetherOS/tree/main/docs"
+Changelog = "https://github.com/shouryaveggalam/AetherOS/blob/main/CHANGELOG.md"
+Issues = "https://github.com/shouryaveggalam/AetherOS/issues"
+
 [project.optional-dependencies]
-dev = ["pytest>=8.0.0"]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.6.0",
+    "black>=24.0.0",
+]
 
 [project.scripts]
 aetheros = "aetheros.dashboard.app:main"
@@ -34,3 +62,43 @@ include = ["aetheros*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+
+[tool.coverage.run]
+source = ["aetheros"]
+omit = [
+    "aetheros/cli/*",
+    "aetheros/**/__main__.py",
+    "aetheros/dashboard/app.py",
+]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+extend-exclude = '''
+/(
+  \.venv
+  | dist
+  | build
+)/
+'''
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+extend-exclude = [".venv", "dist", "build"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = [
+    "E501",
+    "B008",
+]

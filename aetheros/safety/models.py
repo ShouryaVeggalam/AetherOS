@@ -7,7 +7,7 @@ It never carries executable commands — only a decision and a reason.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Literal
 
 SafetyStatus = Literal["approved", "blocked", "cooldown"]
@@ -41,7 +41,7 @@ class SafetyResult:
 def utc_now() -> datetime:
     """Return the current UTC time as a timezone-aware datetime."""
 
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def make_approved(reason: str) -> SafetyResult:

@@ -13,7 +13,11 @@ from aetheros.observatory.models import (
     TimelineWindow,
 )
 from aetheros.observatory.recorder import HistoryRecorder
-from aetheros.observatory.renderer import ObservatoryPanel, render_ascii_graph, sparkline
+from aetheros.observatory.renderer import (
+    ObservatoryPanel,
+    render_ascii_graph,
+    sparkline,
+)
 from aetheros.observatory.timeline import EventTimeline
 
 # Backward-compatible aliases used by older dashboard imports/tests.

@@ -61,7 +61,10 @@ class SimulationEngine:
         performance = 55.0 + cpu_relief * 1.8
         performance += intent.latency_weight * 0.35
         performance += intent.cpu_weight * 0.15
-        if "interactive" in strategy.title.lower() or "priority" in strategy.title.lower():
+        if (
+            "interactive" in strategy.title.lower()
+            or "priority" in strategy.title.lower()
+        ):
             performance += intent.latency_weight * 0.45
             performance += 8.0
 

@@ -147,13 +147,10 @@ class DecisionEngine:
             action=rec.recommended_action,
             timestamp=utc_now(),
         )
-        explanation = self.explain(
-            draft, snapshot=snapshot, approved=list(approved)
-        )
+        explanation = self.explain(draft, snapshot=snapshot, approved=list(approved))
         profile = self.intent.current_intent()
         explanation = (
-            f"{explanation}\n"
-            f"Active intent: {profile.name} — {profile.description}"
+            f"{explanation}\n" f"Active intent: {profile.name} — {profile.description}"
         ).strip()
         decision = Decision(
             title=draft.title,

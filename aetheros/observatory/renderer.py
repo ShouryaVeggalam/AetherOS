@@ -113,9 +113,7 @@ class ObservatoryPanel:
             ("  ·  ", "dim"),
             (f"{self.sample_count}/{self.capacity}", "dim"),
             (
-                f"  ·  -{self.history_offset}s"
-                if self.history_offset
-                else "  ·  live",
+                f"  ·  -{self.history_offset}s" if self.history_offset else "  ·  live",
                 "yellow" if self.history_offset else "green",
             ),
         )

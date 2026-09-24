@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -13,7 +13,9 @@ from aetheros.intent.profiles import CODING, GAMING, get_profile
 from aetheros.policy_engine.models import PolicyRecommendation
 
 
-def _rec(title: str = "CPU Overload", level: str = "critical", confidence: int = 98) -> PolicyRecommendation:
+def _rec(
+    title: str = "CPU Overload", level: str = "critical", confidence: int = 98
+) -> PolicyRecommendation:
     """Build a recommendation for intent bonus tests."""
 
     return PolicyRecommendation(
@@ -64,7 +66,9 @@ def test_cpu_bonus_higher_for_gaming(tmp_path: Path) -> None:
     """Gaming should boost CPU recommendations more than Balanced."""
 
     gaming = IntentEngine(storage=IntentStorage(tmp_path / "g.db"), initial=GAMING)
-    balanced = IntentEngine(storage=IntentStorage(tmp_path / "b.db"), initial="Balanced")
+    balanced = IntentEngine(
+        storage=IntentStorage(tmp_path / "b.db"), initial="Balanced"
+    )
     rec = _rec("CPU Overload")
     assert gaming.bonus_for_recommendation(rec) > balanced.bonus_for_recommendation(rec)
 
@@ -80,7 +84,7 @@ def test_apply_weights_clamps_score(tmp_path: Path) -> None:
         priority_score=95,
         explanation="base",
         action="Reduce background workload.",
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
     )
     adjusted = engine.apply_weights(decision)
     assert 0 <= adjusted.priority_score <= 100

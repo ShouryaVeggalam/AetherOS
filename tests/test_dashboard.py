@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from rich.console import Console
@@ -23,7 +23,7 @@ from aetheros.dashboard.widgets import (
     TelemetryPanel,
     level_style,
 )
-from aetheros.decision import DecisionEngine, DecisionReport
+from aetheros.decision import DecisionEngine
 from aetheros.policy_engine import TelemetrySnapshot
 from aetheros.safety import AuditLogger, CooldownManager, SafetyValidator
 from aetheros.telemetry.models import (
@@ -40,7 +40,7 @@ def _system(*, cpu: float = 24.0, memory: float = 51.0) -> SystemSnapshot:
     """Build a SystemSnapshot for dashboard tests."""
 
     return SystemSnapshot(
-        collected_at=datetime.now(timezone.utc),
+        collected_at=datetime.now(UTC),
         cpu=CpuSnapshot(percent=cpu, per_cpu_percent=(cpu,), load_avg=(0.1, 0.2, 0.3)),
         memory=MemorySnapshot(
             total_bytes=16_000_000_000,
@@ -86,7 +86,7 @@ def test_format_helpers() -> None:
     assert "No audit" in format_audit_summary(None)
     assert "blocked" in format_audit_summary(
         {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "title": "CPU Overload",
             "level": "critical",
             "approved": False,
@@ -101,9 +101,7 @@ def test_widgets_render_without_error() -> None:
 
     console = Console(record=True, width=100)
     console.print(HeaderPanel(version="0.5.0"))
-    console.print(
-        TelemetryPanel(24.0, 51.0, 38.0, "80% (AC)", "1h 2m")
-    )
+    console.print(TelemetryPanel(24.0, 51.0, 38.0, "80% (AC)", "1h 2m"))
     console.print(
         ProcessTable(
             rows=(
@@ -161,9 +159,7 @@ def test_render_frame_has_regions() -> None:
         research_winner="—",
         research_improvement="—",
         research_report_path="Press A to run research",
-        plugin_rows=(
-            ("CPU Monitor", "1.0.0", "Enabled", "AetherOS", "Verified"),
-        ),
+        plugin_rows=(("CPU Monitor", "1.0.0", "Enabled", "AetherOS", "Verified"),),
         plugins_verified=3,
         plugins_unsafe=0,
         show_observatory=True,
@@ -178,6 +174,16 @@ def test_render_frame_has_regions() -> None:
         observatory_samples=10,
         observatory_capacity=300,
         observatory_window_label="Last 60 Seconds",
+        show_explainability=False,
+        explanation=None,
+        show_predictive=False,
+        predictive_report=None,
+        show_cluster=False,
+        cluster_snapshot=None,
+        cluster_online_ids=frozenset(),
+        show_orchestrator=False,
+        execution_plan=None,
+        selected_workload=None,
     )
     layout = render_frame(frame)
     assert layout["header"] is not None
@@ -203,7 +209,9 @@ def test_build_frame_healthy(tmp_path: Path) -> None:
             cooldown=CooldownManager(),
             audit=AuditLogger(tmp_path / "audit.db"),
         ),
-        intent=IntentEngine(storage=IntentStorage(tmp_path / "intent.db"), initial="Coding"),
+        intent=IntentEngine(
+            storage=IntentStorage(tmp_path / "intent.db"), initial="Coding"
+        ),
     )
     report = engine.evaluate_report(snapshot, record=False)
     frame = build_frame(
@@ -226,4 +234,7 @@ def test_build_frame_healthy(tmp_path: Path) -> None:
     assert len(frame.processes) == 3
     assert frame.intent_name == "Coding"
     assert frame.research_status == "Idle"
-    assert frame.decision_title in {"System Healthy", "Idle System"} or frame.decision_score >= 0
+    assert (
+        frame.decision_title in {"System Healthy", "Idle System"}
+        or frame.decision_score >= 0
+    )

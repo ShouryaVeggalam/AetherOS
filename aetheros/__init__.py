@@ -1,7 +1,7 @@
-"""AetherOS — userspace AI control plane for Linux.
+"""AetherOS — userspace AI control plane / operating intelligence platform.
 
-Phases 1–5: telemetry, policy, safety, decision, and operator dashboard.
-All userspace. No kernel modules. Read-only by default.
+v1.5.0-alpha — Explainable Operating Intelligence Platform.
+All userspace. No kernel modules. Recommendation-only by default.
 """
 
-__version__ = "1.1.0"
+__version__ = "1.5.0-alpha"

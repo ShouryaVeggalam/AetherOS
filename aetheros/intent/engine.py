@@ -140,8 +140,7 @@ class IntentEngine:
         profile = self._profile
         if decision is not None and decision.severity in ("warning", "critical"):
             return (
-                f"{decision.action} "
-                f"(under {profile.name}: {profile.description})"
+                f"{decision.action} " f"(under {profile.name}: {profile.description})"
             ).strip()
         guidance = {
             "Coding": "Prioritize interactive development workloads.",

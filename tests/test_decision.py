@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -16,11 +16,13 @@ from aetheros.policy_engine.rules import detect_cpu_overload
 from aetheros.safety import AuditLogger, CooldownManager, SafetyValidator
 
 
-def _snap(*, cpu: float = 50.0, memory: float = 50.0, disk: float = 40.0) -> TelemetrySnapshot:
+def _snap(
+    *, cpu: float = 50.0, memory: float = 50.0, disk: float = 40.0
+) -> TelemetrySnapshot:
     """Build a TelemetrySnapshot for tests."""
 
     return TelemetrySnapshot(
-        timestamp=datetime(2026, 1, 1, tzinfo=timezone.utc),
+        timestamp=datetime(2026, 1, 1, tzinfo=UTC),
         cpu_percent=cpu,
         memory_percent=memory,
         disk_percent=disk,
@@ -87,7 +89,9 @@ def test_system_wide_overload_bonus() -> None:
 def test_prioritizer_picks_highest_score() -> None:
     """The candidate with the highest score should win."""
 
-    low = ScoredRecommendation(_rec(title="Idle System", level="normal", confidence=85), 20)
+    low = ScoredRecommendation(
+        _rec(title="Idle System", level="normal", confidence=85), 20
+    )
     high = ScoredRecommendation(_rec(title="CPU Overload", confidence=98), 94)
     winner = prioritize([low, high])
     assert winner is not None
@@ -111,7 +115,7 @@ def test_decision_bounds() -> None:
             priority_score=150,
             explanation="nope",
             action="none",
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
 
@@ -166,7 +170,7 @@ def test_explain_mentions_score() -> None:
         priority_score=94,
         explanation="",
         action="Reduce background workload.",
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
     )
     text = engine.explain(decision, snapshot=_snap(cpu=97.0, memory=68.0))
     assert "94/100" in text

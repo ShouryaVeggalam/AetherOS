@@ -13,6 +13,7 @@ from rich.layout import Layout
 from rich.panel import Panel
 from rich.text import Text
 
+from aetheros.cluster import ClusterPanel, ClusterSnapshot
 from aetheros.dashboard.layout import build_layout
 from aetheros.dashboard.widgets import (
     DecisionPanel,
@@ -26,8 +27,15 @@ from aetheros.dashboard.widgets import (
     SafetyPanel,
     TelemetryPanel,
 )
+from aetheros.explainability import ExplainabilityPanel, Explanation
 from aetheros.observatory import ObservatoryPanel
 from aetheros.observatory.models import GraphMetric, SystemEvent
+from aetheros.orchestrator import (
+    ExecutionPlan,
+    WorkloadPlannerPanel,
+    WorkloadProfile,
+)
+from aetheros.predictive import PredictivePanel, PredictiveReport
 
 
 @dataclass(frozen=True, slots=True)
@@ -82,6 +90,16 @@ class DashboardFrame:
     observatory_samples: int
     observatory_capacity: int
     observatory_window_label: str
+    show_explainability: bool
+    explanation: Explanation | None
+    show_predictive: bool
+    predictive_report: PredictiveReport | None
+    show_cluster: bool
+    cluster_snapshot: ClusterSnapshot | None
+    cluster_online_ids: frozenset[str]
+    show_orchestrator: bool
+    execution_plan: ExecutionPlan | None
+    selected_workload: WorkloadProfile | None
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -109,7 +127,25 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_observatory:
+    if frame.show_orchestrator:
+        layout["center"].update(
+            WorkloadPlannerPanel(
+                plan=frame.execution_plan,
+                selected=frame.selected_workload,
+            )
+        )
+    elif frame.show_cluster:
+        layout["center"].update(
+            ClusterPanel(
+                snapshot=frame.cluster_snapshot,
+                online_ids=frame.cluster_online_ids,
+            )
+        )
+    elif frame.show_predictive:
+        layout["center"].update(PredictivePanel(report=frame.predictive_report))
+    elif frame.show_explainability:
+        layout["center"].update(ExplainabilityPanel(explanation=frame.explanation))
+    elif frame.show_observatory:
         layout["center"].update(
             ObservatoryPanel(
                 focus_metric=frame.observatory_metric,
@@ -170,8 +206,8 @@ def render_frame(frame: DashboardFrame) -> Layout:
         Panel(
             Align.center(
                 Text(
-                    "Q quit · O observatory · ← history · T graph · ESC leave · "
-                    "A research · D plugins · H help · 1–6 intent",
+                    "Q quit · W workload · C cluster · P predict · E explain · "
+                    "O observatory · ] cycle workload · ESC leave · H help",
                     style="dim cyan",
                 )
             ),

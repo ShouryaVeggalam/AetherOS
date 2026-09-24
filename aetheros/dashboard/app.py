@@ -13,23 +13,33 @@ import termios
 import time
 import tty
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import psutil
 from rich.live import Live
 
 from aetheros import __version__
+from aetheros.agent import (
+    AgentCollector,
+    AgentPublisher,
+    SyntheticPeer,
+    default_demo_peers,
+)
+from aetheros.cluster import (
+    ClusterSnapshot,
+    LocalJSONTransport,
+    NodeRegistry,
+    aggregate,
+)
 from aetheros.core import AetherCore
 from aetheros.dashboard.renderer import DashboardFrame, render_frame
 from aetheros.dashboard.widgets import ProcessRow
 from aetheros.decision import DecisionEngine, DecisionReport
 from aetheros.decision.models import Decision, utc_now
+from aetheros.explainability import ExplainabilityEngine, Explanation
 from aetheros.intent import IntentEngine, IntentStorage
 from aetheros.learning import LearningEngine
-from aetheros.policy_engine import TelemetrySnapshot
-from aetheros.research import ResearchEngine, ResearchReport
-from aetheros.safety import AuditLogger, CooldownManager, SafetyValidator
 from aetheros.observatory import (
     EventTimeline,
     HistoryRecorder,
@@ -41,6 +51,17 @@ from aetheros.observatory import (
     sparkline,
 )
 from aetheros.observatory.models import GraphMetric
+from aetheros.orchestrator import (
+    ExecutionPlan,
+    ResourcePlanner,
+    WorkloadProfile,
+    get_workload,
+    next_workload,
+)
+from aetheros.policy_engine import TelemetrySnapshot
+from aetheros.predictive import ForecastEngine, PredictiveReport
+from aetheros.research import ResearchEngine, ResearchReport
+from aetheros.safety import AuditLogger, CooldownManager, SafetyValidator
 from aetheros.sdk import PluginRecord
 from aetheros.telemetry import TelemetryCollector
 from aetheros.telemetry.models import SystemSnapshot
@@ -70,6 +91,59 @@ class ObservatoryViewState:
     )
     timeline: EventTimeline = field(default_factory=EventTimeline)
     seen_safety_blocks: set[str] = field(default_factory=set)
+
+
+@dataclass
+class ExplainabilityViewState:
+    """UI state for the explainability center panel."""
+
+    visible: bool = False
+    engine: ExplainabilityEngine = field(default_factory=ExplainabilityEngine)
+    last: Explanation | None = None
+
+
+@dataclass
+class PredictiveViewState:
+    """UI state for the predictive intelligence center panel."""
+
+    visible: bool = False
+    engine: ForecastEngine = field(default_factory=ForecastEngine)
+    last: PredictiveReport | None = None
+
+
+@dataclass
+class ClusterViewState:
+    """UI state for the multi-device cluster center panel."""
+
+    visible: bool = False
+    transport: LocalJSONTransport = field(default_factory=LocalJSONTransport)
+    registry: NodeRegistry | None = None
+    local_agent: AgentCollector = field(default_factory=AgentCollector)
+    publisher: AgentPublisher | None = None
+    demo_peers: tuple[SyntheticPeer, ...] = field(default_factory=default_demo_peers)
+    last: ClusterSnapshot | None = None
+    online_ids: frozenset[str] = field(default_factory=frozenset)
+
+    def ensure(self, db_path: Path) -> None:
+        """Lazily wire registry + publisher against the shared transport."""
+
+        if self.registry is None:
+            self.registry = NodeRegistry(transport=self.transport, db_path=db_path)
+        if self.publisher is None:
+            self.publisher = AgentPublisher(transport=self.transport)
+
+
+@dataclass
+class OrchestratorViewState:
+    """UI state for the workload planner center panel."""
+
+    visible: bool = False
+    planner: ResourcePlanner = field(default_factory=ResourcePlanner)
+    workload: WorkloadProfile = field(
+        default_factory=lambda: get_workload("AI Training")
+    )
+    last: ExecutionPlan | None = None
+
 
 def format_uptime(seconds: float) -> str:
     """Format boot uptime as a short human string."""
@@ -113,10 +187,10 @@ def _relative_time(iso_timestamp: str) -> str:
     try:
         parsed = datetime.fromisoformat(iso_timestamp)
         if parsed.tzinfo is None:
-            parsed = parsed.replace(tzinfo=timezone.utc)
+            parsed = parsed.replace(tzinfo=UTC)
     except ValueError:
         return "recently"
-    delta = datetime.now(timezone.utc) - parsed.astimezone(timezone.utc)
+    delta = datetime.now(UTC) - parsed.astimezone(UTC)
     seconds = max(0, int(delta.total_seconds()))
     if seconds < 60:
         return f"{seconds}s ago"
@@ -179,10 +253,29 @@ def plugin_console_rows(
         else:
             status = "Disabled"
             safety = "Verified"
-        rows.append(
-            (record.name, record.version, status, record.author, safety)
-        )
+        rows.append((record.name, record.version, status, record.author, safety))
     return tuple(rows)
+
+
+def tick_cluster(
+    cluster: ClusterViewState,
+    snapshot: TelemetrySnapshot,
+) -> ClusterSnapshot | None:
+    """Publish local + demo peer telemetry and aggregate the cluster view."""
+
+    if cluster.registry is None or cluster.publisher is None:
+        return None
+    local = cluster.local_agent.from_telemetry(snapshot)
+    cluster.publisher.publish(local)
+    for peer in cluster.demo_peers:
+        cluster.publisher.publish(peer.next_snapshot())
+    cluster.registry.ingest()
+    report = aggregate(cluster.registry)
+    cluster.last = report
+    cluster.online_ids = frozenset(
+        n.node_id for n in report.nodes if cluster.registry.is_online(n.node_id)
+    )
+    return report
 
 
 def build_frame(
@@ -198,6 +291,10 @@ def build_frame(
     plugins_verified: int,
     plugins_unsafe: int,
     observatory: ObservatoryViewState,
+    explainability: ExplainabilityViewState | None = None,
+    predictive: PredictiveViewState | None = None,
+    cluster: ClusterViewState | None = None,
+    orchestrator: OrchestratorViewState | None = None,
 ) -> DashboardFrame:
     """Map pipeline output into a DashboardFrame for the renderer."""
 
@@ -213,6 +310,7 @@ def build_frame(
     )
 
     decision = report.decision
+    display_decision: Decision
     if decision is None or (
         decision.severity == "normal" and decision.priority_score < 30
     ):
@@ -227,12 +325,14 @@ def build_frame(
                 action=engine.intent.guidance_text(decision),
                 timestamp=decision.timestamp,
             )
+        display_decision = healthy
         decision_title = healthy.title
         decision_score = healthy.priority_score
         decision_status = "Healthy"
         decision_style = "green"
         explanation = healthy.explanation
     else:
+        display_decision = decision
         decision_title = decision.title
         decision_score = decision.priority_score
         decision_status = decision.severity.upper()
@@ -281,6 +381,46 @@ def build_frame(
         observatory.timeline.recent(20),
     )
 
+    show_explain = bool(explainability and explainability.visible)
+    show_predict = bool(predictive and predictive.visible)
+    show_cluster = bool(cluster and cluster.visible)
+    show_orchestrator = bool(orchestrator and orchestrator.visible)
+    ai_explanation: Explanation | None = None
+    if show_explain and explainability is not None:
+        ai_explanation = explainability.engine.explain(
+            display_decision,
+            snapshot,
+            history=observatory.recorder.points(),
+            intent=profile,
+            processes=system.processes,
+        )
+        explainability.last = ai_explanation
+
+    predictive_report: PredictiveReport | None = None
+    if show_predict and predictive is not None:
+        points = observatory.recorder.points()
+        if points:
+            predictive_report = predictive.engine.predict(points)
+            predictive.last = predictive_report
+
+    cluster_snapshot: ClusterSnapshot | None = None
+    cluster_online: frozenset[str] = frozenset()
+    if cluster is not None:
+        cluster_snapshot = cluster.last
+        cluster_online = cluster.online_ids
+
+    execution_plan: ExecutionPlan | None = None
+    selected_workload: WorkloadProfile | None = None
+    if orchestrator is not None:
+        selected_workload = orchestrator.workload
+        if show_orchestrator and cluster is not None and cluster.last is not None:
+            execution_plan = orchestrator.planner.plan(
+                orchestrator.workload,
+                cluster.last.nodes,
+                online_ids=cluster.online_ids,
+            )
+            orchestrator.last = execution_plan
+
     return DashboardFrame(
         version=__version__,
         cpu_percent=snapshot.cpu_percent,
@@ -318,7 +458,13 @@ def build_frame(
         plugin_rows=plugin_console_rows(plugin_records),
         plugins_verified=plugins_verified,
         plugins_unsafe=plugins_unsafe,
-        show_observatory=observatory.visible,
+        show_observatory=(
+            observatory.visible
+            and not show_explain
+            and not show_predict
+            and not show_cluster
+            and not show_orchestrator
+        ),
         observatory_metric=observatory.metric,
         observatory_cpu_spark=cpu_spark,
         observatory_memory_spark=mem_spark,
@@ -330,6 +476,21 @@ def build_frame(
         observatory_samples=len(observatory.recorder),
         observatory_capacity=observatory.recorder.capacity,
         observatory_window_label="Last 60 Seconds",
+        show_explainability=(
+            show_explain
+            and not show_predict
+            and not show_cluster
+            and not show_orchestrator
+        ),
+        explanation=ai_explanation,
+        show_predictive=show_predict and not show_cluster and not show_orchestrator,
+        predictive_report=predictive_report,
+        show_cluster=show_cluster and not show_orchestrator,
+        cluster_snapshot=cluster_snapshot,
+        cluster_online_ids=cluster_online,
+        show_orchestrator=show_orchestrator,
+        execution_plan=execution_plan,
+        selected_workload=selected_workload,
     )
 
 
@@ -429,9 +590,7 @@ def ingest_observatory_sample(
             if key in observatory.seen_safety_blocks:
                 continue
             observatory.seen_safety_blocks.add(key)
-            events.append(
-                safety_blocked_event(title=rec.title, reason=result.reason)
-            )
+            events.append(safety_blocked_event(title=rec.title, reason=result.reason))
     for event in events:
         observatory.recorder.record_event(event)
         if observatory.history_offset == 0:
@@ -464,6 +623,11 @@ def run_dashboard(
     )
     research_state = ResearchViewState()
     observatory = ObservatoryViewState(visible=True)
+    explainability = ExplainabilityViewState(visible=False)
+    predictive = PredictiveViewState(visible=False)
+    cluster = ClusterViewState(visible=False)
+    cluster.ensure(Path("data/cluster.db"))
+    orchestrator = OrchestratorViewState(visible=False)
     core = AetherCore()
     core.registry.state_path = Path("data/plugin_state.json")
     core.bootstrap()
@@ -479,6 +643,7 @@ def run_dashboard(
         engine.intent.current_intent().name,
         report,
     )
+    tick_cluster(cluster, report.snapshot)
     core.api.telemetry.set_host_snapshot(
         {
             "cpu_percent": report.snapshot.cpu_percent,
@@ -503,6 +668,10 @@ def run_dashboard(
             plugins_verified=summary["verified"],
             plugins_unsafe=summary["unsafe"],
             observatory=observatory,
+            explainability=explainability,
+            predictive=predictive,
+            cluster=cluster,
+            orchestrator=orchestrator,
         )
 
     frame = make_frame()
@@ -521,6 +690,10 @@ def run_dashboard(
                         break
                     if key == "ESC" or lowered == "\x1b":
                         observatory.visible = False
+                        explainability.visible = False
+                        predictive.visible = False
+                        cluster.visible = False
+                        orchestrator.visible = False
                         show_help = False
                         show_developer = False
                     elif lowered == "h":
@@ -528,16 +701,69 @@ def run_dashboard(
                         if show_help:
                             show_developer = False
                             observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
                     elif lowered == "d":
                         show_developer = not show_developer
                         if show_developer:
                             show_help = False
                             observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                    elif lowered == "w":
+                        orchestrator.visible = not orchestrator.visible
+                        if orchestrator.visible:
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                    elif lowered == "]":
+                        if orchestrator.visible:
+                            orchestrator.workload = next_workload(
+                                orchestrator.workload.name
+                            )
+                    elif lowered == "c":
+                        cluster.visible = not cluster.visible
+                        if cluster.visible:
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            orchestrator.visible = False
+                    elif lowered == "p":
+                        predictive.visible = not predictive.visible
+                        if predictive.visible:
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                    elif lowered == "e":
+                        explainability.visible = not explainability.visible
+                        if explainability.visible:
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
                     elif lowered == "o":
                         observatory.visible = not observatory.visible
                         if observatory.visible:
                             show_help = False
                             show_developer = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
                     elif key == "LEFT":
                         observatory.history_offset = min(
                             max(0, len(observatory.recorder) - 1),
@@ -588,6 +814,7 @@ def run_dashboard(
                     engine.intent.current_intent().name,
                     report,
                 )
+                tick_cluster(cluster, report.snapshot)
                 core.api.telemetry.set_host_snapshot(
                     {
                         "cpu_percent": report.snapshot.cpu_percent,
@@ -607,7 +834,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     parser = argparse.ArgumentParser(
         prog="aetheros-dashboard",
-        description="AetherOS v1.1 — Observatory (real-time intelligence)",
+        description="AetherOS v1.5 — Resource Orchestrator",
     )
     parser.add_argument(
         "--db",

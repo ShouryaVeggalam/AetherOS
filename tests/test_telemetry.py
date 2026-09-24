@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -25,15 +25,17 @@ def test_utc_now_is_timezone_aware() -> None:
 
     now = utc_now()
     assert now.tzinfo is not None
-    assert now.tzinfo.utcoffset(now) == timezone.utc.utcoffset(now)
+    assert now.tzinfo.utcoffset(now) == UTC.utcoffset(now)
 
 
 def test_system_snapshot_is_immutable() -> None:
     """Frozen dataclasses must reject attribute assignment."""
 
     snapshot = SystemSnapshot(
-        collected_at=datetime(2026, 1, 1, tzinfo=timezone.utc),
-        cpu=CpuSnapshot(percent=10.0, per_cpu_percent=(10.0,), load_avg=(0.1, 0.2, 0.3)),
+        collected_at=datetime(2026, 1, 1, tzinfo=UTC),
+        cpu=CpuSnapshot(
+            percent=10.0, per_cpu_percent=(10.0,), load_avg=(0.1, 0.2, 0.3)
+        ),
         memory=MemorySnapshot(
             total_bytes=8,
             available_bytes=4,
@@ -55,7 +57,7 @@ def test_system_snapshot_is_immutable() -> None:
         processes=(),
         battery=None,
     )
-    with pytest.raises(Exception):
+    with pytest.raises((AttributeError, TypeError)):
         snapshot.cpu = snapshot.cpu  # type: ignore[misc]
 
 

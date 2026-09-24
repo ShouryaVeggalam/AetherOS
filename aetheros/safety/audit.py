@@ -100,14 +100,12 @@ class AuditLogger:
         """
 
         with self._connect() as conn:
-            row = conn.execute(
-                """
+            row = conn.execute("""
                 SELECT timestamp, title, level, approved, reason, confidence
                 FROM safety_audit
                 ORDER BY id DESC
                 LIMIT 1;
-                """
-            ).fetchone()
+                """).fetchone()
         if row is None:
             return None
         return {

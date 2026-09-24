@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from rich.console import Console
@@ -31,7 +31,7 @@ def _snap(
     """Build a TelemetrySnapshot for recorder tests."""
 
     return TelemetrySnapshot(
-        timestamp=when or datetime.now(timezone.utc),
+        timestamp=when or datetime.now(UTC),
         cpu_percent=cpu,
         memory_percent=memory,
         disk_percent=disk,
@@ -50,7 +50,7 @@ def _point(
 ) -> TelemetryPoint:
     """Build a TelemetryPoint relative to now."""
 
-    stamp = datetime.now(timezone.utc) - timedelta(seconds=seconds_ago)
+    stamp = datetime.now(UTC) - timedelta(seconds=seconds_ago)
     return TelemetryPoint(stamp, cpu, memory, 20.0, 80.0, intent)
 
 
@@ -76,7 +76,7 @@ def test_recorder_capacity_300(tmp_path: Path) -> None:
     """In-memory ring buffer should cap at 300 samples."""
 
     recorder = HistoryRecorder(db_path=tmp_path / "o.db", capacity=300)
-    for value in range(350):
+    for _value in range(350):
         recorder.record_telemetry(_snap(cpu=1.0), "Balanced")
     assert len(recorder) == 300
 
@@ -85,7 +85,7 @@ def test_get_last_seconds(tmp_path: Path) -> None:
     """get_last_seconds should filter by timestamp window."""
 
     recorder = HistoryRecorder(db_path=tmp_path / "t.db", capacity=300)
-    base = datetime.now(timezone.utc)
+    base = datetime.now(UTC)
     for offset in range(10):
         recorder.record_telemetry(
             _snap(cpu=float(offset), when=base - timedelta(seconds=9 - offset)),

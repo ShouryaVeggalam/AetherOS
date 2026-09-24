@@ -74,7 +74,9 @@ def render_pipeline(
             border_style="cyan",
         )
     )
-    console.print(Panel(format_status(snapshot), title="System Status", border_style="blue"))
+    console.print(
+        Panel(format_status(snapshot), title="System Status", border_style="blue")
+    )
 
     if not decisions:
         console.print(

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from rich.console import Console
@@ -64,7 +64,10 @@ def render_report(report: DecisionReport) -> None:
     if report.decision is None:
         console.print(
             Panel(
-                Text("No decision.\nSystem healthy or all advice was blocked.", style="dim"),
+                Text(
+                    "No decision.\nSystem healthy or all advice was blocked.",
+                    style="dim",
+                ),
                 title="Final Decision",
                 border_style="yellow",
             )
@@ -84,7 +87,7 @@ def _fixture_snapshot() -> TelemetrySnapshot:
     """Synthetic overloaded snapshot for a predictable demo."""
 
     return TelemetrySnapshot(
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
         cpu_percent=97.0,
         memory_percent=68.0,
         disk_percent=40.0,

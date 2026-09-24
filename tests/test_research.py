@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from aetheros.intent.profiles import get_profile
@@ -11,14 +11,14 @@ from aetheros.policy_engine.models import TelemetrySnapshot
 from aetheros.research import ResearchEngine, generate_strategies, rank_strategies
 from aetheros.research.evaluator import StrategyEvaluator
 from aetheros.research.reporter import render_markdown, save_report
-from aetheros.simulation import SimulationEngine, SimulatableStrategy
+from aetheros.simulation import SimulatableStrategy, SimulationEngine
 
 
 def _snap(*, cpu: float = 72.0, memory: float = 58.0) -> TelemetrySnapshot:
     """Build a telemetry snapshot for research tests."""
 
     return TelemetrySnapshot(
-        timestamp=datetime(2026, 9, 23, tzinfo=timezone.utc),
+        timestamp=datetime(2026, 9, 23, tzinfo=UTC),
         cpu_percent=cpu,
         memory_percent=memory,
         disk_percent=40.0,
@@ -32,9 +32,7 @@ def test_generator_creates_at_least_five() -> None:
     """Generator should emit at least five named strategies."""
 
     intent = get_profile("Coding")
-    patterns = (
-        HistoricalPattern("t", "d", cpu_bias=10, memory_bias=0, confidence=70),
-    )
+    patterns = (HistoricalPattern("t", "d", cpu_bias=10, memory_bias=0, confidence=70),)
     strategies = generate_strategies(_snap(), intent, patterns)
     assert len(strategies) >= 5
     titles = {s.title for s in strategies}
@@ -103,7 +101,9 @@ def test_coding_prefers_interactive_style(tmp_path: Path) -> None:
     """Under Coding intent, an interactive strategy should rank near the top."""
 
     engine = ResearchEngine(reports_dir=tmp_path)
-    report = engine.run(_snap(cpu=75, memory=55), get_profile("Coding"), write_report=False)
+    report = engine.run(
+        _snap(cpu=75, memory=55), get_profile("Coding"), write_report=False
+    )
     assert report.winner is not None
     top_titles = {item.strategy.title for item in report.ranked[:2]}
     assert (

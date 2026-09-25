@@ -154,3 +154,93 @@ def _fact_supports(hyp: Hypothesis, fact: CognitiveFact) -> bool:
         or any(token in blob for token in fact.subject.lower().split())
         or fact.object.lower() in blob
     )
+
+
+# ---------------------------------------------------------------------------
+# v3 Cognition Core verifier — graph + history + simulation gates
+# ---------------------------------------------------------------------------
+
+
+def verify_core_hypotheses(
+    hypotheses: tuple,
+    evidence: tuple,
+    *,
+    simulation_agreement: float | None = None,
+    min_confidence: float = 60.0,
+    require_simulation: bool = False,
+) -> tuple:
+    """Accept v3 hypotheses only with multi-channel evidence support.
+
+    Gates:
+    * at least one ``resource_graph`` evidence id referenced, OR graph metric
+      present in the evidence pool when hypothesis cites graph paths
+    * historical support when hypothesis cites telemetry_history evidence
+    * simulation agreement when provided (or required)
+
+    Unsupported hypotheses are omitted (rejected), never forced through.
+    """
+
+    from aetheros.cognition.models import VerifiedCoreExplanation
+
+    evidence_by_id = {e.id: e for e in evidence}
+    graph_ids = {e.id for e in evidence if e.source == "resource_graph"}
+    hist_ids = {e.id for e in evidence if e.source == "telemetry_history"}
+    twin_ids = {e.id for e in evidence if e.source == "digital_twin"}
+
+    accepted: list[VerifiedCoreExplanation] = []
+    for hyp in hypotheses:
+        refs = [
+            evidence_by_id[i] for i in hyp.supporting_evidence if i in evidence_by_id
+        ]
+        if not refs:
+            continue
+        graph_support = any(e.id in graph_ids for e in refs) or any(
+            e.source == "resource_graph" for e in refs
+        )
+        historical_support = any(e.id in hist_ids for e in refs) or any(
+            e.source == "telemetry_history" for e in refs
+        )
+        twin_support = any(e.id in twin_ids for e in refs) or any(
+            e.source == "digital_twin" for e in refs
+        )
+
+        # Require at least graph OR history evidence on the hypothesis itself.
+        if not graph_support and not historical_support:
+            continue
+
+        if require_simulation and simulation_agreement is None and not twin_support:
+            continue
+        if simulation_agreement is not None and simulation_agreement < 70.0:
+            continue
+
+        reasons: list[str] = []
+        if graph_support:
+            reasons.append("Supported by resource-graph evidence.")
+        if historical_support:
+            reasons.append("Supported by telemetry history evidence.")
+        if twin_support or simulation_agreement is not None:
+            reasons.append("Simulation channel agrees or twin evidence present.")
+        if not reasons:
+            continue
+
+        conf = hyp.confidence
+        if graph_support and historical_support:
+            conf = min(99.0, conf + 5.0)
+        if simulation_agreement is not None:
+            conf = min(99.0, (conf + simulation_agreement) / 2.0 + 10.0)
+        if conf < min_confidence:
+            continue
+
+        accepted.append(
+            VerifiedCoreExplanation(
+                hypothesis=hyp,
+                graph_support=graph_support,
+                historical_support=historical_support,
+                simulation_agreement=simulation_agreement,
+                reasons=tuple(reasons),
+                confidence=round(conf, 2),
+            )
+        )
+
+    accepted.sort(key=lambda v: (-v.confidence, v.hypothesis.id))
+    return tuple(accepted)

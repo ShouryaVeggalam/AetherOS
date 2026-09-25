@@ -279,3 +279,109 @@ def utc_now() -> datetime:
     """Timezone-aware UTC now."""
 
     return datetime.now(UTC)
+
+
+# ---------------------------------------------------------------------------
+# v3 Cognition Core — evidence → Core Hypothesis (models.Hypothesis)
+# ---------------------------------------------------------------------------
+
+
+def generate_core_hypotheses(
+    evidence: tuple,
+    *,
+    context_label: str = "BALANCED",
+    patterns: tuple[str, ...] = (),
+) -> tuple:
+    """Build v3 ``models.Hypothesis`` candidates from evidence only.
+
+    Returns an empty tuple when evidence is insufficient. Never invents
+    unsupported explanations. Does not alter legacy ``Hypothesis`` generation.
+    """
+
+    from aetheros.cognition.models import Hypothesis as CoreHypothesis
+
+    if not evidence:
+        return ()
+
+    by_source: dict[str, list] = {}
+    for item in evidence:
+        by_source.setdefault(item.source, []).append(item)
+
+    hypotheses: list[CoreHypothesis] = []
+    graph_items = by_source.get("resource_graph", [])
+    hist_items = by_source.get("telemetry_history", [])
+    twin_items = by_source.get("digital_twin", [])
+    mem_items = by_source.get("operational_memory", [])
+
+    cpu_paths = [
+        e
+        for e in graph_items
+        if e.metric.startswith("path:") and "cpu" in e.metric.lower()
+    ]
+    proc_cpu = [e for e in graph_items if e.metric.startswith("process_cpu:")]
+    if proc_cpu or cpu_paths:
+        top = max(proc_cpu or graph_items, key=lambda e: abs(e.value))
+        support = tuple(e.id for e in (proc_cpu or graph_items)[:5])
+        if cpu_paths:
+            support = support + tuple(e.id for e in cpu_paths[:3])
+        hypotheses.append(
+            CoreHypothesis(
+                id=f"hyp_cpu_{top.id[-8:]}",
+                title=f"{context_label} foreground CPU pressure",
+                description=(
+                    f"Graph evidence shows elevated process/CPU coupling "
+                    f"(peak metric value {top.value:.1f})."
+                ),
+                supporting_evidence=support,
+                confidence=min(95.0, 55.0 + min(40.0, abs(top.value) * 0.4)),
+            )
+        )
+
+    cpu_delta = next((e for e in hist_items if e.metric == "cpu_delta"), None)
+    if cpu_delta is not None and abs(cpu_delta.value) >= 5.0:
+        direction = "increase" if cpu_delta.value > 0 else "decrease"
+        support = tuple(e.id for e in hist_items)
+        hypotheses.append(
+            CoreHypothesis(
+                id=f"hyp_hist_{cpu_delta.id[-8:]}",
+                title=f"Historical CPU {direction} under {context_label}",
+                description=(
+                    f"Telemetry history shows CPU delta {cpu_delta.value:+.1f} "
+                    f"across recorded samples."
+                ),
+                supporting_evidence=support,
+                confidence=min(92.0, 50.0 + abs(cpu_delta.value)),
+            )
+        )
+
+    if twin_items and (proc_cpu or cpu_delta is not None):
+        support = tuple(e.id for e in twin_items[:3])
+        if proc_cpu:
+            support = support + (proc_cpu[0].id,)
+        if cpu_delta is not None:
+            support = support + (cpu_delta.id,)
+        hypotheses.append(
+            CoreHypothesis(
+                id="hyp_twin_agree",
+                title="Simulation agreement with observed load",
+                description=(
+                    "Digital twin summaries align with graph/history load signals."
+                ),
+                supporting_evidence=support,
+                confidence=78.0,
+            )
+        )
+
+    if patterns and mem_items:
+        support = tuple(e.id for e in mem_items[:3])
+        hypotheses.append(
+            CoreHypothesis(
+                id="hyp_memory_pattern",
+                title="Operational memory pattern match",
+                description=patterns[0],
+                supporting_evidence=support,
+                confidence=70.0,
+            )
+        )
+
+    return tuple(hypotheses)

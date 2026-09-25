@@ -167,3 +167,80 @@ def _score_plan(
     if verified is not None and verified.result is not None:
         base += verified.confidence * 0.1
     return int(max(0, min(100, round(base))))
+
+
+# ---------------------------------------------------------------------------
+# v3 Cognition Core planner — simulation-backed recommendation plans only
+# ---------------------------------------------------------------------------
+
+
+def generate_cognition_plans(
+    *,
+    verified: tuple = (),
+    simulation_agreement: float | None = None,
+    context_label: str = "BALANCED",
+) -> tuple:
+    """Emit Performance / Efficiency / Balanced plans when simulation-backed.
+
+    Plans are advice-only. Without a simulation signal, returns empty —
+    never invents executable actions.
+    """
+
+    from aetheros.cognition.models import CognitionPlan
+
+    has_sim_reason = any(any("Simulation" in r for r in v.reasons) for v in verified)
+    if simulation_agreement is None and not has_sim_reason:
+        return ()
+
+    base = simulation_agreement if simulation_agreement is not None else 75.0
+    top = verified[0] if verified else None
+    conf = round(min(95.0, base * 0.7 + (top.confidence * 0.3 if top else 20.0)), 2)
+    label = context_label
+
+    return (
+        CognitionPlan(
+            kind="performance",
+            title="Performance Plan",
+            summary=(
+                f"Prioritize responsiveness for {label} by reducing foreground "
+                f"CPU contention (simulation-backed advice)."
+            ),
+            steps=(
+                "Review top CPU-bound process edges on the resource graph",
+                "Simulate reduced foreground load via Digital Twin",
+                "Compare latency score before recommending operator action",
+            ),
+            simulation_backed=True,
+            confidence=conf,
+        ),
+        CognitionPlan(
+            kind="efficiency",
+            title="Efficiency Plan",
+            summary=(
+                f"Prioritize efficiency for {label} by easing sustained resource "
+                f"pressure (simulation-backed advice)."
+            ),
+            steps=(
+                "Identify memory/disk pressure paths from evidence",
+                "Simulate efficiency-oriented deltas",
+                "Recommend batching or deferring non-critical workloads",
+            ),
+            simulation_backed=True,
+            confidence=max(50.0, conf - 3.0),
+        ),
+        CognitionPlan(
+            kind="balanced",
+            title="Balanced Plan",
+            summary=(
+                f"Balance responsiveness and efficiency under {label} "
+                f"(simulation-backed advice)."
+            ),
+            steps=(
+                "Keep verified explanations visible to the operator",
+                "Simulate a mixed latency/efficiency scenario",
+                "Present trade-offs; await human approval",
+            ),
+            simulation_backed=True,
+            confidence=max(50.0, conf - 1.5),
+        ),
+    )

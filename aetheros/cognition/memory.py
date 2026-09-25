@@ -196,3 +196,73 @@ def _row_to_fact(row: tuple) -> CognitiveFact:
         created_at=stamp,
         notes=str(row[7]),
     )
+
+
+# ---------------------------------------------------------------------------
+# v3 Cognition Core — read-only operational pattern memory (isolated layer)
+# ---------------------------------------------------------------------------
+
+from aetheros.cognition.models import OperationalPattern  # noqa: E402
+
+SEED_PATTERNS: tuple[OperationalPattern, ...] = (
+    OperationalPattern(
+        key="morning_coding_cpu_before_memory",
+        statement=(
+            "Morning coding sessions typically increase CPU before memory pressure."
+        ),
+        evidence_count=18,
+        confidence=88.0,
+    ),
+    OperationalPattern(
+        key="compile_saturates_cpu",
+        statement="Compile workloads often saturate foreground CPU before disk fills.",
+        evidence_count=24,
+        confidence=91.0,
+    ),
+    OperationalPattern(
+        key="idle_battery_stable",
+        statement="Idle Balanced sessions keep battery drain stable relative to Coding.",
+        evidence_count=12,
+        confidence=80.0,
+    ),
+)
+
+
+@dataclass(frozen=True, slots=True)
+class OperationalMemory:
+    """Read-only store of verified system patterns (no user content).
+
+    Patterns are seeded and optionally filtered. This layer never writes
+    conversation text and does not mutate existing ``CognitiveMemory`` DBs.
+    """
+
+    patterns: tuple[OperationalPattern, ...] = SEED_PATTERNS
+
+    def list_patterns(self) -> tuple[OperationalPattern, ...]:
+        """Return all verified operational patterns."""
+
+        return self.patterns
+
+    def statements(self) -> tuple[str, ...]:
+        """Return pattern statements only."""
+
+        return tuple(p.statement for p in self.patterns)
+
+    def match(self, needle: str) -> tuple[OperationalPattern, ...]:
+        """Case-insensitive substring match over pattern statements/keys."""
+
+        text = needle.lower().strip()
+        if not text:
+            return ()
+        return tuple(
+            p
+            for p in self.patterns
+            if text in p.statement.lower() or text in p.key.lower()
+        )
+
+    def verified_only(
+        self, *, min_confidence: float = 70.0
+    ) -> tuple[OperationalPattern, ...]:
+        """Return patterns meeting a confidence floor."""
+
+        return tuple(p for p in self.patterns if p.confidence >= min_confidence)

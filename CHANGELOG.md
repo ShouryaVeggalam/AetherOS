@@ -40,6 +40,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Context Intelligence Engine (`aetheros.context` builder/intent/history/engine)
 - Optional prediction/reasoning/simulation context adapters (no runtime rewrite)
 - Docs: `docs/context_engine.md`
+- Research Intelligence Engine P9 (`aetheros.research` analyzer/trends/bottlenecks/discoveries)
+- Dashboard **X** Research Intelligence page (A remains strategy research)
+- Docs: `docs/research_engine.md`
 
 ### Changed
 

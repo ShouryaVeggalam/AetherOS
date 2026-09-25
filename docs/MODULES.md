@@ -15,6 +15,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `cluster` | [cluster.md](cluster.md) | Multi-device registry |
 | `cognition` | [cognition.md](cognition.md) | Causal / hypothesis / verify |
 | `context` | [context_engine.md](context_engine.md) | Context Intelligence Engine (P8) |
+| `research` | [research_engine.md](research_engine.md) | Strategy research + P9 Research Intelligence |
 | `core` | SDK docs | Plugin host |
 | `dashboard` | README | Rich Live UI |
 | `decision` | architecture | Prioritizer |

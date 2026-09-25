@@ -96,6 +96,7 @@ flowchart LR
 - [Graph Reasoning](reasoning.md)
 - [Digital Twin 2.0](digital_twin.md)
 - [Context Engine](context_engine.md)
+- [Research Intelligence P9](research_engine.md)
 - [Phase 16 GII](PHASE16.md)
 - [Fabric](fabric.md) · [Sentinel](sentinel.md) · [Genesis](genesis.md) · [Horizon](horizon.md)
 - [Agents](agents.md) · [Cognition](cognition.md) · [Observatory](observatory.md)

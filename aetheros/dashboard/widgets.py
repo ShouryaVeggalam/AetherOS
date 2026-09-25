@@ -317,6 +317,7 @@ class HelpPanel:
             "[bold]Q[/bold]  Quit dashboard\n"
             "[bold]?[/bold]  Toggle this help overlay\n"
             "[bold]A[/bold]  Run autonomous research\n"
+            "[bold]X[/bold]  Research Intelligence (evidence reports)\n"
             "[bold]D[/bold]  Developer Console (plugins)\n"
             "[bold]V[/bold]  Digital Twin (host what-if)\n"
             "[bold]G[/bold]  Genesis (research intelligence)\n"

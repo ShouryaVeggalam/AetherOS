@@ -48,6 +48,8 @@ from aetheros.reasoning.formatter import GraphReasoningPanel
 from aetheros.reasoning.models import Observation, VerifiedExplanation
 from aetheros.runtime import AgenticReport
 from aetheros.sentinel import SentinelPanel, SentinelReport
+from aetheros.research.formatter import ResearchIntelligencePanel
+from aetheros.research.models import SystemResearchReport
 from aetheros.twin import (
     DigitalTwinPanel,
     DigitalTwinReport,
@@ -141,6 +143,9 @@ class DashboardFrame:
     digital_twin_report: DigitalTwinReport | None
     digital_twin_scenario: SimulationScenario | None
     digital_twin_baseline: TwinSnapshot | None
+    show_research_intel: bool
+    research_intel_report: SystemResearchReport | None
+    research_intel_view: str
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -168,7 +173,14 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_digital_twin:
+    if frame.show_research_intel:
+        layout["center"].update(
+            ResearchIntelligencePanel(
+                report=frame.research_intel_report,
+                view=frame.research_intel_view,
+            )
+        )
+    elif frame.show_digital_twin:
         layout["center"].update(
             DigitalTwinPanel(
                 report=frame.digital_twin_report,

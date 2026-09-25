@@ -80,7 +80,8 @@ from aetheros.reasoning import (
     reason as graph_reason,
 )
 from aetheros.reasoning.explain import CognitiveReport
-from aetheros.research import ResearchEngine, ResearchReport
+from aetheros.research import ResearchEngine, ResearchIntelligenceEngine, ResearchReport
+from aetheros.research.models import SystemResearchReport
 from aetheros.runtime import AgenticReport, AgenticRuntime
 from aetheros.safety import AuditLogger, CooldownManager, SafetyValidator
 from aetheros.sdk import PluginRecord
@@ -266,6 +267,26 @@ class DigitalTwinViewState:
     scenario_index: int = 0
 
 
+@dataclass
+class ResearchIntelligenceViewState:
+    """UI state for P9 Research Intelligence panel (shortcut X)."""
+
+    visible: bool = False
+    last: SystemResearchReport | None = None
+    view_index: int = 0
+    views: tuple[str, ...] = (
+        "daily",
+        "weekly",
+        "bottlenecks",
+        "discoveries",
+        "simulation",
+    )
+
+    @property
+    def view(self) -> str:
+        return self.views[self.view_index % len(self.views)]
+
+
 def max_cooldown_seconds(engine: DecisionEngine) -> float:
     """Return the longest active cooldown across known categories."""
 
@@ -350,6 +371,7 @@ def build_frame(
     resource_graph: ResourceGraphViewState | None = None,
     graph_reasoning: GraphReasoningViewState | None = None,
     digital_twin: DigitalTwinViewState | None = None,
+    research_intel: ResearchIntelligenceViewState | None = None,
 ) -> DashboardFrame:
     """Map pipeline output into a DashboardFrame for the renderer."""
 
@@ -450,6 +472,7 @@ def build_frame(
     show_resource_graph = bool(resource_graph and resource_graph.visible)
     show_graph_reasoning = bool(graph_reasoning and graph_reasoning.visible)
     show_digital_twin = bool(digital_twin and digital_twin.visible)
+    show_research_intel = bool(research_intel and research_intel.visible)
     overlay = (
         show_explain
         or show_predict
@@ -465,6 +488,7 @@ def build_frame(
         or show_resource_graph
         or show_graph_reasoning
         or show_digital_twin
+        or show_research_intel
     )
     ai_explanation: Explanation | None = None
     if show_explain and explainability is not None:
@@ -607,6 +631,39 @@ def build_frame(
         digital_twin_scenario = scene
         digital_twin_baseline = twin_snap
 
+    research_intel_report: SystemResearchReport | None = None
+    research_intel_view = "daily"
+    if show_research_intel and research_intel is not None:
+        research_intel_view = research_intel.view
+        kind_map = {
+            "daily": "daily",
+            "weekly": "weekly",
+            "bottlenecks": "research_summary",
+            "discoveries": "research_summary",
+            "simulation": "simulation_summary",
+        }
+        host_graph = build_resource_graph(system, intent_name=profile.name)
+        history = observatory.recorder.points()
+        research_intel.last = ResearchIntelligenceEngine(min_evidence=3).generate(
+            graph=host_graph,
+            history=history,
+            context=profile.name,
+            verified_reasoning=(
+                ("Telemetry and resource graph evidence reviewed.",)
+                if history
+                else ()
+            ),
+            twin_summaries=(
+                (f"Digital twin scenario available: {digital_twin.scenario.name}",)
+                if digital_twin is not None and digital_twin.scenario is not None
+                else ()
+            ),
+            simulation_agreement=90.0 if history else None,
+            session_count=max(len(history), 0) or None,
+            kind=kind_map.get(research_intel_view, "research_summary"),  # type: ignore[arg-type]
+        )
+        research_intel_report = research_intel.last
+
     return DashboardFrame(
         version=__version__,
         cpu_percent=snapshot.cpu_percent,
@@ -664,7 +721,7 @@ def build_frame(
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
         explanation=ai_explanation,
         show_predictive=show_predict
         and not show_cognitive
@@ -674,7 +731,7 @@ def build_frame(
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
         predictive_report=predictive_report,
         show_cluster=show_cluster
         and not show_cognitive
@@ -684,7 +741,7 @@ def build_frame(
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
         cluster_snapshot=cluster_snapshot,
         cluster_online_ids=cluster_online,
         show_orchestrator=show_orchestrator
@@ -695,7 +752,7 @@ def build_frame(
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
         execution_plan=execution_plan,
         selected_workload=selected_workload,
         show_cognitive=show_cognitive
@@ -705,7 +762,7 @@ def build_frame(
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
         cognitive_report=cognitive_report,
         show_multi_agent=show_multi_agent
         and not show_horizon
@@ -713,39 +770,42 @@ def build_frame(
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
         agentic_report=agentic_report,
         show_horizon=show_horizon
         and not show_genesis
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
         horizon_report=horizon_report,
         show_genesis=show_genesis
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
         genesis_report=genesis_report,
         show_sentinel=show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
         sentinel_report=sentinel_report,
-        show_fabric=show_fabric and not show_infinity and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
+        show_fabric=show_fabric and not show_infinity and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
         fabric_report=fabric_report,
-        show_infinity=show_infinity and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
+        show_infinity=show_infinity and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
         infinity_report=infinity_report,
-        show_resource_graph=show_resource_graph and not show_graph_reasoning and not show_digital_twin,
+        show_resource_graph=show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
         resource_graph=resource_graph_report,
-        show_graph_reasoning=show_graph_reasoning and not show_digital_twin,
+        show_graph_reasoning=show_graph_reasoning and not show_digital_twin and not show_research_intel,
         graph_reasoning=graph_reasoning_report,
         graph_reasoning_observation=graph_reasoning_observation,
-        show_digital_twin=show_digital_twin,
+        show_digital_twin=show_digital_twin and not show_research_intel,
         digital_twin_report=digital_twin_report,
         digital_twin_scenario=digital_twin_scenario,
         digital_twin_baseline=digital_twin_baseline,
+        show_research_intel=show_research_intel,
+        research_intel_report=research_intel_report,
+        research_intel_view=research_intel_view,
     )
 
 
@@ -893,6 +953,7 @@ def run_dashboard(
     resource_graph_view = ResourceGraphViewState(visible=False)
     graph_reasoning_view = GraphReasoningViewState(visible=False)
     digital_twin_view = DigitalTwinViewState(visible=False)
+    research_intel_view = ResearchIntelligenceViewState(visible=False)
     core = AetherCore()
     core.registry.state_path = Path("data/plugin_state.json")
     core.bootstrap()
@@ -947,6 +1008,7 @@ def run_dashboard(
             resource_graph=resource_graph_view,
             graph_reasoning=graph_reasoning_view,
             digital_twin=digital_twin_view,
+            research_intel=research_intel_view,
         )
 
     frame = make_frame()
@@ -979,6 +1041,7 @@ def run_dashboard(
                         resource_graph_view.visible = False
                         graph_reasoning_view.visible = False
                         digital_twin_view.visible = False
+                        research_intel_view.visible = False
                         show_help = False
                         show_developer = False
                     elif key == "?" or lowered == "?":
@@ -1000,6 +1063,7 @@ def run_dashboard(
                             resource_graph_view.visible = False
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif lowered == "h":
                         horizon_view.visible = not horizon_view.visible
                         if horizon_view.visible:
@@ -1019,6 +1083,7 @@ def run_dashboard(
                             resource_graph_view.visible = False
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif lowered == "d":
                         show_developer = not show_developer
                         if show_developer:
@@ -1038,6 +1103,7 @@ def run_dashboard(
                             resource_graph_view.visible = False
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif lowered == "m":
                         multi_agent.visible = not multi_agent.visible
                         if multi_agent.visible:
@@ -1057,6 +1123,7 @@ def run_dashboard(
                             resource_graph_view.visible = False
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif lowered == "g":
                         genesis_view.visible = not genesis_view.visible
                         if genesis_view.visible:
@@ -1076,6 +1143,7 @@ def run_dashboard(
                             resource_graph_view.visible = False
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif lowered == "s":
                         sentinel_view.visible = not sentinel_view.visible
                         if sentinel_view.visible:
@@ -1095,6 +1163,7 @@ def run_dashboard(
                             resource_graph_view.visible = False
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif lowered == "f":
                         fabric_view.visible = not fabric_view.visible
                         if fabric_view.visible:
@@ -1114,6 +1183,7 @@ def run_dashboard(
                             resource_graph_view.visible = False
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif lowered == "i":
                         infinity_view.visible = not infinity_view.visible
                         if infinity_view.visible:
@@ -1134,6 +1204,7 @@ def run_dashboard(
                             resource_graph_view.visible = False
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif lowered == "y":
                         resource_graph_view.visible = not resource_graph_view.visible
                         if resource_graph_view.visible:
@@ -1153,6 +1224,7 @@ def run_dashboard(
                             infinity_view.visible = False
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif lowered == "r":
                         graph_reasoning_view.visible = not graph_reasoning_view.visible
                         if graph_reasoning_view.visible:
@@ -1171,6 +1243,8 @@ def run_dashboard(
                             fabric_view.visible = False
                             infinity_view.visible = False
                             resource_graph_view.visible = False
+                            digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif lowered == "v":
                         digital_twin_view.visible = not digital_twin_view.visible
                         if digital_twin_view.visible:
@@ -1190,6 +1264,27 @@ def run_dashboard(
                             infinity_view.visible = False
                             resource_graph_view.visible = False
                             graph_reasoning_view.visible = False
+                            research_intel_view.visible = False
+                    elif lowered == "x":
+                        research_intel_view.visible = not research_intel_view.visible
+                        if research_intel_view.visible:
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
                     elif lowered == "k":
                         cognition.visible = not cognition.visible
                         if cognition.visible:
@@ -1209,6 +1304,7 @@ def run_dashboard(
                             resource_graph_view.visible = False
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif lowered == "w":
                         orchestrator.visible = not orchestrator.visible
                         if orchestrator.visible:
@@ -1228,8 +1324,11 @@ def run_dashboard(
                             resource_graph_view.visible = False
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif lowered == "]":
-                        if digital_twin_view.visible:
+                        if research_intel_view.visible:
+                            research_intel_view.view_index += 1
+                        elif digital_twin_view.visible:
                             digital_twin_view.scenario_index += 1
                         elif orchestrator.visible:
                             orchestrator.workload = next_workload(
@@ -1254,6 +1353,7 @@ def run_dashboard(
                             resource_graph_view.visible = False
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif lowered == "p":
                         predictive.visible = not predictive.visible
                         if predictive.visible:
@@ -1273,6 +1373,7 @@ def run_dashboard(
                             resource_graph_view.visible = False
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif lowered == "e":
                         explainability.visible = not explainability.visible
                         if explainability.visible:
@@ -1292,6 +1393,7 @@ def run_dashboard(
                             resource_graph_view.visible = False
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif lowered == "o":
                         observatory.visible = not observatory.visible
                         if observatory.visible:
@@ -1311,6 +1413,7 @@ def run_dashboard(
                             resource_graph_view.visible = False
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
+                            research_intel_view.visible = False
                     elif key == "LEFT":
                         observatory.history_offset = min(
                             max(0, len(observatory.recorder) - 1),

@@ -7,54 +7,41 @@ Goal → Attention → Decomposition → Planning → Reasoning
     → Reflection → Critique → Revised Plan → Decision
 ```
 
-Deterministic · explainable · observable. Not a language model. Not CoT generation. Not an agent framework.
+Deterministic · explainable · observable.
 
-## Module 1 — Attention Engine ✓
+## Modules
 
-**Package:** `labs/aether/attention/`
+| Module | Package | Status |
+|--------|---------|--------|
+| 1 Attention | `attention/` | ✓ |
+| 2 Decomposition | `decomposition/` | ✓ |
+| 2+ Planning | `planning/` | ✓ |
+| 3 Reflection | `reflection/` | ✓ |
+| 4 Critique | `critique/` | ✓ |
+| Cognition orchestrator | `cognition/` | ✓ |
 
-| File | Role |
-|------|------|
-| `signals.py` | Normalize complexity / context / memory / uncertainty |
-| `allocator.py` | Deterministic channel weights + budgets |
-| `service.py` | `AttentionEngine` async facade + draft cognition plans |
+## API
 
-### Inputs
-
-- task complexity
-- available context
-- memory relevance
-- uncertainty
-
-### Outputs
-
-- attention weights (`focus`, `memory`, `exploration`, `verification`)
-- reasoning budget
-- retrieval budget
-- explainable `factors`
-
-### API
-
-| Method | Path | Status |
+| Method | Path | Module |
 |--------|------|--------|
-| `POST` | `/aether/attention` | Module 1 |
-| `GET` | `/aether/attention/{id}` | Module 1 |
-| `POST` | `/aether/cognition` | Attention-backed draft plan |
-| `GET` | `/aether/plans/{id}` | Module 1 |
-| `POST` | `/aether/decompose` | Pending |
-| `POST` | `/aether/reflect` | Pending |
-| `POST` | `/aether/critique` | Pending |
-| `GET` | `/aether/health` | Ready |
+| `POST` | `/aether/attention` | 1 |
+| `GET` | `/aether/attention/{id}` | 1 |
+| `POST` | `/aether/cognition` | 1–2 pipeline |
+| `GET` | `/aether/plans/{id}` | 1–2 |
+| `POST` | `/aether/decompose` | 2 |
+| `GET` | `/aether/graphs/{id}` | 2 |
+| `POST` | `/aether/reflect` | 3 |
+| `POST` | `/aether/critique` | 4 |
+| `GET` | `/aether/health` | all |
 
-### Observatory
+## Observatory
 
-Next.js 16 app: `labs/aether/observatory/web` — Attention Map page talks to `/aether/attention`.
+Next.js 16: `labs/aether/observatory/web`
+
+- Cognition · Attention Map · Task Graph · Reflection · Critique
 
 ```bash
-# API
 uvicorn aetheros.api:create_app --factory --reload
-
-# Observatory
 cd labs/aether/observatory/web && npm install && npm run dev
 ```
 
@@ -62,21 +49,16 @@ cd labs/aether/observatory/web && npm install && npm run dev
 
 ```
 labs/aether/
-  attention/       # Module 1 ✓
-  cognition/       # orchestration façade
-  planning/        # Module 2+
-  decomposition/   # Module 2+
-  reflection/      # pending
-  critique/        # pending
-  observatory/     # Attention Map + replay helpers + Next.js UI
+  attention/       # Module 1
+  decomposition/   # Module 2 — DAG tasks
+  planning/        # hierarchical CognitionPlan
+  reflection/      # Module 3
+  critique/        # Module 4
+  cognition/       # orchestrator
+  observatory/     # heatmap + Next.js UI
   api/             # FastAPI /aether
-  models/          # frozen domain types
-  repositories/    # append-only stores
-  migrations/      # PostgreSQL forward schema
+  models/
+  repositories/
+  migrations/
   tests/
 ```
-
-## Persistence
-
-Default: in-memory append-only repositories.  
-Forward: PostgreSQL via `migrations/m0001_aether_attention.py`.

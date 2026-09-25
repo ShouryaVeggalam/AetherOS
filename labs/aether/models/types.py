@@ -123,8 +123,10 @@ class CognitionPlan:
     stages: tuple[CognitionStage, ...]
     confidence: float
     attention_id: str = ""
+    task_graph_id: str = ""
     status: PlanStatus = "draft"
     created_at: datetime | None = None
+    parent_plan_id: str = ""
 
     def __post_init__(self) -> None:
         if not self.id.strip():
@@ -157,6 +159,36 @@ class Task:
 
 
 @dataclass(frozen=True, slots=True)
+class TaskGraph:
+    """Hierarchical DAG of tasks produced by decomposition."""
+
+    id: str
+    goal_id: str
+    objective: str
+    tasks: tuple[Task, ...]
+    roots: tuple[str, ...]
+    max_depth: int
+    created_at: datetime | None = None
+
+    def __post_init__(self) -> None:
+        if not self.id.strip():
+            raise ValueError("id must be non-empty")
+        if not self.goal_id.strip():
+            raise ValueError("goal_id must be non-empty")
+        if not self.objective.strip():
+            raise ValueError("objective must be non-empty")
+        if self.max_depth < 0:
+            raise ValueError("max_depth must be >= 0")
+        ids = {t.id for t in self.tasks}
+        for task in self.tasks:
+            for dep in task.dependencies:
+                if dep not in ids:
+                    raise ValueError(f"dependency missing from graph: {dep}")
+            if task.parent_task is not None and task.parent_task not in ids:
+                raise ValueError(f"parent missing from graph: {task.parent_task}")
+
+
+@dataclass(frozen=True, slots=True)
 class Reflection:
     """Post-reasoning self-assessment used to revise plans."""
 
@@ -164,6 +196,7 @@ class Reflection:
     weaknesses: tuple[str, ...]
     assumptions: tuple[str, ...]
     improvements: tuple[str, ...]
+    id: str = ""
     plan_id: str = ""
     created_at: datetime | None = None
 
@@ -215,7 +248,16 @@ class AetherHealth:
 
     attention_count: int
     plan_count: int
+    task_graph_count: int = 0
+    reflection_count: int = 0
+    critique_count: int = 0
     modules_ready: tuple[str, ...] = field(
-        default_factory=lambda: ("attention",)
+        default_factory=lambda: (
+            "attention",
+            "decomposition",
+            "planning",
+            "reflection",
+            "critique",
+        )
     )
     status: str = "ok"

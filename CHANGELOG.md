@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- CELESTRA X **Aether Lab** Modules 2–4 — Decomposition (DAG), Planning, Reflection, Critique
+- Cognition orchestrator (`POST /aether/cognition`) runs attention → decompose → plan
+- Observatory Task Graph / Reflection / Critique / Cognition pages (Next.js 16)
+- Docs: `docs/aether_lab.md` updated for full cognitive pipeline
 - CELESTRA X **Aether Lab** Module 1 — Attention Engine (`labs/aether/`, `/aether`)
 - Deterministic attention allocation (weights + reasoning/retrieval budgets) + draft cognition plans
 - Aether Observatory Next.js 16 Attention Map (`labs/aether/observatory/web`)

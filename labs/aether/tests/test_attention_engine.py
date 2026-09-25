@@ -356,6 +356,7 @@ def test_api_cognition_and_plans(client: TestClient) -> None:
     assert res.status_code == 200
     body = res.json()
     assert body["plan"]["attention_id"] == body["attention"]["id"]
+    assert body["task_graph"]["tasks"]
     plan_id = body["plan"]["id"]
     fetched = client.get(f"/aether/plans/{plan_id}")
     assert fetched.status_code == 200
@@ -363,20 +364,62 @@ def test_api_cognition_and_plans(client: TestClient) -> None:
     assert client.get("/aether/plans/nope").status_code == 404
 
 
-def test_api_pending_modules_and_health(client: TestClient) -> None:
-    assert client.get("/aether/health").json()["status"] == "ok"
-    assert client.post(
+def test_api_decompose_reflect_critique_and_health(client: TestClient) -> None:
+    health = client.get("/aether/health").json()
+    assert health["status"] == "ok"
+    assert "decomposition" in health["modules_ready"]
+    decomp = client.post(
         "/aether/decompose",
-        json={"objective": "break this down"},
-    ).json()["status"] == "pending"
+        json={"objective": "break this research system down", "max_depth": 3},
+    )
+    assert decomp.status_code == 200
+    assert decomp.json()["tasks"]
+    graph_id = decomp.json()["id"]
+    assert client.get(f"/aether/graphs/{graph_id}").status_code == 200
+    assert client.get("/aether/graphs/missing").status_code == 404
+
+    cog = client.post(
+        "/aether/cognition",
+        json={"objective": "strategic architecture with evidence", "priority": 70},
+    ).json()
+    plan_id = cog["plan"]["id"]
+    reflected = client.post(
+        "/aether/reflect",
+        json={
+            "plan_id": plan_id,
+            "reasoning_summary": (
+                "We assume scalability. Maybe evidence is missing and unknown."
+            ),
+            "evidence": [],
+            "revise": True,
+        },
+    )
+    assert reflected.status_code == 200
+    body = reflected.json()
+    assert body["weaknesses"]
+    assert body["revised_plan"] is not None
+
+    crit = client.post(
+        "/aether/critique",
+        json={
+            "plan_id": plan_id,
+            "reasoning_summary": (
+                "Therefore the strategic architecture holds because evidence supports it."
+            ),
+            "evidence": ["e1", "e2", "e3"],
+            "reflection_id": body["id"],
+        },
+    )
+    assert crit.status_code == 200
+    assert crit.json()["verdict"] in ("pass", "revise", "reject")
     assert client.post(
         "/aether/reflect",
-        json={"plan_id": "p", "reasoning_summary": "summary text"},
-    ).json()["module"] == "reflection"
+        json={"plan_id": "missing", "reasoning_summary": "x"},
+    ).status_code == 404
     assert client.post(
         "/aether/critique",
-        json={"plan_id": "p", "reasoning_summary": "summary text"},
-    ).json()["module"] == "critique"
+        json={"plan_id": "missing", "reasoning_summary": "x"},
+    ).status_code == 404
 
 
 def test_api_attention_validation_error(client: TestClient) -> None:

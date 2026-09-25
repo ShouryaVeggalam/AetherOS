@@ -1,7 +1,7 @@
-"""Cognition orchestration (Module 1 uses AttentionEngine drafts)."""
+"""Cognition orchestration package."""
 
 from __future__ import annotations
 
-from labs.aether.attention.service import AttentionEngine
+from labs.aether.cognition.service import CognitionBundle, CognitionEngine
 
-__all__ = ["AttentionEngine"]
+__all__ = ["CognitionBundle", "CognitionEngine"]

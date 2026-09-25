@@ -16,6 +16,7 @@ from labs.aether.models.types import (
     PlanStatus,
     Reflection,
     Task,
+    TaskGraph,
     TaskStatus,
     TaskType,
 )
@@ -34,6 +35,7 @@ __all__ = [
     "PlanStatus",
     "Reflection",
     "Task",
+    "TaskGraph",
     "TaskStatus",
     "TaskType",
 ]

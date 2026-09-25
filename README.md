@@ -12,11 +12,11 @@ no kernel mutation, no sudo.
 
 [![Python 3.12](https://img.shields.io/badge/python-3.12-black?style=flat-square)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-black?style=flat-square)](LICENSE)
-[![Coverage 80%+](https://img.shields.io/badge/coverage-80%25%2B-black?style=flat-square)](pytest.ini)
+[![Coverage 90%+](https://img.shields.io/badge/coverage-90%25%2B-black?style=flat-square)](pytest.ini)
 [![Rich UI](https://img.shields.io/badge/UI-Rich-black?style=flat-square)](https://github.com/Textualize/rich)
 [![Linux](https://img.shields.io/badge/os-Linux-black?style=flat-square)](#installation)
 [![WSL2](https://img.shields.io/badge/os-WSL2-black?style=flat-square)](#installation)
-[![Status: Infinity](https://img.shields.io/badge/status-v10.0.0--infinity-black?style=flat-square)](CHANGELOG.md)
+[![Status: Intelligence RC](https://img.shields.io/badge/status-v2.0.0--intelligence--RC-black?style=flat-square)](docs/releases/v2.0.0.md)
 
 ---
 
@@ -28,9 +28,9 @@ It collects local telemetry, evaluates policy, validates safety, ranks decisions
 
 Nothing is executed on your behalf. There is no kernel module, no sudo path, and no remote shell.
 
-**Release:** `v10.0.0` · **Codename:** Infinity (∞) · **Team:** [CELESTRA](docs/CELESTRA.md)
+**Release:** `v2.0.0` · **Codename:** Intelligence · **Status:** Release Candidate · **Team:** [CELESTRA](docs/CELESTRA.md)
 
-Docs: [CELESTRA](docs/CELESTRA.md) · [Architecture](docs/architecture.md) · [Infinity](docs/infinity.md) · [Modules](docs/MODULES.md)
+Docs: [CELESTRA](docs/CELESTRA.md) · [Architecture](docs/architecture.md) · [Release notes](docs/releases/v2.0.0.md) · [Modules](docs/MODULES.md) · [Benchmarks](docs/benchmarks.md) · [Security](SECURITY.md)
 
 ---
 
@@ -154,7 +154,7 @@ Press `Q` to quit. The dashboard is a Rich Live terminal UI.
 | `PermissionError` from `psutil` on macOS | Grant Full Disk Access to the terminal, or re-run locally outside sandboxes |
 | No battery metrics | Expected on many desktops / VMs — AetherOS treats battery as optional |
 | Import errors after pull | Re-run `pip install -e ".[dev]"` |
-| Coverage / CI red | `pytest --cov=aetheros --cov-fail-under=80` |
+| Coverage / CI red | `pytest --cov=aetheros --cov-fail-under=90` |
 
 ---
 
@@ -229,14 +229,15 @@ Charter: [docs/CELESTRA.md](docs/CELESTRA.md)
 
 | Version | Focus |
 |---------|--------|
-| **v10.0.0 Infinity** | Unifying platform layer + docs + `/infinity` |
+| **v2.0.0 Intelligence (RC)** | P1–P9 stack freeze, ≥90% coverage, benchmarks, ADRs |
+| v10 Infinity (historical label) | Unifying platform layer + docs + `/infinity` |
 | v9 Fabric | Universal federation graph + twin |
 | v8 Sentinel | Resilience intelligence |
 | v7 Genesis | Research knowledge engine |
 | v6 Horizon | Planetary intelligence |
 | v4–v5 | Agents + Atlas facade |
 | v3 | Cognitive reasoning |
-| v1–v2 | Operating intelligence + resource graph |
+| v1.x | Operating intelligence foundations |
 
 See [CHANGELOG.md](CHANGELOG.md) for history.
 
@@ -252,7 +253,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT
 pip install -e ".[dev]"
 ruff check .
 black --check .
-pytest --cov=aetheros --cov-fail-under=80
+pytest --cov=aetheros --cov-fail-under=90
 ```
 
 ---

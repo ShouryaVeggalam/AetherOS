@@ -1,0 +1,3 @@
+AetherOS v2.0.0 coverage
+statements=9296 covered=8586 missing=710 percent=92.36
+gate=90.0 status=PASS

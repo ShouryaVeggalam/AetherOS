@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aetheros"
-version = "10.0.0"
-description = "AetherOS — Explainable Operating Intelligence Platform (userspace, simulation-only)"
+version = "2.0.0"
+description = "AetherOS — Explainable Operating Intelligence Platform (v2.0 Intelligence RC)"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
@@ -14,7 +14,7 @@ authors = [
 requires-python = ">=3.12"
 keywords = ["aetheros", "telemetry", "explainability", "rich", "observability"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
@@ -79,7 +79,7 @@ omit = [
 ]
 
 [tool.coverage.report]
-fail_under = 80
+fail_under = 90
 show_missing = true
 exclude_lines = [
     "pragma: no cover",

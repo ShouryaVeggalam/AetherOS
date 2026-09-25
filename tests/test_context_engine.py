@@ -104,18 +104,24 @@ def test_intent_resolver() -> None:
         battery_percent=10.0,
     )
     assert low_batt.name == "BATTERY"
-    assert resolve_operational_intent(
-        manual_profile="AI Training",
-        foreground_process="jupyter",
-    ).name == "AI"
+    assert (
+        resolve_operational_intent(
+            manual_profile="AI Training",
+            foreground_process="jupyter",
+        ).name
+        == "AI"
+    )
 
 
 def test_historical_matcher() -> None:
     """Matcher returns None without enough evidence; scores similar windows."""
 
-    assert match_historical_pattern(
-        cpu=40, memory=50, disk=30, intent="CODING", history=()
-    ) is None
+    assert (
+        match_historical_pattern(
+            cpu=40, memory=50, disk=30, intent="CODING", history=()
+        )
+        is None
+    )
     pattern = match_historical_pattern(
         cpu=40,
         memory=48,
@@ -356,8 +362,11 @@ def test_builder_edges_without_battery_and_cluster() -> None:
         now=stamp,
     )
     assert "battery" in ctx2.battery_state.lower() or "40" in ctx2.battery_state
-    assert resolve_intent(
-        manual_profile=None,
-        foreground_process="unknown-app",
-        history=(),
-    ).name == "BALANCED"
+    assert (
+        resolve_intent(
+            manual_profile=None,
+            foreground_process="unknown-app",
+            history=(),
+        ).name
+        == "BALANCED"
+    )

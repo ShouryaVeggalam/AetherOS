@@ -1,4 +1,4 @@
-# Continuous integration for AetherOS v1.5.0-alpha
+# Continuous integration for AetherOS v2.0 Intelligence RC
 name: CI
 
 on:
@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Lint · Format · Tests · Coverage
+    name: Lint · Format · Types · Tests · Coverage · Build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -34,6 +34,7 @@ jobs:
         run: |
           python -m pip install -U pip
           pip install -e ".[dev]"
+          pip install build
 
       - name: Ruff
         run: ruff check .
@@ -41,11 +42,17 @@ jobs:
       - name: Black
         run: black --check .
 
+      - name: Type surface (bytecode compile)
+        run: python -m compileall -q aetheros services
+
       - name: Import cycles
         run: python scripts/check_import_cycles.py
 
-      - name: Pytest + coverage (fail under 80%)
-        run: pytest --cov=aetheros --cov-report=term-missing --cov-report=xml --cov-fail-under=80
+      - name: Pytest + coverage (fail under 90%)
+        run: pytest --cov=aetheros --cov-report=term-missing --cov-report=xml --cov-fail-under=90
+
+      - name: Build sdist and wheel
+        run: python -m build
 
       - name: Upload coverage artifact
         if: always()

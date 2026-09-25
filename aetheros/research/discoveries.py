@@ -46,7 +46,10 @@ def verify_discoveries(
     if evidence_count < min_evidence:
         return ()
 
-    if simulation_agreement is not None and simulation_agreement < min_simulation_agreement:
+    if (
+        simulation_agreement is not None
+        and simulation_agreement < min_simulation_agreement
+    ):
         return ()
 
     discoveries: list[Discovery] = []
@@ -114,5 +117,7 @@ def _compose_confidence(
 ) -> float:
     evidence_score = min(40.0, evidence_count * 1.5)
     trend_score = 0.35 * trend_confidence
-    sim_score = 0.25 * (simulation_agreement if simulation_agreement is not None else 70.0)
+    sim_score = 0.25 * (
+        simulation_agreement if simulation_agreement is not None else 70.0
+    )
     return round(min(99.0, evidence_score + trend_score + sim_score), 2)

@@ -207,7 +207,9 @@ def _obs(
     )
 
 
-def context_label_from_mapping(context: Mapping[str, Any] | object | None) -> str | None:
+def context_label_from_mapping(
+    context: Mapping[str, Any] | object | None,
+) -> str | None:
     """Extract a display label from a loose context mapping or GraphContext-like object."""
 
     if context is None:

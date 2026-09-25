@@ -46,10 +46,10 @@ from aetheros.predictive import PredictivePanel, PredictiveReport
 from aetheros.reasoning.explain import CognitiveReport
 from aetheros.reasoning.formatter import GraphReasoningPanel
 from aetheros.reasoning.models import Observation, VerifiedExplanation
-from aetheros.runtime import AgenticReport
-from aetheros.sentinel import SentinelPanel, SentinelReport
 from aetheros.research.formatter import ResearchIntelligencePanel
 from aetheros.research.models import SystemResearchReport
+from aetheros.runtime import AgenticReport
+from aetheros.sentinel import SentinelPanel, SentinelReport
 from aetheros.twin import (
     DigitalTwinPanel,
     DigitalTwinReport,

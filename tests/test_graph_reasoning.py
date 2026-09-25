@@ -172,9 +172,7 @@ def test_verification_and_reason() -> None:
         supporting_paths=(),
         confidence=10,
     )
-    assert (
-        verify_hypotheses(graph, obs, (empty,), now=_stamp()) is None
-    )
+    assert verify_hypotheses(graph, obs, (empty,), now=_stamp()) is None
 
 
 def test_confidence_engine() -> None:
@@ -409,7 +407,9 @@ def test_verifier_history_and_battery_metrics() -> None:
         observation=Observation("cpu", 96.0, "CPU Overload"),
     )
     console.print(GraphReasoningPanel(explanation=empty_paths))
-    assert "no paths" in console.export_text().lower() or "Causal" in console.export_text()
+    assert (
+        "no paths" in console.export_text().lower() or "Causal" in console.export_text()
+    )
     # Process with USES but only via find_all_paths (no shortest to core-only target)
     from aetheros.reasoning.hypotheses import _provisional_confidence
 

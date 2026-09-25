@@ -110,7 +110,10 @@ class SimulationResult:
         ):
             if not 0.0 <= value <= 100.0:
                 raise ValueError(f"{label} must be in [0, 100]")
-        if self.predicted_battery is not None and not 0.0 <= self.predicted_battery <= 100.0:
+        if (
+            self.predicted_battery is not None
+            and not 0.0 <= self.predicted_battery <= 100.0
+        ):
             raise ValueError("predicted_battery must be in [0, 100]")
 
 

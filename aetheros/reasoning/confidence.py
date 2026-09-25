@@ -31,12 +31,7 @@ def compute_confidence(
     evidence_score = _evidence_score(evidence_count)
     hist = _clamp01(historical_agreement)
     sim = _clamp01(simulation_agreement)
-    raw = (
-        0.35 * path_completeness
-        + 0.30 * evidence_score
-        + 0.20 * hist
-        + 0.15 * sim
-    )
+    raw = 0.35 * path_completeness + 0.30 * evidence_score + 0.20 * hist + 0.15 * sim
     return int(round(100 * _clamp01(raw)))
 
 

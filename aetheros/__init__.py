@@ -1,7 +1,7 @@
 """AetherOS — Explainable Operating Intelligence Platform.
 
-v10.0.0 — Infinity (∞).
+v2.0.0 — Intelligence (Release Candidate).
 Userspace. Simulation-only. Human-in-the-loop. Never an OS or kernel.
 """
 
-__version__ = "10.0.0"
+__version__ = "2.0.0"

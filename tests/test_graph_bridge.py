@@ -262,7 +262,16 @@ def test_bridge_lookups_and_aggregates() -> None:
     assert bridge.evidence_chain(process_id="process:42", now=_stamp())
     assert evidence_chain(_graph(), now=_stamp())
     stamp = _stamp()
-    weird = ResourceNode("r", "Research", "R", (("percent", "bad"), ("other", "1"),), stamp)
+    weird = ResourceNode(
+        "r",
+        "Research",
+        "R",
+        (
+            ("percent", "bad"),
+            ("other", "1"),
+        ),
+        stamp,
+    )
     assert aggregate_percent((weird,)) is None
     ok = ResourceNode("m", "Memory", "M", (("percent", "10"),), stamp)
     assert aggregate_percent((ok, weird)) == 10.0

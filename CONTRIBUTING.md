@@ -42,7 +42,7 @@ Verify:
 
 ```bash
 python -m aetheros
-pytest --cov=aetheros --cov-fail-under=80
+pytest --cov=aetheros --cov-fail-under=90
 ```
 
 ---
@@ -94,7 +94,7 @@ Do not commit:
 4. Ensure CI is green:
    - `ruff check .`
    - `black --check .`
-   - `pytest --cov=aetheros --cov-fail-under=80`
+   - `pytest --cov=aetheros --cov-fail-under=90`
 5. Describe operator-visible impact and safety implications in the PR body.
 
 Maintainers may request changes for clarity, test gaps, or safety regressions.
@@ -106,10 +106,10 @@ Maintainers may request changes for clarity, test gaps, or safety regressions.
 - Add or extend unit tests for every non-trivial module change
 - Prefer pure fixtures over live OS reads when testing logic
 - Integration tests that call `psutil` must remain **read-only**
-- Coverage must remain **≥ 80%** on `aetheros/`
+- Coverage must remain **≥ 90%** on `aetheros/`
 
 ```bash
-pytest -q --cov=aetheros --cov-report=term-missing --cov-fail-under=80
+pytest -q --cov=aetheros --cov-report=term-missing --cov-fail-under=90
 ```
 
 ---

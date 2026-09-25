@@ -32,7 +32,9 @@ def _plan(plan_id: str, workspace_id: str = "ws") -> CognitionPlan:
                 priority=1,
             ),
         ),
-        complexity=ComplexityEstimate(score=0.1, tier="trivial", factors=("single_objective",)),
+        complexity=ComplexityEstimate(
+            score=0.1, tier="trivial", factors=("single_objective",)
+        ),
         allocation=ResourceAllocation(
             required_agents=(),
             required_knowledge=(),

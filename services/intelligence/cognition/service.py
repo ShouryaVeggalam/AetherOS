@@ -45,9 +45,7 @@ class CognitionEngine:
 
         ctx = dict(context or {})
         constraint_tuple = tuple(
-            " ".join(str(c).split()).strip()
-            for c in constraints
-            if str(c).strip()
+            " ".join(str(c).split()).strip() for c in constraints if str(c).strip()
         )
         objectives = decompose_goal(goal, constraints=constraint_tuple, context=ctx)
         allocation = allocate_resources(
@@ -134,13 +132,9 @@ def _execution_steps(objectives: Sequence[Any], allocation: Any) -> tuple[str, .
         if node.depth == 1:
             steps.append(f"Address: {node.statement}")
     if allocation.required_agents:
-        steps.append(
-            "Engage agents: " + ", ".join(allocation.required_agents)
-        )
+        steps.append("Engage agents: " + ", ".join(allocation.required_agents))
     if allocation.required_knowledge:
-        steps.append(
-            "Load knowledge: " + ", ".join(allocation.required_knowledge)
-        )
+        steps.append("Load knowledge: " + ", ".join(allocation.required_knowledge))
     steps.append("Hand off to hierarchical planner (Module 2)")
     return tuple(steps)
 

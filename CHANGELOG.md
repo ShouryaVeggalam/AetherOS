@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [2.0.0] — 2026-09-25 — Intelligence (Release Candidate)
+
+### Added
+
 - CELESTRA GII Module 1 — Cognition Engine (`services/intelligence/`, Phase 16 / `/v9`)
 - `/v9/cognition` create/list/get and `/v9/intelligence` health
 - Append-only cognition plans + `li_gii_cognition_plans` migration contract
@@ -43,9 +51,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Research Intelligence Engine P9 (`aetheros.research` analyzer/trends/bottlenecks/discoveries)
 - Dashboard **X** Research Intelligence page (A remains strategy research)
 - Docs: `docs/research_engine.md`
+- Release engineering: `SECURITY.md`, ADRs, benchmarks, release checklist, coverage gate 90%
 
 ### Changed
 
+- Package version set to **2.0.0** (codename **Intelligence**, Release Candidate)
+- CI / pytest coverage fail-under raised from 80% to **90%**
 - `reasoning.explain` re-exports cognition report helpers (compat)
 - `decision.models` re-exports `aetheros.advice.Decision` (compat)
 - `runtime` re-exports agentic report types from `agents.report` (compat)
@@ -290,7 +301,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI monitor prototype
 - Project skeleton under `aetheros/`
 
-[Unreleased]: https://github.com/shouryaveggalam/AetherOS/compare/v1.5.0-alpha...HEAD
+[Unreleased]: https://github.com/shouryaveggalam/AetherOS/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/shouryaveggalam/AetherOS/releases/tag/v2.0.0
 [1.5.0-alpha]: https://github.com/shouryaveggalam/AetherOS/releases/tag/v1.5.0-alpha
 [1.4.0]: https://github.com/shouryaveggalam/AetherOS/releases/tag/v1.4.0
 [1.3.0]: https://github.com/shouryaveggalam/AetherOS/releases/tag/v1.3.0

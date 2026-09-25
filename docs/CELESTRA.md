@@ -42,7 +42,7 @@ If any answer is weak, the feature is not ready to merge.
 |--------|-----------------|
 | Exceptional documentation | Package README + Mermaid + public API + entry in [MODULES.md](MODULES.md) |
 | Clean architecture | Generation boundaries preserved; Infinity unifies without breaking v1–v9 |
-| High test coverage | `pytest --cov=aetheros --cov-fail-under=80` |
+| High test coverage | `pytest --cov=aetheros --cov-fail-under=90` |
 | Research credibility | Simulation-only claims; verified knowledge paths (Genesis/Sentinel) |
 | Developer adoption | Clear install, `python -m aetheros`, FastAPI `/docs`, typed exports |
 

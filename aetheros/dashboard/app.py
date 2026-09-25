@@ -649,9 +649,7 @@ def build_frame(
             history=history,
             context=profile.name,
             verified_reasoning=(
-                ("Telemetry and resource graph evidence reviewed.",)
-                if history
-                else ()
+                ("Telemetry and resource graph evidence reviewed.",) if history else ()
             ),
             twin_summaries=(
                 (f"Digital twin scenario available: {digital_twin.scenario.name}",)
@@ -721,7 +719,10 @@ def build_frame(
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
+        and not show_resource_graph
+        and not show_graph_reasoning
+        and not show_digital_twin
+        and not show_research_intel,
         explanation=ai_explanation,
         show_predictive=show_predict
         and not show_cognitive
@@ -731,7 +732,10 @@ def build_frame(
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
+        and not show_resource_graph
+        and not show_graph_reasoning
+        and not show_digital_twin
+        and not show_research_intel,
         predictive_report=predictive_report,
         show_cluster=show_cluster
         and not show_cognitive
@@ -741,7 +745,10 @@ def build_frame(
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
+        and not show_resource_graph
+        and not show_graph_reasoning
+        and not show_digital_twin
+        and not show_research_intel,
         cluster_snapshot=cluster_snapshot,
         cluster_online_ids=cluster_online,
         show_orchestrator=show_orchestrator
@@ -752,7 +759,10 @@ def build_frame(
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
+        and not show_resource_graph
+        and not show_graph_reasoning
+        and not show_digital_twin
+        and not show_research_intel,
         execution_plan=execution_plan,
         selected_workload=selected_workload,
         show_cognitive=show_cognitive
@@ -762,7 +772,10 @@ def build_frame(
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
+        and not show_resource_graph
+        and not show_graph_reasoning
+        and not show_digital_twin
+        and not show_research_intel,
         cognitive_report=cognitive_report,
         show_multi_agent=show_multi_agent
         and not show_horizon
@@ -770,33 +783,59 @@ def build_frame(
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
+        and not show_resource_graph
+        and not show_graph_reasoning
+        and not show_digital_twin
+        and not show_research_intel,
         agentic_report=agentic_report,
         show_horizon=show_horizon
         and not show_genesis
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
+        and not show_resource_graph
+        and not show_graph_reasoning
+        and not show_digital_twin
+        and not show_research_intel,
         horizon_report=horizon_report,
         show_genesis=show_genesis
         and not show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
+        and not show_resource_graph
+        and not show_graph_reasoning
+        and not show_digital_twin
+        and not show_research_intel,
         genesis_report=genesis_report,
         show_sentinel=show_sentinel
         and not show_fabric
         and not show_infinity
-        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
+        and not show_resource_graph
+        and not show_graph_reasoning
+        and not show_digital_twin
+        and not show_research_intel,
         sentinel_report=sentinel_report,
-        show_fabric=show_fabric and not show_infinity and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
+        show_fabric=show_fabric
+        and not show_infinity
+        and not show_resource_graph
+        and not show_graph_reasoning
+        and not show_digital_twin
+        and not show_research_intel,
         fabric_report=fabric_report,
-        show_infinity=show_infinity and not show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
+        show_infinity=show_infinity
+        and not show_resource_graph
+        and not show_graph_reasoning
+        and not show_digital_twin
+        and not show_research_intel,
         infinity_report=infinity_report,
-        show_resource_graph=show_resource_graph and not show_graph_reasoning and not show_digital_twin and not show_research_intel,
+        show_resource_graph=show_resource_graph
+        and not show_graph_reasoning
+        and not show_digital_twin
+        and not show_research_intel,
         resource_graph=resource_graph_report,
-        show_graph_reasoning=show_graph_reasoning and not show_digital_twin and not show_research_intel,
+        show_graph_reasoning=show_graph_reasoning
+        and not show_digital_twin
+        and not show_research_intel,
         graph_reasoning=graph_reasoning_report,
         graph_reasoning_observation=graph_reasoning_observation,
         show_digital_twin=show_digital_twin and not show_research_intel,

@@ -150,7 +150,9 @@ def _from_system(
             )
         )
 
-    primary_disk = f"disk:{_slug(snapshot.disks[0].mountpoint)}" if snapshot.disks else None
+    primary_disk = (
+        f"disk:{_slug(snapshot.disks[0].mountpoint)}" if snapshot.disks else None
+    )
     for proc in snapshot.processes:
         proc_id = f"process:{proc.pid}"
         nodes.append(
@@ -293,9 +295,7 @@ def _append_intent(
             created_at=stamp,
         )
     )
-    edges.append(
-        ResourceEdge("intent:active", "cpu", "PREDICTS", 0.3)
-    )
+    edges.append(ResourceEdge("intent:active", "cpu", "PREDICTS", 0.3))
 
 
 def _slug(value: str) -> str:

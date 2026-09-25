@@ -1,4 +1,4 @@
-# Publish GitHub Releases for annotated version tags
+# Draft GitHub Releases for annotated version tags (no auto-publish)
 name: Release
 
 on:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   release:
-    name: Build and publish GitHub Release
+    name: Build draft GitHub Release
     runs-on: ubuntu-latest
 
     steps:
@@ -34,7 +34,9 @@ jobs:
         run: |
           ruff check .
           black --check .
-          pytest --cov=aetheros --cov-fail-under=80
+          python -m compileall -q aetheros services
+          python scripts/check_import_cycles.py
+          pytest --cov=aetheros --cov-fail-under=90
 
       - name: Build sdist and wheel
         run: python -m build
@@ -42,15 +44,19 @@ jobs:
       - name: Check distributions
         run: twine check dist/*
 
-      - name: Create GitHub Release
+      - name: Create DRAFT GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          draft: true
           generate_release_notes: true
+          name: AetherOS ${{ github.ref_name }} — Intelligence
           files: |
             dist/*.whl
             dist/*.tar.gz
           body: |
-            AetherOS **${{ github.ref_name }}** — Operating Intelligence Platform (alpha).
+            AetherOS **${{ github.ref_name }}** — Intelligence (Release Candidate draft).
+
+            This release was created as a **draft**. Human review required before publish.
 
             ## Install
 
@@ -59,7 +65,9 @@ jobs:
             python -m aetheros
             ```
 
-            See [CHANGELOG.md](https://github.com/shouryaveggalam/AetherOS/blob/main/CHANGELOG.md) and [README.md](https://github.com/shouryaveggalam/AetherOS/blob/main/README.md).
+            See [docs/releases/v2.0.0.md](https://github.com/shouryaveggalam/AetherOS/blob/main/docs/releases/v2.0.0.md),
+            [CHANGELOG.md](https://github.com/shouryaveggalam/AetherOS/blob/main/CHANGELOG.md),
+            and [SECURITY.md](https://github.com/shouryaveggalam/AetherOS/blob/main/SECURITY.md).
 
             Recommendation-only. Userspace. MIT License.
         env:

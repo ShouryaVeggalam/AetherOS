@@ -55,7 +55,9 @@ def _snap():
     system = _system()
     graph = build_resource_graph(system, intent_name="Coding", now=_stamp())
     tel = TelemetrySnapshot.from_system_snapshot(system)
-    return create_snapshot(graph, tel, intent="Coding", now=_stamp(), snapshot_id="twin:test")
+    return create_snapshot(
+        graph, tel, intent="Coding", now=_stamp(), snapshot_id="twin:test"
+    )
 
 
 def test_snapshot_cloning() -> None:
@@ -79,13 +81,21 @@ def test_scenario_execution() -> None:
     simulated = apply_scenario(snap, cpu_scene, now=_stamp())
     assert simulated.telemetry.cpu_percent > snap.telemetry.cpu_percent
     assert snap.telemetry.cpu_percent == pytest.approx(41.0)
-    mem = apply_scenario(snap, builtin_scenario("MEMORY_PRESSURE", now=_stamp()), now=_stamp())
+    mem = apply_scenario(
+        snap, builtin_scenario("MEMORY_PRESSURE", now=_stamp()), now=_stamp()
+    )
     assert mem.telemetry.memory_percent > snap.telemetry.memory_percent
-    batt = apply_scenario(snap, builtin_scenario("BATTERY_LOW", now=_stamp()), now=_stamp())
+    batt = apply_scenario(
+        snap, builtin_scenario("BATTERY_LOW", now=_stamp()), now=_stamp()
+    )
     assert batt.telemetry.battery_percent == pytest.approx(10.0)
-    disk = apply_scenario(snap, builtin_scenario("DISK_SATURATION", now=_stamp()), now=_stamp())
+    disk = apply_scenario(
+        snap, builtin_scenario("DISK_SATURATION", now=_stamp()), now=_stamp()
+    )
     assert disk.telemetry.disk_percent > snap.telemetry.disk_percent
-    offline = apply_scenario(snap, builtin_scenario("NODE_OFFLINE", now=_stamp()), now=_stamp())
+    offline = apply_scenario(
+        snap, builtin_scenario("NODE_OFFLINE", now=_stamp()), now=_stamp()
+    )
     assert offline.telemetry.process_count == snap.telemetry.process_count - 1
     custom = builtin_scenario(
         "CUSTOM",
@@ -151,7 +161,13 @@ def test_formatter_and_global_twin_compat() -> None:
     text = console.export_text()
     assert "DIGITAL TWIN" in text
     assert "Simulation Only" in text
-    console.print(DigitalTwinPanel(report=None, scenario=builtin_scenario("CPU_OVERLOAD", now=_stamp()), baseline=snap))
+    console.print(
+        DigitalTwinPanel(
+            report=None,
+            scenario=builtin_scenario("CPU_OVERLOAD", now=_stamp()),
+            baseline=snap,
+        )
+    )
     assert "idle" in console.export_text().lower() or "V" in console.export_text()
     # Global twin regression
     outcome = TwinSimulator().simulate(SEED_SCENARIOS[0])

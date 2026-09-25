@@ -80,9 +80,7 @@ def _add_cpu_branch(root: Tree, graph: ResourceGraph) -> None:
     cpu = graph.get_node("cpu")
     if cpu is None:
         return
-    branch = root.add(
-        Text(f"CPU ({_meta(cpu, 'percent')}%)", style="bold cyan")
-    )
+    branch = root.add(Text(f"CPU ({_meta(cpu, 'percent')}%)", style="bold cyan"))
     for edge in edges_from(graph, "cpu"):
         if edge.relationship != "ALLOCATES":
             continue
@@ -91,7 +89,9 @@ def _add_cpu_branch(root: Tree, graph: ResourceGraph) -> None:
             branch.add(Text(f"{core.name} ({_meta(core, 'percent')}%)"))
 
 
-def _add_simple_branch(root: Tree, graph: ResourceGraph, title: str, node_id: str) -> None:
+def _add_simple_branch(
+    root: Tree, graph: ResourceGraph, title: str, node_id: str
+) -> None:
     """Attach a single named resource node."""
 
     node = graph.get_node(node_id)

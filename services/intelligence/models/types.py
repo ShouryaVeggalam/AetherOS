@@ -86,6 +86,4 @@ class IntelligenceHealth:
     avg_confidence: float
     last_plan_at: datetime | None
     workspace_id: str
-    modules_ready: tuple[str, ...] = field(
-        default_factory=lambda: ("cognition",)
-    )
+    modules_ready: tuple[str, ...] = field(default_factory=lambda: ("cognition",))

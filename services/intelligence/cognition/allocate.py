@@ -19,9 +19,22 @@ _AGENT_CUES: dict[str, tuple[str, ...]] = {
 
 _KNOWLEDGE_CUES: dict[str, tuple[str, ...]] = {
     "domain_ontology": ("ontology", "taxonomy", "schema", "entity", "knowledge graph"),
-    "operational_telemetry": ("cpu", "memory", "latency", "telemetry", "metric", "load"),
+    "operational_telemetry": (
+        "cpu",
+        "memory",
+        "latency",
+        "telemetry",
+        "metric",
+        "load",
+    ),
     "policy_constraints": ("policy", "compliance", "constraint", "regulation", "sla"),
-    "scientific_literature": ("paper", "scientific", "experiment", "theorem", "evidence"),
+    "scientific_literature": (
+        "paper",
+        "scientific",
+        "experiment",
+        "theorem",
+        "evidence",
+    ),
     "world_entities": ("market", "company", "geography", "region", "world"),
 }
 

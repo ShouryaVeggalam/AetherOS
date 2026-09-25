@@ -113,9 +113,9 @@ def apply_scenario(
             disk_percent=telemetry.disk_percent,
             battery_percent=telemetry.battery_percent,
             process_count=max(0, telemetry.process_count - 1),
-            top_processes=telemetry.top_processes[1:]
-            if telemetry.top_processes
-            else (),
+            top_processes=(
+                telemetry.top_processes[1:] if telemetry.top_processes else ()
+            ),
         )
     elif scenario.name == "CUSTOM":
         graph, telemetry = _apply_custom(graph, telemetry, mods)

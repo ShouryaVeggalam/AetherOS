@@ -62,7 +62,11 @@ def verify_hypotheses(
         if not hypothesis.supporting_paths:
             rejected.append(hypothesis.title)
             continue
-        if observation.value >= observation.threshold and hist_ratio <= 0.0 and not history:
+        if (
+            observation.value >= observation.threshold
+            and hist_ratio <= 0.0
+            and not history
+        ):
             # No history available — still allow graph+telemetry evidence.
             pass
         accepted.append(hypothesis)

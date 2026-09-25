@@ -1,0 +1,57 @@
+{
+  "generated_at": "2026-09-25T17:13:14.563860+00:00",
+  "version": "10.0.0",
+  "methodology": {
+    "timer": "time.perf_counter",
+    "memory": "tracemalloc peak (per timed suite; None for subprocess)",
+    "warmup": 3,
+    "host": "userspace only; no privileged APIs"
+  },
+  "results": [
+    {
+      "name": "telemetry_refresh",
+      "iterations": 30,
+      "mean_ms": 10.492,
+      "p95_ms": 12.738,
+      "min_ms": 8.298,
+      "max_ms": 15.115,
+      "peak_kib": 78.6
+    },
+    {
+      "name": "graph_build",
+      "iterations": 40,
+      "mean_ms": 0.32,
+      "p95_ms": 0.354,
+      "min_ms": 0.307,
+      "max_ms": 0.386,
+      "peak_kib": 5.3
+    },
+    {
+      "name": "reasoning_latency",
+      "iterations": 40,
+      "mean_ms": 0.351,
+      "p95_ms": 0.369,
+      "min_ms": 0.331,
+      "max_ms": 0.415,
+      "peak_kib": 36.4
+    },
+    {
+      "name": "simulation_latency",
+      "iterations": 30,
+      "mean_ms": 0.407,
+      "p95_ms": 0.437,
+      "min_ms": 0.384,
+      "max_ms": 0.457,
+      "peak_kib": 33.1
+    },
+    {
+      "name": "startup_import",
+      "iterations": 8,
+      "mean_ms": 24.679,
+      "p95_ms": 25.604,
+      "min_ms": 22.974,
+      "max_ms": 30.272,
+      "peak_kib": null
+    }
+  ]
+}

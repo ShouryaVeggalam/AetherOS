@@ -51,7 +51,9 @@ class DigitalTwinPanel:
         result = report.result
         base = report.baseline.telemetry
         lines = format_metric_lines(report.diff)
-        diff_block = "\n".join(f"  {line}" for line in lines) if lines else "  (no metric drift)"
+        diff_block = (
+            "\n".join(f"  {line}" for line in lines) if lines else "  (no metric drift)"
+        )
         body = Group(
             Text("DIGITAL TWIN", style="bold bright_magenta"),
             Text(""),

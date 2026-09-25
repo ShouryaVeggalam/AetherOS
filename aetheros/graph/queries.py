@@ -78,9 +78,7 @@ def subgraph(
     keep = frozenset(node_ids)
     nodes = tuple(node for node in graph.nodes if node.id in keep)
     edges = tuple(
-        edge
-        for edge in graph.edges
-        if edge.source in keep and edge.target in keep
+        edge for edge in graph.edges if edge.source in keep and edge.target in keep
     )
     return ResourceGraph(
         nodes=nodes,

@@ -89,7 +89,9 @@ def test_complexity_tiers() -> None:
     assert trivial.tier == "trivial"
 
     deep = tuple(
-        ObjectiveNode(id=str(i), statement=f"s{i}", parent_id="0", depth=min(i, 3), priority=i)
+        ObjectiveNode(
+            id=str(i), statement=f"s{i}", parent_id="0", depth=min(i, 3), priority=i
+        )
         for i in range(10)
     )
     strategic = estimate_complexity(

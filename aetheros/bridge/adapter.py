@@ -80,7 +80,11 @@ class GraphBridge:
     def get_process_resources(self, pid: int | str) -> ProcessResourceView | None:
         """Return outbound resource edges for a process id or node id."""
 
-        process_id = pid if isinstance(pid, str) and pid.startswith("process:") else f"process:{pid}"
+        process_id = (
+            pid
+            if isinstance(pid, str) and pid.startswith("process:")
+            else f"process:{pid}"
+        )
         node = self.graph.get_node(process_id)
         if node is None or node.type != "Process":
             # Allow bare numeric lookup already handled; also try rank-style ids.
@@ -169,7 +173,9 @@ class GraphBridge:
 
         return build_evidence_chain(self.graph, process_id=process_id, now=now)
 
-    def process_evidence(self, process_id: str, *, now: datetime | None = None) -> tuple[Evidence, ...]:
+    def process_evidence(
+        self, process_id: str, *, now: datetime | None = None
+    ) -> tuple[Evidence, ...]:
         """Evidence limited to one process node's outbound edges."""
 
         return evidence_for_process(self.graph, process_id, now=now)
@@ -184,7 +190,9 @@ class GraphBridge:
 
         return clone_resource_graph(self.graph)
 
-    def diff_snapshots(self, before: GraphSnapshot, after: GraphSnapshot) -> SnapshotDiff:
+    def diff_snapshots(
+        self, before: GraphSnapshot, after: GraphSnapshot
+    ) -> SnapshotDiff:
         """Diff two snapshots (pure set arithmetic)."""
 
         return diff_graph_snapshots(before, after)

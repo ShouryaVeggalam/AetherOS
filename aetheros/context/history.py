@@ -31,9 +31,7 @@ def match_historical_pattern(
     scored: list[tuple[float, TelemetryPoint]] = []
     for point in samples:
         distance = (
-            abs(point.cpu - cpu)
-            + abs(point.memory - memory)
-            + abs(point.disk - disk)
+            abs(point.cpu - cpu) + abs(point.memory - memory) + abs(point.disk - disk)
         ) / 3.0
         similarity = max(0.0, 100.0 - distance)
         if intent is not None:

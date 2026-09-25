@@ -65,9 +65,7 @@ def _system() -> SystemSnapshot:
             swap_used_bytes=0,
             swap_percent=0.0,
         ),
-        disks=(
-            DiskSnapshot("/", 100, 40, 60, 40.0),
-        ),
+        disks=(DiskSnapshot("/", 100, 40, 60, 40.0),),
         processes=(
             ProcessSnapshot(42, "Cursor", "user", 25.0, 12.0, "running"),
             ProcessSnapshot(7, "python", "user", 10.0, 5.0, "running"),

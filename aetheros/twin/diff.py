@@ -35,11 +35,7 @@ def diff_twins(before: TwinSnapshot, after: TwinSnapshot) -> SnapshotDiff:
             after.telemetry.battery_percent,
         ),
     )
-    changed = tuple(
-        item
-        for item in metrics
-        if item.before != item.after
-    )
+    changed = tuple(item for item in metrics if item.before != item.after)
     return SnapshotDiff(
         added_nodes=after_ids - before_ids,
         removed_nodes=before_ids - after_ids,

@@ -7,10 +7,153 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- CELESTRA founding engineering charter (`docs/CELESTRA.md`) with feature acceptance gate
+- Contributor gate linked from `CONTRIBUTING.md`
+
 ### Planned
 
 - Recorded demo GIFs under `docs/screenshots/`
 - Optional WebSocket cluster transport (read-only)
+
+## [10.0.0] — 2026-09-25
+
+### Added
+
+- AetherOS Infinity (∞) unifying layer (`aetheros/infinity`)
+- Generation catalog (v1–v9 + ∞) and intelligence pipeline descriptors
+- Compatibility facades: `aetheros.atlas`, `aetheros.kernel`, `aetheros.policy`
+- Platform docs: `docs/architecture.md`, `docs/infinity.md`, `docs/MODULES.md`
+- Dashboard Infinity panel (`I`)
+- API: `GET /infinity`
+
+### Changed
+
+- Package version set to `10.0.0`
+- Root identity clarified: Explainable Operating Intelligence Platform (not an OS)
+
+### Security
+
+- Infinity remains observation / recommendation only — no shell, sudo, or kernel mutation
+
+## [9.0.0] — 2026-09-25
+
+### Added
+
+- Aether Fabric universal intelligence (`aetheros/fabric`, `aetheros/protocol`, `aetheros/twin`)
+- Universal graph (device/cluster/DC/GPU/storage/network/agent/simulation/knowledge)
+- Federation of immutable telemetry snapshots with eventual-consistency sync
+- Global Digital Twin scenarios (region outage, GPU shortage, congestion, edge expansion)
+- Dashboard Fabric panel (`F`)
+- API: `/fabric`, `/federation`, `/fabric/graph`, `/twin`, `/knowledge` (plus existing `/health`)
+
+### Changed
+
+- Package version set to `9.0.0`
+- `/health` reports `mode=simulation-only` and `control=human`
+
+### Security
+
+- Fabric remains simulation-only: no remote execution, no hardware control, humans approve recommendations
+
+## [8.0.0] — 2026-09-25
+
+### Added
+
+- Sentinel Intelligence Fabric (`aetheros/sentinel`, `aetheros/graph`)
+- Anomaly engine (CPU, memory leak, network, disk, battery, cluster imbalance)
+- Root-cause ranking verified via telemetry, history, and simulation
+- Cascade simulator over service/infra dependency graph
+- Recovery planner (Digital Twin scored; recommendation only)
+- Explainable resilience score (health / stability / redundancy / risk)
+- Dashboard Sentinel panel (`S`)
+- API: `/sentinel`, `/sentinel/anomalies`, `/sentinel/graph`
+
+### Changed
+
+- Package version set to `8.0.0`
+
+### Security
+
+- Sentinel never executes recovery: no OS commands, no sudo, no kernel changes
+
+## [7.0.0] — 2026-09-25
+
+### Added
+
+- Genesis Intelligence Layer (`aetheros/genesis`, `aetheros/ontology`)
+- Verified knowledge base (SQLite) — rejects unsupported claims
+- Hypothesis → experiment → verifier → theorem research cycle
+- Computing ontology (CPU/GPU/Memory/Disk/Network/Intent/Cluster/…) with CAUSES/USES/ALLOCATES/DEPENDS_ON/IMPROVES/DEGRADES
+- Dashboard Genesis panel (`G`); Cognitive Graph moved to `K`
+- API: `/genesis`, `/genesis/knowledge`, `/genesis/theorems`, `/genesis/ontology`
+
+### Changed
+
+- Package version set to `7.0.0`
+
+### Security
+
+- Genesis remains research-only: no OS execution, no hardware control, simulation-backed evidence only
+
+## [6.0.0] — 2026-09-25
+
+### Added
+
+- Horizon Planetary Intelligence Network (`aetheros/horizon`, `aetheros/edge`, `aetheros/robotics`)
+- NetworkX world graph (Earth → Region → Country → DC → Cluster → Node → Process)
+- Latency engine (geography + network class; no live probes)
+- Resilience simulator (region outage, DC failure, partition, power loss)
+- Capacity planner (1h / 24h / 7d compute, memory, GPU, storage)
+- Dashboard Horizon panel (`H`); Help moved to `?`
+- Read-only API: `/world`, `/regions`, `/latency`, `/resilience`, `/capacity`, `/graph`
+
+### Changed
+
+- Package version set to `6.0.0`
+- Dependency: `networkx>=3.2`
+
+### Security
+
+- Horizon remains simulation-first: no OS execution, no hardware control, no live network tests
+
+## [4.0.0] — 2026-09-25
+
+### Added
+
+- Agentic Systems Intelligence (`aetheros/agents`, `aetheros/messaging`, `aetheros/runtime`)
+- Async in-process message bus with immutable `AgentEvent` records
+- Specialist agents: Telemetry, Performance, Battery, Security, Cluster, Research
+- Coordinator conflict resolution (e.g. performance vs battery → Balanced Mode)
+- Dashboard Multi-Agent View (`M`)
+
+### Changed
+
+- Package version set to `4.0.0`
+
+### Security
+
+- Agents remain recommendation-only: no OS execution, no sudo, no kernel changes
+
+## [3.0.0] — 2026-09-24
+
+### Added
+
+- Cognitive Operating Intelligence (`aetheros/cognition`, `aetheros/knowledge`, `aetheros/reasoning`)
+- Structured cognitive memory (SQLite) with public systems facts only
+- Causal graph builder (CAUSES / USES / DEPENDS_ON / PREDICTS / EXPLAINS)
+- Hypothesis engine, verifier, and simulation-backed intervention planner
+- FastAPI read-only cognitive API (`aetheros.api`)
+- Dashboard Cognitive Graph panel (`G`)
+
+### Changed
+
+- Package version set to `3.0.0`
+
+### Security
+
+- Cognition remains recommendation-only: no OS execution, no sudo, no kernel changes
 
 ## [1.5.0-alpha] — 2026-09-23
 

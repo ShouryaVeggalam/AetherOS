@@ -60,7 +60,7 @@ class HeaderPanel:
     """Top banner for the dashboard."""
 
     version: str
-    subtitle: str = "AI Control Plane • Linux • Read Only"
+    subtitle: str = "Aether Fabric · Simulation Only · Human Controlled"
 
     def __rich__(self) -> RenderableType:
         """Render the header panel."""
@@ -316,9 +316,16 @@ class HelpPanel:
             "[bold cyan]Keyboard[/bold cyan]\n\n"
             "[bold]Q[/bold]  Quit dashboard\n"
             "[bold]R[/bold]  Refresh immediately\n"
-            "[bold]H[/bold]  Toggle this help overlay\n"
+            "[bold]?[/bold]  Toggle this help overlay\n"
             "[bold]A[/bold]  Run autonomous research\n"
             "[bold]D[/bold]  Developer Console (plugins)\n"
+            "[bold]G[/bold]  Genesis (research intelligence)\n"
+            "[bold]S[/bold]  Sentinel (resilience intelligence)\n"
+            "[bold]F[/bold]  Fabric (universal intelligence)\n"
+            "[bold]I[/bold]  Infinity (∞ platform overview)\n"
+            "[bold]H[/bold]  Horizon (planetary intelligence)\n"
+            "[bold]M[/bold]  Multi-Agent View (agentic intelligence)\n"
+            "[bold]K[/bold]  Cognitive Graph (systems reasoning)\n"
             "[bold]W[/bold]  Workload Planner (orchestrator)\n"
             "[bold]][/bold]  Cycle selected workload\n"
             "[bold]C[/bold]  Cluster (multi-device overview)\n"

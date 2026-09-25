@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aetheros"
-version = "1.5.0a1"
-description = "AetherOS — explainable operating intelligence platform (userspace, recommendation-only)"
+version = "10.0.0"
+description = "AetherOS — Explainable Operating Intelligence Platform (userspace, simulation-only)"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
@@ -28,6 +28,10 @@ classifiers = [
 dependencies = [
     "psutil>=6.0.0",
     "rich>=13.0.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "httpx>=0.27.0",
+    "networkx>=3.2",
 ]
 
 [project.urls]
@@ -69,6 +73,7 @@ omit = [
     "aetheros/cli/*",
     "aetheros/**/__main__.py",
     "aetheros/dashboard/app.py",
+    "aetheros/api/app.py",
 ]
 
 [tool.coverage.report]

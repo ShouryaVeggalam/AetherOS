@@ -1,8 +1,14 @@
-# AetherOS
+# AetherOS ∞
 
 **Explainable Operating Intelligence Platform**
 
-AetherOS is a research-grade operating intelligence platform that observes, explains, predicts, and simulates system behavior through safe, explainable AI. It never modifies the operating system automatically and remains entirely userspace.
+AetherOS observes, understands, predicts, simulates, and explains computing
+systems while remaining entirely **userspace**, **read-only**, and
+**human-in-the-loop**.
+
+It is **not** an operating system, Linux distribution, kernel, device driver,
+or autonomous controller. Humans always approve actions. No shell execution,
+no kernel mutation, no sudo.
 
 [![Python 3.12](https://img.shields.io/badge/python-3.12-black?style=flat-square)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-black?style=flat-square)](LICENSE)
@@ -10,7 +16,7 @@ AetherOS is a research-grade operating intelligence platform that observes, expl
 [![Rich UI](https://img.shields.io/badge/UI-Rich-black?style=flat-square)](https://github.com/Textualize/rich)
 [![Linux](https://img.shields.io/badge/os-Linux-black?style=flat-square)](#installation)
 [![WSL2](https://img.shields.io/badge/os-WSL2-black?style=flat-square)](#installation)
-[![Status: Alpha](https://img.shields.io/badge/status-v1.5.0--alpha-black?style=flat-square)](CHANGELOG.md)
+[![Status: Infinity](https://img.shields.io/badge/status-v10.0.0--infinity-black?style=flat-square)](CHANGELOG.md)
 
 ---
 
@@ -22,7 +28,9 @@ It collects local telemetry, evaluates policy, validates safety, ranks decisions
 
 Nothing is executed on your behalf. There is no kernel module, no sudo path, and no remote shell.
 
-**Release:** `v1.5.0-alpha` · **Codename:** Operating Intelligence Platform
+**Release:** `v10.0.0` · **Codename:** Infinity (∞) · **Team:** [CELESTRA](docs/CELESTRA.md)
+
+Docs: [CELESTRA](docs/CELESTRA.md) · [Architecture](docs/architecture.md) · [Infinity](docs/infinity.md) · [Modules](docs/MODULES.md)
 
 ---
 
@@ -52,39 +60,27 @@ Operators drown in metrics without a trustworthy narrative. Autopilots that muta
 | **Predictive** | Statistical 5 / 15 / 60 minute forecasts (no ML libraries) |
 | **Cluster** | Multi-node JSON bus, aggregator, health colors |
 | **Orchestrator** | Workload placement scores — recommendation only |
-| **Research & Simulation** | What-if strategies without side effects |
+| **Cognition / Agents** | Causal reasoning and multi-agent deliberation |
+| **Horizon / Genesis / Sentinel / Fabric** | Planetary, research, resilience, federation layers |
+| **Infinity (∞)** | Unifying generation map, pipeline, and layer status |
 | **Plugin SDK** | Sandboxed userspace plugins |
 
 ---
 
 ## Architecture
 
-### System architecture
+### Intelligence pipeline
 
 ```mermaid
 flowchart TD
-    T[Telemetry] --> P[Policy]
-    P --> S[Safety]
-    S --> D[Decision]
-    D --> E[Explainability]
-    E --> UI[Dashboard]
-    O[Observatory] --> UI
-    PR[Predictive] --> UI
-    C[Cluster] --> UI
-    OR[Orchestrator] --> UI
-```
-
-### Cluster architecture
-
-```mermaid
-flowchart TD
-    N1[Laptop Agent] --> BUS[Local JSON Transport]
-    N2[Desktop Agent] --> BUS
-    N3[Pi / Cloud Agents] --> BUS
-    BUS --> REG[Node Registry]
-    REG --> AGG[Aggregator]
-    AGG --> RES[Research / Simulation]
-    AGG --> CON[Operator Console]
+    T[Telemetry] --> O[Observatory]
+    O --> Ev[Evidence]
+    Ev --> R[Reasoning]
+    R --> S[Simulation]
+    S --> P[Prediction]
+    P --> X[Explainability]
+    X --> Rec[Recommendation]
+    Rec --> H[Human Approval]
 ```
 
 ### Intelligence loop
@@ -167,6 +163,13 @@ Press `Q` to quit. The dashboard is a Rich Live terminal UI.
 | Key | Action |
 |-----|--------|
 | `Q` | Quit |
+| `I` | Infinity (∞ platform overview) |
+| `F` | Fabric |
+| `S` | Sentinel |
+| `G` | Genesis |
+| `H` | Horizon |
+| `M` | Multi-Agent |
+| `K` | Cognitive Graph |
 | `O` | Observatory |
 | `E` | Explainability |
 | `P` | Predictive Intelligence |
@@ -177,7 +180,7 @@ Press `Q` to quit. The dashboard is a Rich Live terminal UI.
 | `T` | Cycle CPU / Memory / Disk graph |
 | `A` | Run autonomous research |
 | `D` | Developer / plugin console |
-| `H` | Help |
+| `?` | Help |
 | `1`–`6` | Switch intent profile |
 | `ESC` | Leave overlays |
 
@@ -188,21 +191,14 @@ Press `Q` to quit. The dashboard is a Rich Live terminal UI.
 ```text
 AetherOS/
 ├── aetheros/
-│   ├── telemetry/          # Host metrics
-│   ├── policy_engine/      # Rule evaluation
-│   ├── safety/             # Validation + audit
-│   ├── decision/           # Prioritized advice
-│   ├── dashboard/          # Rich operator UI
-│   ├── intent/             # Operator profiles
-│   ├── learning/           # Historical patterns
-│   ├── simulation/         # What-if scoring
-│   ├── research/           # Strategy research
-│   ├── sdk/ · plugins/     # Plugin surface
-│   ├── observatory/        # Temporal memory
-│   ├── explainability/     # Evidence & confidence
-│   ├── predictive/         # Statistical forecasts
-│   ├── cluster/ · agent/   # Multi-device bus
-│   └── orchestrator/       # Workload planner
+│   ├── telemetry/ · policy_engine/ · safety/ · decision/
+│   ├── observatory/ · explainability/ · predictive/
+│   ├── cognition/ · reasoning/ · agents/ · messaging/
+│   ├── horizon/ · genesis/ · sentinel/ · fabric/
+│   ├── infinity/               # ∞ unifying layer
+│   ├── atlas/ · kernel/ · policy/   # compatibility facades
+│   ├── api/ · dashboard/
+│   └── …
 ├── docs/
 ├── tests/
 ├── main.py
@@ -213,11 +209,19 @@ AetherOS/
 
 ## Philosophy
 
+Built by **CELESTRA** under a research- and enterprise-grade charter:
+
 1. **Observe before acting.**
 2. **Explain every recommendation.**
-3. **Humans always remain in control.**
+3. **Simulation before intervention.**
+4. **Humans remain in control.**
 
-AetherOS is an intelligence layer — not an autopilot.
+Every feature must be problem-backed, evidence-based, explainable, tested, and
+reproducible. Systems quality outranks flashy UI.
+
+AetherOS is the intelligence layer for computing — not an autopilot.
+
+Charter: [docs/CELESTRA.md](docs/CELESTRA.md)
 
 ---
 
@@ -225,10 +229,14 @@ AetherOS is an intelligence layer — not an autopilot.
 
 | Version | Focus |
 |---------|--------|
-| **v1.5.0-alpha** | Public alpha: full intelligence stack + release packaging |
-| v1.5.x | Coverage hardening, demo assets, packaging polish |
-| v1.6 | Optional WebSocket cluster transport (still read-only) |
-| v2.0 | Signed plugins, multi-operator sessions, richer research reports |
+| **v10.0.0 Infinity** | Unifying platform layer + docs + `/infinity` |
+| v9 Fabric | Universal federation graph + twin |
+| v8 Sentinel | Resilience intelligence |
+| v7 Genesis | Research knowledge engine |
+| v6 Horizon | Planetary intelligence |
+| v4–v5 | Agents + Atlas facade |
+| v3 | Cognitive reasoning |
+| v1–v2 | Operating intelligence + resource graph |
 
 See [CHANGELOG.md](CHANGELOG.md) for history.
 

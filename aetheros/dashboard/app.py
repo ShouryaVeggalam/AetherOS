@@ -32,12 +32,17 @@ from aetheros.cluster import (
     NodeRegistry,
     aggregate,
 )
+from aetheros.cognition import CognitiveRuntime
 from aetheros.core import AetherCore
 from aetheros.dashboard.renderer import DashboardFrame, render_frame
 from aetheros.dashboard.widgets import ProcessRow
 from aetheros.decision import DecisionEngine, DecisionReport
 from aetheros.decision.models import Decision, utc_now
 from aetheros.explainability import ExplainabilityEngine, Explanation
+from aetheros.fabric import FabricReport, FabricRuntime
+from aetheros.genesis import GenesisReport, GenesisRuntime
+from aetheros.horizon import HorizonReport, HorizonRuntime
+from aetheros.infinity import InfinityReport, InfinityRuntime
 from aetheros.intent import IntentEngine, IntentStorage
 from aetheros.learning import LearningEngine
 from aetheros.observatory import (
@@ -60,9 +65,12 @@ from aetheros.orchestrator import (
 )
 from aetheros.policy_engine import TelemetrySnapshot
 from aetheros.predictive import ForecastEngine, PredictiveReport
+from aetheros.reasoning.explain import CognitiveReport
 from aetheros.research import ResearchEngine, ResearchReport
+from aetheros.runtime import AgenticReport, AgenticRuntime
 from aetheros.safety import AuditLogger, CooldownManager, SafetyValidator
 from aetheros.sdk import PluginRecord
+from aetheros.sentinel import SentinelReport, SentinelRuntime
 from aetheros.telemetry import TelemetryCollector
 from aetheros.telemetry.models import SystemSnapshot
 
@@ -143,6 +151,69 @@ class OrchestratorViewState:
         default_factory=lambda: get_workload("AI Training")
     )
     last: ExecutionPlan | None = None
+
+
+@dataclass
+class CognitiveViewState:
+    """UI state for the cognitive graph center panel."""
+
+    visible: bool = False
+    runtime: CognitiveRuntime = field(default_factory=CognitiveRuntime)
+    last: CognitiveReport | None = None
+
+
+@dataclass
+class MultiAgentViewState:
+    """UI state for the multi-agent center panel."""
+
+    visible: bool = False
+    runtime: AgenticRuntime = field(default_factory=AgenticRuntime)
+    last: AgenticReport | None = None
+
+
+@dataclass
+class HorizonViewState:
+    """UI state for the Horizon planetary intelligence panel."""
+
+    visible: bool = False
+    runtime: HorizonRuntime = field(default_factory=HorizonRuntime)
+    last: HorizonReport | None = None
+
+
+@dataclass
+class GenesisViewState:
+    """UI state for the Genesis research intelligence panel."""
+
+    visible: bool = False
+    runtime: GenesisRuntime = field(default_factory=GenesisRuntime)
+    last: GenesisReport | None = None
+
+
+@dataclass
+class SentinelViewState:
+    """UI state for the Sentinel resilience intelligence panel."""
+
+    visible: bool = False
+    runtime: SentinelRuntime = field(default_factory=SentinelRuntime)
+    last: SentinelReport | None = None
+
+
+@dataclass
+class FabricViewState:
+    """UI state for the Aether Fabric universal intelligence panel."""
+
+    visible: bool = False
+    runtime: FabricRuntime = field(default_factory=FabricRuntime)
+    last: FabricReport | None = None
+
+
+@dataclass
+class InfinityViewState:
+    """UI state for the Infinity platform overview panel."""
+
+    visible: bool = False
+    runtime: InfinityRuntime = field(default_factory=InfinityRuntime)
+    last: InfinityReport | None = None
 
 
 def format_uptime(seconds: float) -> str:
@@ -295,6 +366,13 @@ def build_frame(
     predictive: PredictiveViewState | None = None,
     cluster: ClusterViewState | None = None,
     orchestrator: OrchestratorViewState | None = None,
+    cognition: CognitiveViewState | None = None,
+    multi_agent: MultiAgentViewState | None = None,
+    horizon: HorizonViewState | None = None,
+    genesis: GenesisViewState | None = None,
+    sentinel: SentinelViewState | None = None,
+    fabric: FabricViewState | None = None,
+    infinity: InfinityViewState | None = None,
 ) -> DashboardFrame:
     """Map pipeline output into a DashboardFrame for the renderer."""
 
@@ -385,6 +463,26 @@ def build_frame(
     show_predict = bool(predictive and predictive.visible)
     show_cluster = bool(cluster and cluster.visible)
     show_orchestrator = bool(orchestrator and orchestrator.visible)
+    show_cognitive = bool(cognition and cognition.visible)
+    show_multi_agent = bool(multi_agent and multi_agent.visible)
+    show_horizon = bool(horizon and horizon.visible)
+    show_genesis = bool(genesis and genesis.visible)
+    show_sentinel = bool(sentinel and sentinel.visible)
+    show_fabric = bool(fabric and fabric.visible)
+    show_infinity = bool(infinity and infinity.visible)
+    overlay = (
+        show_explain
+        or show_predict
+        or show_cluster
+        or show_orchestrator
+        or show_cognitive
+        or show_multi_agent
+        or show_horizon
+        or show_genesis
+        or show_sentinel
+        or show_fabric
+        or show_infinity
+    )
     ai_explanation: Explanation | None = None
     if show_explain and explainability is not None:
         ai_explanation = explainability.engine.explain(
@@ -420,6 +518,59 @@ def build_frame(
                 online_ids=cluster.online_ids,
             )
             orchestrator.last = execution_plan
+
+    cognitive_report: CognitiveReport | None = None
+    if show_cognitive and cognition is not None:
+        cognitive_report = cognition.runtime.reason(
+            snapshot,
+            profile,
+            history=observatory.recorder.points(),
+        )
+        cognition.last = cognitive_report
+
+    agentic_report: AgenticReport | None = None
+    if show_multi_agent and multi_agent is not None:
+        agentic_report = multi_agent.runtime.deliberate_sync(
+            snapshot,
+            profile,
+            history=observatory.recorder.points(),
+            cluster=cluster.last if cluster is not None else None,
+        )
+        multi_agent.last = agentic_report
+
+    horizon_report: HorizonReport | None = None
+    if show_horizon and horizon is not None:
+        horizon_report = horizon.runtime.observe()
+        horizon.last = horizon_report
+
+    genesis_report: GenesisReport | None = None
+    if show_genesis and genesis is not None:
+        if genesis.last is None:
+            genesis.last = genesis.runtime.research(experiment_runs=12)
+        genesis_report = genesis.last
+
+    sentinel_report: SentinelReport | None = None
+    if show_sentinel and sentinel is not None:
+        cluster_avg = None
+        if cluster is not None and cluster.last is not None:
+            cluster_avg = cluster.last.average_cpu
+        sentinel_report = sentinel.runtime.observe(
+            snapshot,
+            history=observatory.recorder.points(),
+            cluster_avg_cpu=cluster_avg,
+        )
+        sentinel.last = sentinel_report
+
+    fabric_report: FabricReport | None = None
+    if show_fabric and fabric is not None:
+        fabric_report = fabric.runtime.observe()
+        fabric.last = fabric_report
+
+    infinity_report: InfinityReport | None = None
+    if show_infinity and infinity is not None:
+        if infinity.last is None:
+            infinity.last = infinity.runtime.observe(snapshot)
+        infinity_report = infinity.last
 
     return DashboardFrame(
         version=__version__,
@@ -458,13 +609,7 @@ def build_frame(
         plugin_rows=plugin_console_rows(plugin_records),
         plugins_verified=plugins_verified,
         plugins_unsafe=plugins_unsafe,
-        show_observatory=(
-            observatory.visible
-            and not show_explain
-            and not show_predict
-            and not show_cluster
-            and not show_orchestrator
-        ),
+        show_observatory=observatory.visible and not overlay,
         observatory_metric=observatory.metric,
         observatory_cpu_spark=cpu_spark,
         observatory_memory_spark=mem_spark,
@@ -476,21 +621,76 @@ def build_frame(
         observatory_samples=len(observatory.recorder),
         observatory_capacity=observatory.recorder.capacity,
         observatory_window_label="Last 60 Seconds",
-        show_explainability=(
-            show_explain
-            and not show_predict
-            and not show_cluster
-            and not show_orchestrator
-        ),
+        show_explainability=show_explain
+        and not show_cognitive
+        and not show_multi_agent
+        and not show_horizon
+        and not show_genesis
+        and not show_sentinel
+        and not show_fabric
+        and not show_infinity,
         explanation=ai_explanation,
-        show_predictive=show_predict and not show_cluster and not show_orchestrator,
+        show_predictive=show_predict
+        and not show_cognitive
+        and not show_multi_agent
+        and not show_horizon
+        and not show_genesis
+        and not show_sentinel
+        and not show_fabric
+        and not show_infinity,
         predictive_report=predictive_report,
-        show_cluster=show_cluster and not show_orchestrator,
+        show_cluster=show_cluster
+        and not show_cognitive
+        and not show_multi_agent
+        and not show_horizon
+        and not show_genesis
+        and not show_sentinel
+        and not show_fabric
+        and not show_infinity,
         cluster_snapshot=cluster_snapshot,
         cluster_online_ids=cluster_online,
-        show_orchestrator=show_orchestrator,
+        show_orchestrator=show_orchestrator
+        and not show_cognitive
+        and not show_multi_agent
+        and not show_horizon
+        and not show_genesis
+        and not show_sentinel
+        and not show_fabric
+        and not show_infinity,
         execution_plan=execution_plan,
         selected_workload=selected_workload,
+        show_cognitive=show_cognitive
+        and not show_multi_agent
+        and not show_horizon
+        and not show_genesis
+        and not show_sentinel
+        and not show_fabric
+        and not show_infinity,
+        cognitive_report=cognitive_report,
+        show_multi_agent=show_multi_agent
+        and not show_horizon
+        and not show_genesis
+        and not show_sentinel
+        and not show_fabric
+        and not show_infinity,
+        agentic_report=agentic_report,
+        show_horizon=show_horizon
+        and not show_genesis
+        and not show_sentinel
+        and not show_fabric
+        and not show_infinity,
+        horizon_report=horizon_report,
+        show_genesis=show_genesis
+        and not show_sentinel
+        and not show_fabric
+        and not show_infinity,
+        genesis_report=genesis_report,
+        show_sentinel=show_sentinel and not show_fabric and not show_infinity,
+        sentinel_report=sentinel_report,
+        show_fabric=show_fabric and not show_infinity,
+        fabric_report=fabric_report,
+        show_infinity=show_infinity,
+        infinity_report=infinity_report,
     )
 
 
@@ -628,6 +828,13 @@ def run_dashboard(
     cluster = ClusterViewState(visible=False)
     cluster.ensure(Path("data/cluster.db"))
     orchestrator = OrchestratorViewState(visible=False)
+    cognition = CognitiveViewState(visible=False)
+    multi_agent = MultiAgentViewState(visible=False)
+    horizon_view = HorizonViewState(visible=False)
+    genesis_view = GenesisViewState(visible=False)
+    sentinel_view = SentinelViewState(visible=False)
+    fabric_view = FabricViewState(visible=False)
+    infinity_view = InfinityViewState(visible=False)
     core = AetherCore()
     core.registry.state_path = Path("data/plugin_state.json")
     core.bootstrap()
@@ -672,6 +879,13 @@ def run_dashboard(
             predictive=predictive,
             cluster=cluster,
             orchestrator=orchestrator,
+            cognition=cognition,
+            multi_agent=multi_agent,
+            horizon=horizon_view,
+            genesis=genesis_view,
+            sentinel=sentinel_view,
+            fabric=fabric_view,
+            infinity=infinity_view,
         )
 
     frame = make_frame()
@@ -694,9 +908,16 @@ def run_dashboard(
                         predictive.visible = False
                         cluster.visible = False
                         orchestrator.visible = False
+                        cognition.visible = False
+                        multi_agent.visible = False
+                        horizon_view.visible = False
+                        genesis_view.visible = False
+                        sentinel_view.visible = False
+                        fabric_view.visible = False
+                        infinity_view.visible = False
                         show_help = False
                         show_developer = False
-                    elif lowered == "h":
+                    elif key == "?" or lowered == "?":
                         show_help = not show_help
                         if show_help:
                             show_developer = False
@@ -705,6 +926,29 @@ def run_dashboard(
                             predictive.visible = False
                             cluster.visible = False
                             orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
+                    elif lowered == "h":
+                        horizon_view.visible = not horizon_view.visible
+                        if horizon_view.visible:
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
                     elif lowered == "d":
                         show_developer = not show_developer
                         if show_developer:
@@ -714,6 +958,110 @@ def run_dashboard(
                             predictive.visible = False
                             cluster.visible = False
                             orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
+                    elif lowered == "m":
+                        multi_agent.visible = not multi_agent.visible
+                        if multi_agent.visible:
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                            cognition.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
+                    elif lowered == "g":
+                        genesis_view.visible = not genesis_view.visible
+                        if genesis_view.visible:
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
+                    elif lowered == "s":
+                        sentinel_view.visible = not sentinel_view.visible
+                        if sentinel_view.visible:
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
+                    elif lowered == "f":
+                        fabric_view.visible = not fabric_view.visible
+                        if fabric_view.visible:
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            infinity_view.visible = False
+                    elif lowered == "i":
+                        infinity_view.visible = not infinity_view.visible
+                        if infinity_view.visible:
+                            infinity_view.last = None
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                    elif lowered == "k":
+                        cognition.visible = not cognition.visible
+                        if cognition.visible:
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
                     elif lowered == "w":
                         orchestrator.visible = not orchestrator.visible
                         if orchestrator.visible:
@@ -723,6 +1071,13 @@ def run_dashboard(
                             explainability.visible = False
                             predictive.visible = False
                             cluster.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
                     elif lowered == "]":
                         if orchestrator.visible:
                             orchestrator.workload = next_workload(
@@ -737,6 +1092,13 @@ def run_dashboard(
                             explainability.visible = False
                             predictive.visible = False
                             orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
                     elif lowered == "p":
                         predictive.visible = not predictive.visible
                         if predictive.visible:
@@ -746,6 +1108,13 @@ def run_dashboard(
                             explainability.visible = False
                             cluster.visible = False
                             orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
                     elif lowered == "e":
                         explainability.visible = not explainability.visible
                         if explainability.visible:
@@ -755,6 +1124,13 @@ def run_dashboard(
                             predictive.visible = False
                             cluster.visible = False
                             orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
                     elif lowered == "o":
                         observatory.visible = not observatory.visible
                         if observatory.visible:
@@ -764,6 +1140,13 @@ def run_dashboard(
                             predictive.visible = False
                             cluster.visible = False
                             orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
                     elif key == "LEFT":
                         observatory.history_offset = min(
                             max(0, len(observatory.recorder) - 1),
@@ -834,7 +1217,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     parser = argparse.ArgumentParser(
         prog="aetheros-dashboard",
-        description="AetherOS v1.5 — Resource Orchestrator",
+        description="AetherOS ∞ — Explainable Operating Intelligence",
     )
     parser.add_argument(
         "--db",

@@ -13,7 +13,9 @@ from rich.layout import Layout
 from rich.panel import Panel
 from rich.text import Text
 
+from aetheros.agents import MultiAgentPanel
 from aetheros.cluster import ClusterPanel, ClusterSnapshot
+from aetheros.cognition import CognitivePanel
 from aetheros.dashboard.layout import build_layout
 from aetheros.dashboard.widgets import (
     DecisionPanel,
@@ -28,6 +30,10 @@ from aetheros.dashboard.widgets import (
     TelemetryPanel,
 )
 from aetheros.explainability import ExplainabilityPanel, Explanation
+from aetheros.fabric import FabricPanel, FabricReport
+from aetheros.genesis import GenesisPanel, GenesisReport
+from aetheros.horizon import HorizonPanel, HorizonReport
+from aetheros.infinity import InfinityPanel, InfinityReport
 from aetheros.observatory import ObservatoryPanel
 from aetheros.observatory.models import GraphMetric, SystemEvent
 from aetheros.orchestrator import (
@@ -36,6 +42,9 @@ from aetheros.orchestrator import (
     WorkloadProfile,
 )
 from aetheros.predictive import PredictivePanel, PredictiveReport
+from aetheros.reasoning.explain import CognitiveReport
+from aetheros.runtime import AgenticReport
+from aetheros.sentinel import SentinelPanel, SentinelReport
 
 
 @dataclass(frozen=True, slots=True)
@@ -100,6 +109,20 @@ class DashboardFrame:
     show_orchestrator: bool
     execution_plan: ExecutionPlan | None
     selected_workload: WorkloadProfile | None
+    show_cognitive: bool
+    cognitive_report: CognitiveReport | None
+    show_multi_agent: bool
+    agentic_report: AgenticReport | None
+    show_horizon: bool
+    horizon_report: HorizonReport | None
+    show_genesis: bool
+    genesis_report: GenesisReport | None
+    show_sentinel: bool
+    sentinel_report: SentinelReport | None
+    show_fabric: bool
+    fabric_report: FabricReport | None
+    show_infinity: bool
+    infinity_report: InfinityReport | None
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -127,7 +150,21 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_orchestrator:
+    if frame.show_infinity:
+        layout["center"].update(InfinityPanel(report=frame.infinity_report))
+    elif frame.show_fabric:
+        layout["center"].update(FabricPanel(report=frame.fabric_report))
+    elif frame.show_sentinel:
+        layout["center"].update(SentinelPanel(report=frame.sentinel_report))
+    elif frame.show_genesis:
+        layout["center"].update(GenesisPanel(report=frame.genesis_report))
+    elif frame.show_horizon:
+        layout["center"].update(HorizonPanel(report=frame.horizon_report))
+    elif frame.show_multi_agent:
+        layout["center"].update(MultiAgentPanel(report=frame.agentic_report))
+    elif frame.show_cognitive:
+        layout["center"].update(CognitivePanel(report=frame.cognitive_report))
+    elif frame.show_orchestrator:
         layout["center"].update(
             WorkloadPlannerPanel(
                 plan=frame.execution_plan,
@@ -206,8 +243,8 @@ def render_frame(frame: DashboardFrame) -> Layout:
         Panel(
             Align.center(
                 Text(
-                    "Q quit · W workload · C cluster · P predict · E explain · "
-                    "O observatory · ] cycle workload · ESC leave · H help",
+                    "Q quit · F fabric · S sentinel · G genesis · H horizon · "
+                    "M agents · K cognitive · ? help · ESC",
                     style="dim cyan",
                 )
             ),

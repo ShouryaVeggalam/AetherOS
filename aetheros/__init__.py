@@ -1,7 +1,7 @@
-"""AetherOS — userspace AI control plane / operating intelligence platform.
+"""AetherOS — Explainable Operating Intelligence Platform.
 
-v1.5.0-alpha — Explainable Operating Intelligence Platform.
-All userspace. No kernel modules. Recommendation-only by default.
+v10.0.0 — Infinity (∞).
+Userspace. Simulation-only. Human-in-the-loop. Never an OS or kernel.
 """
 
-__version__ = "1.5.0-alpha"
+__version__ = "10.0.0"

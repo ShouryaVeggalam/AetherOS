@@ -1,14 +1,29 @@
 # Contributing to AetherOS
 
-Thank you for helping build an explainable, userspace operating intelligence platform.
+Thank you for helping **CELESTRA** build an explainable, userspace operating
+intelligence platform. Read the founding charter: [docs/CELESTRA.md](docs/CELESTRA.md).
 
-AetherOS is an **alpha** research project. Contributions should preserve three invariants:
+AetherOS is an **alpha** research project. Contributions should preserve these
+invariants:
 
 1. Observe before acting.
 2. Explain every recommendation.
-3. Humans always remain in control.
+3. Simulation before intervention.
+4. Humans always remain in control.
 
 No contribution may introduce remote command execution, SSH automation, sudo usage, or automatic OS mutation.
+
+## Feature acceptance gate
+
+Before opening a PR, confirm each item:
+
+1. **Problem** — What operator or research problem does this solve?
+2. **Evidence** — What measurable inputs support the claim?
+3. **Explainability** — Can a human reconstruct why the output appeared?
+4. **Testability** — Will CI fail if the behavior regresses?
+5. **Reproducibility** — Can another engineer rebuild the result from docs + code?
+
+Systems quality outranks flashy UI.
 
 ---
 

@@ -16,6 +16,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `cognition` | [cognition.md](cognition.md) · [cognition_core.md](cognition_core.md) | Causal / hypothesis / verify + v3 Cognition Core |
 | `context` | [context_engine.md](context_engine.md) | Context Intelligence Engine (P8) |
 | `research` | [research_engine.md](research_engine.md) | Strategy research + P9 Research Intelligence |
+| `research_ai` | [autonomous_research.md](autonomous_research.md) | v3 P5 Autonomous Research Engine (twin experiments) |
 | `core` | SDK docs | Plugin host |
 | `dashboard` | README | Rich Live UI |
 | `decision` | architecture | Prioritizer |

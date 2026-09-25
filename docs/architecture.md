@@ -100,6 +100,7 @@ flowchart LR
 - [Operational Memory v3 P2](operational_memory.md)
 - [Causal Knowledge Graph v3 P3](causal_knowledge_graph.md)
 - [Multi-Agent Consensus v3 P4](multi_agent_consensus.md)
+- [Autonomous Research Engine v3 P5](autonomous_research.md)
 - [Research Intelligence P9](research_engine.md)
 - [Phase 16 GII](PHASE16.md)
 - [Fabric](fabric.md) · [Sentinel](sentinel.md) · [Genesis](genesis.md) · [Horizon](horizon.md)

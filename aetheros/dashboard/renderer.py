@@ -53,6 +53,20 @@ from aetheros.reasoning.formatter import GraphReasoningPanel
 from aetheros.reasoning.models import Observation, VerifiedExplanation
 from aetheros.research.formatter import ResearchIntelligencePanel
 from aetheros.research.models import SystemResearchReport
+from aetheros.research_ai import (
+    Discovery as ResearchLabDiscovery,
+)
+from aetheros.research_ai import (
+    Experiment as ResearchLabExperiment,
+)
+from aetheros.research_ai import (
+    JournalEntry,
+    ResearchLabPanel,
+    ResearchQuestion,
+)
+from aetheros.research_ai import (
+    Result as ResearchLabResult,
+)
 from aetheros.runtime import AgenticReport
 from aetheros.sentinel import SentinelPanel, SentinelReport
 from aetheros.twin import (
@@ -164,6 +178,14 @@ class DashboardFrame:
     consensus_conflicts: tuple[Conflict, ...]
     consensus_bus_events: tuple[Event, ...]
     consensus_view: str
+    show_research_lab: bool
+    research_lab_questions: tuple[ResearchQuestion, ...]
+    research_lab_experiments: tuple[ResearchLabExperiment, ...]
+    research_lab_results: tuple[ResearchLabResult, ...]
+    research_lab_verified: tuple[ResearchLabDiscovery, ...]
+    research_lab_rejected: tuple[ResearchLabDiscovery, ...]
+    research_lab_journal: tuple[JournalEntry, ...]
+    research_lab_view: str
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -191,7 +213,19 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_consensus:
+    if frame.show_research_lab:
+        layout["center"].update(
+            ResearchLabPanel(
+                questions=frame.research_lab_questions,
+                experiments=frame.research_lab_experiments,
+                results=frame.research_lab_results,
+                verified=frame.research_lab_verified,
+                rejected=frame.research_lab_rejected,
+                journal=frame.research_lab_journal,
+                view=frame.research_lab_view,
+            )
+        )
+    elif frame.show_consensus:
         layout["center"].update(
             ConsensusPanel(
                 findings=frame.consensus_findings,

@@ -223,6 +223,14 @@ def test_render_frame_has_regions() -> None:
         consensus_conflicts=(),
         consensus_bus_events=(),
         consensus_view="consensus",
+        show_research_lab=False,
+        research_lab_questions=(),
+        research_lab_experiments=(),
+        research_lab_results=(),
+        research_lab_verified=(),
+        research_lab_rejected=(),
+        research_lab_journal=(),
+        research_lab_view="discoveries",
     )
     layout = render_frame(frame)
     assert layout["header"] is not None

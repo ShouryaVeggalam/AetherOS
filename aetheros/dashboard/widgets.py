@@ -317,6 +317,7 @@ class HelpPanel:
             "[bold]Q[/bold]  Quit dashboard\n"
             "[bold]?[/bold]  Toggle this help overlay\n"
             "[bold]A[/bold]  Run autonomous research\n"
+            "[bold]B[/bold]  Research Lab (twin experiments)\n"
             "[bold]J[/bold]  Multi-Agent Consensus (human approval)\n"
             "[bold]X[/bold]  Research Intelligence (evidence reports)\n"
             "[bold]L[/bold]  Operational Memory (verified patterns)\n"

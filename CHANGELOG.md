@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- v3.0 P5 Autonomous Research Engine — `aetheros.research_ai` (twin-only experiments + journal)
+- Dashboard **B** → Research Lab (Questions / Experiments / Discoveries / Rejected / Journal); **R** stays Graph Reasoning
+- Docs: `docs/autonomous_research.md`
 - v3.0 P4 Multi-Agent Consensus — sync `EventBus` + `ConsensusEngine` (human-approval recommendations)
 - Dashboard **J** → Multi-Agent Consensus (Status / Findings / Bus / Consensus / Conflicts); **A** stays Research, **M** stays Multi-Agent View
 - Docs: `docs/multi_agent_consensus.md`

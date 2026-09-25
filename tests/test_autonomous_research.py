@@ -334,6 +334,30 @@ def test_research_lab_panel_views() -> None:
         )
         assert "AUTONOMOUS RESEARCH" in console.export_text()
 
+    verified = engine.store.list_verified()
+    if verified:
+        top = verified[0]
+        matched = next(
+            (q for q in engine.last_questions if q.id == top.question_id),
+            None,
+        )
+        console = Console(record=True, width=110)
+        console.print(
+            ResearchLabPanel(
+                questions=engine.last_questions,
+                experiments=engine.last_experiments,
+                results=engine.last_results,
+                verified=verified,
+                rejected=engine.store.list_rejected(),
+                journal=engine.journal.entries(),
+                view="discoveries",
+            )
+        )
+        text = console.export_text()
+        if matched is not None:
+            assert matched.title in text
+        assert "Verified Discovery" in text
+
 
 def test_coverage_edges() -> None:
     stamp = _stamp()

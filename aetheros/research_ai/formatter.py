@@ -65,9 +65,28 @@ class ResearchLabPanel:
 
     def _discoveries_view(self) -> RenderableType:
         top = self.verified[0] if self.verified else None
-        question = self.questions[0] if self.questions else None
-        result = self.results[0] if self.results else None
-        experiment = self.experiments[0] if self.experiments else None
+        question = None
+        experiment = None
+        result = None
+        if top is not None:
+            if top.question_id:
+                question = next(
+                    (q for q in self.questions if q.id == top.question_id),
+                    None,
+                )
+            if top.experiment_id:
+                for idx, exp in enumerate(self.experiments):
+                    if exp.id == top.experiment_id:
+                        experiment = exp
+                        if idx < len(self.results):
+                            result = self.results[idx]
+                        break
+        if question is None:
+            question = self.questions[0] if self.questions else None
+        if experiment is None:
+            experiment = self.experiments[0] if self.experiments else None
+        if result is None:
+            result = self.results[0] if self.results else None
         parts: list[Text] = [
             Text("AUTONOMOUS RESEARCH", style="bold bright_yellow"),
             Text(""),

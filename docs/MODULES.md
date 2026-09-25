@@ -32,6 +32,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `kernel` | package README | Userspace context only |
 | `knowledge` | [ontology-catalogs.md](ontology-catalogs.md) | Causal resource catalog |
 | `learning` | architecture | Pattern summaries |
+| `memory` | [operational_memory.md](operational_memory.md) | v3 P2 long-term operational memory (verified patterns only) |
 | `messaging` | [agents.md](agents.md) | Async agent bus |
 | `observatory` | [observatory.md](observatory.md) | Temporal memory |
 | `ontology` | [ontology-catalogs.md](ontology-catalogs.md) | Genesis entity relations |

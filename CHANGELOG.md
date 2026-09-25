@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- v3.0 P2 Long-Term Operational Memory — `aetheros.memory` (`MemoryEngine`, store, verifier, consolidation)
+- Dashboard **L** → Operational Memory (Verified / Recent / Related / Evidence Timeline); **M** stays Multi-Agent
+- Docs: `docs/operational_memory.md`
 - v3.0 P1 Cognition Core — `CognitionEngine` (observe/reason/verify/plan) over graph evidence
 - `Evidence` / `CoreHypothesis` / `CognitionState` / `OperationalMemory` (isolated layer)
 - Docs: `docs/cognition_core.md`

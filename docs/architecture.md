@@ -97,6 +97,7 @@ flowchart LR
 - [Digital Twin 2.0](digital_twin.md)
 - [Context Engine](context_engine.md)
 - [Cognition Core v3](cognition_core.md)
+- [Operational Memory v3 P2](operational_memory.md)
 - [Research Intelligence P9](research_engine.md)
 - [Phase 16 GII](PHASE16.md)
 - [Fabric](fabric.md) · [Sentinel](sentinel.md) · [Genesis](genesis.md) · [Horizon](horizon.md)

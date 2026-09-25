@@ -210,6 +210,10 @@ def test_render_frame_has_regions() -> None:
         show_research_intel=False,
         research_intel_report=None,
         research_intel_view="daily",
+        show_op_memory=False,
+        op_memory_verified=(),
+        op_memory_patterns=(),
+        op_memory_view="verified",
     )
     layout = render_frame(frame)
     assert layout["header"] is not None

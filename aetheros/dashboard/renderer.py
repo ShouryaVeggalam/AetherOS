@@ -46,6 +46,7 @@ from aetheros.predictive import PredictivePanel, PredictiveReport
 from aetheros.reasoning.explain import CognitiveReport
 from aetheros.reasoning.formatter import GraphReasoningPanel
 from aetheros.reasoning.models import Observation, VerifiedExplanation
+from aetheros.memory import MemoryRecord, OperationalMemoryPanel, Pattern
 from aetheros.research.formatter import ResearchIntelligencePanel
 from aetheros.research.models import SystemResearchReport
 from aetheros.runtime import AgenticReport
@@ -146,6 +147,10 @@ class DashboardFrame:
     show_research_intel: bool
     research_intel_report: SystemResearchReport | None
     research_intel_view: str
+    show_op_memory: bool
+    op_memory_verified: tuple[MemoryRecord, ...]
+    op_memory_patterns: tuple[Pattern, ...]
+    op_memory_view: str
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -173,7 +178,15 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_research_intel:
+    if frame.show_op_memory:
+        layout["center"].update(
+            OperationalMemoryPanel(
+                verified=frame.op_memory_verified,
+                patterns=frame.op_memory_patterns,
+                view=frame.op_memory_view,
+            )
+        )
+    elif frame.show_research_intel:
         layout["center"].update(
             ResearchIntelligencePanel(
                 report=frame.research_intel_report,

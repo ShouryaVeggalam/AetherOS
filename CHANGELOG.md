@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- CELESTRA X **Aether Lab** Module 1 — Attention Engine (`labs/aether/`, `/aether`)
+- Deterministic attention allocation (weights + reasoning/retrieval budgets) + draft cognition plans
+- Aether Observatory Next.js 16 Attention Map (`labs/aether/observatory/web`)
+- Docs: `docs/aether_lab.md`
 - v3.0 P5 Autonomous Research Engine — `aetheros.research_ai` (twin-only experiments + journal)
 - Dashboard **B** → Research Lab (Questions / Experiments / Discoveries / Rejected / Journal); **R** stays Graph Reasoning
 - Docs: `docs/autonomous_research.md`

@@ -67,7 +67,8 @@ def create_app(
         description=(
             "Explainable Operating Intelligence API (Infinity ∞). "
             "Read-only / simulation-first. Humans approve actions. "
-            "CELESTRA GII Module 1 exposes cognition under `/v9`."
+            "CELESTRA GII Module 1 exposes cognition under `/v9`. "
+            "Aether Lab (CELESTRA X) Attention Engine under `/aether`."
         ),
         openapi_tags=[
             {
@@ -77,11 +78,20 @@ def create_app(
                     "(understand · decompose · allocate)."
                 ),
             },
+            {
+                "name": "aether-lab",
+                "description": (
+                    "Aether Lab — Cognitive Architecture "
+                    "(attention · cognition draft · observatory)."
+                ),
+            },
         ],
     )
     from services.intelligence.api.router import router as gii_v9_router
+    from labs.aether.api import router as aether_router
 
     app.include_router(gii_v9_router)
+    app.include_router(aether_router)
     runtime = CognitiveRuntime(
         memory=CognitiveMemory(memory_db or Path("data/cognition_memory.db"))
     )

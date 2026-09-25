@@ -62,10 +62,10 @@ aetheros-sdk = "aetheros.cli.sdk_demo:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["aetheros*", "services*"]
+include = ["aetheros*", "services*", "labs*"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "services/intelligence/tests"]
+testpaths = ["tests", "services/intelligence/tests", "labs/aether/tests"]
 pythonpath = ["."]
 asyncio_mode = "auto"
 

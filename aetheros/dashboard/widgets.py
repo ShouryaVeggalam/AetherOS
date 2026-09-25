@@ -319,6 +319,7 @@ class HelpPanel:
             "[bold]A[/bold]  Run autonomous research\n"
             "[bold]X[/bold]  Research Intelligence (evidence reports)\n"
             "[bold]L[/bold]  Operational Memory (verified patterns)\n"
+            "[bold]N[/bold]  Causal Knowledge Graph (verified relations)\n"
             "[bold]D[/bold]  Developer Console (plugins)\n"
             "[bold]V[/bold]  Digital Twin (host what-if)\n"
             "[bold]G[/bold]  Genesis (research intelligence)\n"

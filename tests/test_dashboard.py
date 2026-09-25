@@ -214,6 +214,9 @@ def test_render_frame_has_regions() -> None:
         op_memory_verified=(),
         op_memory_patterns=(),
         op_memory_view="verified",
+        show_causal_knowledge=False,
+        causal_knowledge_graph=None,
+        causal_knowledge_view="causal",
     )
     layout = render_frame(frame)
     assert layout["header"] is not None

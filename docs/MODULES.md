@@ -30,7 +30,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `infinity` | [infinity.md](infinity.md) | ∞ unifying layer |
 | `intent` | architecture | Operator profiles |
 | `kernel` | package README | Userspace context only |
-| `knowledge` | [ontology-catalogs.md](ontology-catalogs.md) | Causal resource catalog |
+| `knowledge` | [ontology-catalogs.md](ontology-catalogs.md) · [causal_knowledge_graph.md](causal_knowledge_graph.md) | Ontology catalogs + v3 P3 Causal Knowledge Graph |
 | `learning` | architecture | Pattern summaries |
 | `memory` | [operational_memory.md](operational_memory.md) | v3 P2 long-term operational memory (verified patterns only) |
 | `messaging` | [agents.md](agents.md) | Async agent bus |

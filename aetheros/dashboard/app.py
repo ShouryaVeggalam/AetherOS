@@ -50,6 +50,10 @@ from aetheros.graph import ResourceGraph, build_resource_graph
 from aetheros.horizon import HorizonReport, HorizonRuntime
 from aetheros.infinity import InfinityReport, InfinityRuntime
 from aetheros.intent import IntentEngine, IntentStorage
+from aetheros.knowledge import (
+    CausalKnowledgeGraph,
+    build_knowledge_graph,
+)
 from aetheros.learning import LearningEngine
 from aetheros.memory import MemoryEngine, MemoryQuery
 from aetheros.observatory import (
@@ -315,6 +319,26 @@ class OperationalMemoryViewState:
             self.seeded = True
 
 
+@dataclass
+class CausalKnowledgeViewState:
+    """UI state for P3 Causal Knowledge Graph panel (shortcut N)."""
+
+    visible: bool = False
+    last: CausalKnowledgeGraph | None = None
+    view_index: int = 0
+    views: tuple[str, ...] = (
+        "causal",
+        "ontology",
+        "discoveries",
+        "relationships",
+        "evidence",
+    )
+
+    @property
+    def view(self) -> str:
+        return self.views[self.view_index % len(self.views)]
+
+
 def max_cooldown_seconds(engine: DecisionEngine) -> float:
     """Return the longest active cooldown across known categories."""
 
@@ -401,6 +425,7 @@ def build_frame(
     digital_twin: DigitalTwinViewState | None = None,
     research_intel: ResearchIntelligenceViewState | None = None,
     op_memory: OperationalMemoryViewState | None = None,
+    causal_knowledge: CausalKnowledgeViewState | None = None,
 ) -> DashboardFrame:
     """Map pipeline output into a DashboardFrame for the renderer."""
 
@@ -503,6 +528,7 @@ def build_frame(
     show_digital_twin = bool(digital_twin and digital_twin.visible)
     show_research_intel = bool(research_intel and research_intel.visible)
     show_op_memory = bool(op_memory and op_memory.visible)
+    show_causal_knowledge = bool(causal_knowledge and causal_knowledge.visible)
     overlay = (
         show_explain
         or show_predict
@@ -520,6 +546,7 @@ def build_frame(
         or show_digital_twin
         or show_research_intel
         or show_op_memory
+        or show_causal_knowledge
     )
     ai_explanation: Explanation | None = None
     if show_explain and explainability is not None:
@@ -712,6 +739,33 @@ def build_frame(
         else:
             op_memory_patterns = ()
 
+    causal_knowledge_graph: CausalKnowledgeGraph | None = None
+    causal_knowledge_view = "causal"
+    if show_causal_knowledge and causal_knowledge is not None:
+        causal_knowledge_view = causal_knowledge.view
+        # Seed operational memory for verified pattern edges (read-only).
+        if op_memory is not None:
+            op_memory.ensure_seeded()
+            memories = tuple(op_memory.engine.store.list_verified(limit=50))
+        else:
+            memories = MemoryEngine().seed_defaults()
+        # Resource graph from current host snapshot when available.
+        rg = None
+        try:
+            rg = build_resource_graph(system, intent_name=profile.name)
+        except Exception:
+            rg = None
+        twin_summaries: tuple[str, ...] = ()
+        if digital_twin is not None and digital_twin.scenario is not None:
+            twin_summaries = (f"Digital twin scenario: {digital_twin.scenario.name}",)
+        causal_knowledge.last = build_knowledge_graph(
+            resource_graph=rg,
+            memories=memories,
+            twin_summaries=twin_summaries,
+            context_label=profile.name,
+        )
+        causal_knowledge_graph = causal_knowledge.last
+
     return DashboardFrame(
         version=__version__,
         cpu_percent=snapshot.cpu_percent,
@@ -773,7 +827,8 @@ def build_frame(
         and not show_graph_reasoning
         and not show_digital_twin
         and not show_research_intel
-        and not show_op_memory,
+        and not show_op_memory
+        and not show_causal_knowledge,
         explanation=ai_explanation,
         show_predictive=show_predict
         and not show_cognitive
@@ -787,7 +842,8 @@ def build_frame(
         and not show_graph_reasoning
         and not show_digital_twin
         and not show_research_intel
-        and not show_op_memory,
+        and not show_op_memory
+        and not show_causal_knowledge,
         predictive_report=predictive_report,
         show_cluster=show_cluster
         and not show_cognitive
@@ -801,7 +857,8 @@ def build_frame(
         and not show_graph_reasoning
         and not show_digital_twin
         and not show_research_intel
-        and not show_op_memory,
+        and not show_op_memory
+        and not show_causal_knowledge,
         cluster_snapshot=cluster_snapshot,
         cluster_online_ids=cluster_online,
         show_orchestrator=show_orchestrator
@@ -816,7 +873,8 @@ def build_frame(
         and not show_graph_reasoning
         and not show_digital_twin
         and not show_research_intel
-        and not show_op_memory,
+        and not show_op_memory
+        and not show_causal_knowledge,
         execution_plan=execution_plan,
         selected_workload=selected_workload,
         show_cognitive=show_cognitive
@@ -830,7 +888,8 @@ def build_frame(
         and not show_graph_reasoning
         and not show_digital_twin
         and not show_research_intel
-        and not show_op_memory,
+        and not show_op_memory
+        and not show_causal_knowledge,
         cognitive_report=cognitive_report,
         show_multi_agent=show_multi_agent
         and not show_horizon
@@ -842,7 +901,8 @@ def build_frame(
         and not show_graph_reasoning
         and not show_digital_twin
         and not show_research_intel
-        and not show_op_memory,
+        and not show_op_memory
+        and not show_causal_knowledge,
         agentic_report=agentic_report,
         show_horizon=show_horizon
         and not show_genesis
@@ -853,7 +913,8 @@ def build_frame(
         and not show_graph_reasoning
         and not show_digital_twin
         and not show_research_intel
-        and not show_op_memory,
+        and not show_op_memory
+        and not show_causal_knowledge,
         horizon_report=horizon_report,
         show_genesis=show_genesis
         and not show_sentinel
@@ -863,7 +924,8 @@ def build_frame(
         and not show_graph_reasoning
         and not show_digital_twin
         and not show_research_intel
-        and not show_op_memory,
+        and not show_op_memory
+        and not show_causal_knowledge,
         genesis_report=genesis_report,
         show_sentinel=show_sentinel
         and not show_fabric
@@ -872,7 +934,8 @@ def build_frame(
         and not show_graph_reasoning
         and not show_digital_twin
         and not show_research_intel
-        and not show_op_memory,
+        and not show_op_memory
+        and not show_causal_knowledge,
         sentinel_report=sentinel_report,
         show_fabric=show_fabric
         and not show_infinity
@@ -880,40 +943,50 @@ def build_frame(
         and not show_graph_reasoning
         and not show_digital_twin
         and not show_research_intel
-        and not show_op_memory,
+        and not show_op_memory
+        and not show_causal_knowledge,
         fabric_report=fabric_report,
         show_infinity=show_infinity
         and not show_resource_graph
         and not show_graph_reasoning
         and not show_digital_twin
         and not show_research_intel
-        and not show_op_memory,
+        and not show_op_memory
+        and not show_causal_knowledge,
         infinity_report=infinity_report,
         show_resource_graph=show_resource_graph
         and not show_graph_reasoning
         and not show_digital_twin
         and not show_research_intel
-        and not show_op_memory,
+        and not show_op_memory
+        and not show_causal_knowledge,
         resource_graph=resource_graph_report,
         show_graph_reasoning=show_graph_reasoning
         and not show_digital_twin
         and not show_research_intel
-        and not show_op_memory,
+        and not show_op_memory
+        and not show_causal_knowledge,
         graph_reasoning=graph_reasoning_report,
         graph_reasoning_observation=graph_reasoning_observation,
         show_digital_twin=show_digital_twin
         and not show_research_intel
-        and not show_op_memory,
+        and not show_op_memory
+        and not show_causal_knowledge,
         digital_twin_report=digital_twin_report,
         digital_twin_scenario=digital_twin_scenario,
         digital_twin_baseline=digital_twin_baseline,
-        show_research_intel=show_research_intel and not show_op_memory,
+        show_research_intel=show_research_intel
+        and not show_op_memory
+        and not show_causal_knowledge,
         research_intel_report=research_intel_report,
         research_intel_view=research_intel_view,
-        show_op_memory=show_op_memory,
+        show_op_memory=show_op_memory and not show_causal_knowledge,
         op_memory_verified=op_memory_verified,
         op_memory_patterns=op_memory_patterns,
         op_memory_view=op_memory_view,
+        show_causal_knowledge=show_causal_knowledge,
+        causal_knowledge_graph=causal_knowledge_graph,
+        causal_knowledge_view=causal_knowledge_view,
     )
 
 
@@ -1063,6 +1136,7 @@ def run_dashboard(
     digital_twin_view = DigitalTwinViewState(visible=False)
     research_intel_view = ResearchIntelligenceViewState(visible=False)
     op_memory_view = OperationalMemoryViewState(visible=False)
+    causal_knowledge_view = CausalKnowledgeViewState(visible=False)
     core = AetherCore()
     core.registry.state_path = Path("data/plugin_state.json")
     core.bootstrap()
@@ -1119,6 +1193,7 @@ def run_dashboard(
             digital_twin=digital_twin_view,
             research_intel=research_intel_view,
             op_memory=op_memory_view,
+            causal_knowledge=causal_knowledge_view,
         )
 
     frame = make_frame()
@@ -1153,6 +1228,7 @@ def run_dashboard(
                         digital_twin_view.visible = False
                         research_intel_view.visible = False
                         op_memory_view.visible = False
+                        causal_knowledge_view.visible = False
                         show_help = False
                         show_developer = False
                     elif key == "?" or lowered == "?":
@@ -1176,6 +1252,7 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "h":
                         horizon_view.visible = not horizon_view.visible
                         if horizon_view.visible:
@@ -1197,6 +1274,7 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "d":
                         show_developer = not show_developer
                         if show_developer:
@@ -1218,6 +1296,7 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "m":
                         multi_agent.visible = not multi_agent.visible
                         if multi_agent.visible:
@@ -1239,6 +1318,7 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "g":
                         genesis_view.visible = not genesis_view.visible
                         if genesis_view.visible:
@@ -1260,6 +1340,7 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "s":
                         sentinel_view.visible = not sentinel_view.visible
                         if sentinel_view.visible:
@@ -1281,6 +1362,7 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "f":
                         fabric_view.visible = not fabric_view.visible
                         if fabric_view.visible:
@@ -1302,6 +1384,7 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "i":
                         infinity_view.visible = not infinity_view.visible
                         if infinity_view.visible:
@@ -1324,6 +1407,7 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "y":
                         resource_graph_view.visible = not resource_graph_view.visible
                         if resource_graph_view.visible:
@@ -1345,6 +1429,7 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "r":
                         graph_reasoning_view.visible = not graph_reasoning_view.visible
                         if graph_reasoning_view.visible:
@@ -1366,6 +1451,7 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "v":
                         digital_twin_view.visible = not digital_twin_view.visible
                         if digital_twin_view.visible:
@@ -1387,6 +1473,7 @@ def run_dashboard(
                             graph_reasoning_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "x":
                         research_intel_view.visible = not research_intel_view.visible
                         if research_intel_view.visible:
@@ -1408,6 +1495,7 @@ def run_dashboard(
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
 
                     elif lowered == "l":
                         op_memory_view.visible = not op_memory_view.visible
@@ -1430,6 +1518,32 @@ def run_dashboard(
                             graph_reasoning_view.visible = False
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
+                            causal_knowledge_view.visible = False
+
+                    elif lowered == "n":
+                        causal_knowledge_view.visible = (
+                            not causal_knowledge_view.visible
+                        )
+                        if causal_knowledge_view.visible:
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
+                            research_intel_view.visible = False
+                            op_memory_view.visible = False
                     elif lowered == "k":
                         cognition.visible = not cognition.visible
                         if cognition.visible:
@@ -1451,6 +1565,7 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "w":
                         orchestrator.visible = not orchestrator.visible
                         if orchestrator.visible:
@@ -1472,8 +1587,11 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "]":
-                        if op_memory_view.visible:
+                        if causal_knowledge_view.visible:
+                            causal_knowledge_view.view_index += 1
+                        elif op_memory_view.visible:
                             op_memory_view.view_index += 1
                         elif research_intel_view.visible:
                             research_intel_view.view_index += 1
@@ -1504,6 +1622,7 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "p":
                         predictive.visible = not predictive.visible
                         if predictive.visible:
@@ -1525,6 +1644,7 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "e":
                         explainability.visible = not explainability.visible
                         if explainability.visible:
@@ -1546,6 +1666,7 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif lowered == "o":
                         observatory.visible = not observatory.visible
                         if observatory.visible:
@@ -1567,6 +1688,7 @@ def run_dashboard(
                             digital_twin_view.visible = False
                             research_intel_view.visible = False
                             op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
                     elif key == "LEFT":
                         observatory.history_offset = min(
                             max(0, len(observatory.recorder) - 1),

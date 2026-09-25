@@ -123,3 +123,50 @@ def get_concept(concept_id: str) -> OntologyConcept:
         if concept.concept_id == concept_id:
             return concept
     raise KeyError(f"Unknown concept: {concept_id}")
+
+
+# ---------------------------------------------------------------------------
+# P3 Causal Knowledge Graph node ontology (additive; does not alter concepts)
+# ---------------------------------------------------------------------------
+
+KnowledgeNodeType = Literal[
+    "CPU",
+    "Memory",
+    "Disk",
+    "GPU",
+    "Network",
+    "Process",
+    "Intent",
+    "Battery",
+    "Cluster",
+    "Simulation",
+    "Discovery",
+    "Pattern",
+    "Context",
+    "Research",
+]
+
+KNOWLEDGE_NODE_TYPES: frozenset[str] = frozenset(
+    {
+        "CPU",
+        "Memory",
+        "Disk",
+        "GPU",
+        "Network",
+        "Process",
+        "Intent",
+        "Battery",
+        "Cluster",
+        "Simulation",
+        "Discovery",
+        "Pattern",
+        "Context",
+        "Research",
+    }
+)
+
+
+def is_knowledge_node_type(value: str) -> bool:
+    """Return True when ``value`` is a supported Causal Knowledge node type."""
+
+    return value in KNOWLEDGE_NODE_TYPES

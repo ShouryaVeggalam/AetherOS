@@ -35,6 +35,8 @@ from aetheros.genesis import GenesisPanel, GenesisReport
 from aetheros.graph import ResourceGraph, ResourceGraphPanel
 from aetheros.horizon import HorizonPanel, HorizonReport
 from aetheros.infinity import InfinityPanel, InfinityReport
+from aetheros.knowledge import CausalKnowledgeGraph, CausalKnowledgePanel
+from aetheros.memory import MemoryRecord, OperationalMemoryPanel, Pattern
 from aetheros.observatory import ObservatoryPanel
 from aetheros.observatory.models import GraphMetric, SystemEvent
 from aetheros.orchestrator import (
@@ -46,7 +48,6 @@ from aetheros.predictive import PredictivePanel, PredictiveReport
 from aetheros.reasoning.explain import CognitiveReport
 from aetheros.reasoning.formatter import GraphReasoningPanel
 from aetheros.reasoning.models import Observation, VerifiedExplanation
-from aetheros.memory import MemoryRecord, OperationalMemoryPanel, Pattern
 from aetheros.research.formatter import ResearchIntelligencePanel
 from aetheros.research.models import SystemResearchReport
 from aetheros.runtime import AgenticReport
@@ -151,6 +152,9 @@ class DashboardFrame:
     op_memory_verified: tuple[MemoryRecord, ...]
     op_memory_patterns: tuple[Pattern, ...]
     op_memory_view: str
+    show_causal_knowledge: bool
+    causal_knowledge_graph: CausalKnowledgeGraph | None
+    causal_knowledge_view: str
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -178,7 +182,14 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_op_memory:
+    if frame.show_causal_knowledge:
+        layout["center"].update(
+            CausalKnowledgePanel(
+                graph=frame.causal_knowledge_graph,
+                view=frame.causal_knowledge_view,
+            )
+        )
+    elif frame.show_op_memory:
         layout["center"].update(
             OperationalMemoryPanel(
                 verified=frame.op_memory_verified,

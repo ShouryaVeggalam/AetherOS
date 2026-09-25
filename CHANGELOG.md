@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- v3.0 P3 Causal Knowledge Graph — `aetheros.knowledge` builder/traversal/validator (verified relations only)
+- Dashboard **N** → Causal Knowledge Graph (Ontology / Causal / Discoveries / Relationships / Evidence); **K** stays Cognitive
+- Docs: `docs/causal_knowledge_graph.md`
 - v3.0 P2 Long-Term Operational Memory — `aetheros.memory` (`MemoryEngine`, store, verifier, consolidation)
 - Dashboard **L** → Operational Memory (Verified / Recent / Related / Evidence Timeline); **M** stays Multi-Agent
 - Docs: `docs/operational_memory.md`

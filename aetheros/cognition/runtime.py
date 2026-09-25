@@ -23,13 +23,13 @@ from aetheros.cognition.hypotheses import (
 )
 from aetheros.cognition.memory import CognitiveFact, CognitiveMemory
 from aetheros.cognition.planner import CognitivePlanner
+from aetheros.cognition.report import CognitiveReport, build_cognitive_report
 from aetheros.cognition.verifier import VerifiedExplanation, verify_hypotheses
 from aetheros.intent.models import IntentProfile
 from aetheros.knowledge.resource_types import ResourceKind
 from aetheros.knowledge.workload_graph import WORKLOAD_EDGES
 from aetheros.observatory.models import TelemetryPoint
 from aetheros.policy_engine.models import TelemetrySnapshot
-from aetheros.reasoning.explain import CognitiveReport, build_cognitive_report
 
 
 @dataclass

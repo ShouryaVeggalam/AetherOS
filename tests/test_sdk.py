@@ -54,6 +54,20 @@ def test_sandbox_rejects_sudo_string(tmp_path: Path) -> None:
     assert result.safe is False
 
 
+def test_sandbox_rejects_eval_and_httpx(tmp_path: Path) -> None:
+    """Plugins using eval() or httpx must be rejected by the tightened sandbox."""
+
+    evil = tmp_path / "eval_plugin"
+    evil.mkdir()
+    (evil / "plugin.py").write_text("x = eval('1+1')\n", encoding="utf-8")
+    assert PluginSandbox().validate_path(evil).safe is False
+
+    net = tmp_path / "httpx_plugin"
+    net.mkdir()
+    (net / "plugin.py").write_text("import httpx\n", encoding="utf-8")
+    assert PluginSandbox().validate_path(net).safe is False
+
+
 def test_sandbox_allows_safe_plugin(tmp_path: Path) -> None:
     """A clean telemetry-only plugin should pass validation."""
 

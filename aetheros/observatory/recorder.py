@@ -13,6 +13,7 @@ from pathlib import Path
 
 from aetheros.observatory.models import SystemEvent, TelemetryPoint, TimelineWindow
 from aetheros.policy_engine.models import TelemetrySnapshot
+from aetheros.storage import apply_schema, connect
 
 DEFAULT_CAPACITY = 300
 
@@ -68,13 +69,8 @@ class HistoryRecorder:
 
         if self.capacity <= 0:
             raise ValueError("capacity must be positive")
-        self.db_path = Path(self.db_path)
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self.db_path = apply_schema(self.db_path, _CREATE_TELEMETRY, _CREATE_EVENTS)
         self._points = deque(maxlen=self.capacity)
-        with self._connect() as conn:
-            conn.execute(_CREATE_TELEMETRY)
-            conn.execute(_CREATE_EVENTS)
-            conn.commit()
 
     def __len__(self) -> int:
         """Return in-memory sample count."""
@@ -84,7 +80,7 @@ class HistoryRecorder:
     def _connect(self) -> sqlite3.Connection:
         """Open a SQLite connection."""
 
-        return sqlite3.connect(self.db_path)
+        return connect(self.db_path)
 
     def record_telemetry(
         self,

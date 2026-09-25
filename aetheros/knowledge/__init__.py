@@ -13,6 +13,7 @@ from aetheros.knowledge.ontology import (
 )
 from aetheros.knowledge.resource_types import (
     RESOURCE_TYPES,
+    CausalRelationKind,
     RelationKind,
     ResourceKind,
     ResourceType,
@@ -28,6 +29,7 @@ __all__ = [
     "CORE_ONTOLOGY",
     "RESOURCE_TYPES",
     "WORKLOAD_EDGES",
+    "CausalRelationKind",
     "OntologyConcept",
     "RelationKind",
     "ResourceKind",

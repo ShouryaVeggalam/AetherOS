@@ -6,13 +6,13 @@ Never invents samples. Empty history yields empty series.
 
 from __future__ import annotations
 
-import sqlite3
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
 from aetheros.observatory.models import TelemetryPoint
 from aetheros.predictive.models import MetricName
+from aetheros.storage import connect
 
 
 @dataclass(frozen=True, slots=True)
@@ -88,7 +88,7 @@ def load_points_from_sqlite(
         ORDER BY id DESC
         LIMIT ?
     """
-    with sqlite3.connect(path) as conn:
+    with connect(path) as conn:
         rows = conn.execute(query, (limit,)).fetchall()
     points: list[TelemetryPoint] = []
     for stamp, cpu, memory, disk, battery, intent in reversed(rows):

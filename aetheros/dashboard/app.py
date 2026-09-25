@@ -13,7 +13,6 @@ import termios
 import time
 import tty
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
 from pathlib import Path
 
 import psutil
@@ -34,6 +33,12 @@ from aetheros.cluster import (
 )
 from aetheros.cognition import CognitiveRuntime
 from aetheros.core import AetherCore
+from aetheros.dashboard.formatting import (
+    format_audit_summary,
+    format_battery,
+    format_uptime,
+    plugin_console_rows,
+)
 from aetheros.dashboard.renderer import DashboardFrame, render_frame
 from aetheros.dashboard.widgets import ProcessRow
 from aetheros.decision import DecisionEngine, DecisionReport
@@ -41,6 +46,7 @@ from aetheros.decision.models import Decision, utc_now
 from aetheros.explainability import ExplainabilityEngine, Explanation
 from aetheros.fabric import FabricReport, FabricRuntime
 from aetheros.genesis import GenesisReport, GenesisRuntime
+from aetheros.graph import ResourceGraph, build_resource_graph
 from aetheros.horizon import HorizonReport, HorizonRuntime
 from aetheros.infinity import InfinityReport, InfinityRuntime
 from aetheros.intent import IntentEngine, IntentStorage
@@ -65,6 +71,14 @@ from aetheros.orchestrator import (
 )
 from aetheros.policy_engine import TelemetrySnapshot
 from aetheros.predictive import ForecastEngine, PredictiveReport
+from aetheros.reasoning import (
+    Observation,
+    VerifiedExplanation,
+    observation_from_metrics,
+)
+from aetheros.reasoning import (
+    reason as graph_reason,
+)
 from aetheros.reasoning.explain import CognitiveReport
 from aetheros.research import ResearchEngine, ResearchReport
 from aetheros.runtime import AgenticReport, AgenticRuntime
@@ -73,6 +87,14 @@ from aetheros.sdk import PluginRecord
 from aetheros.sentinel import SentinelReport, SentinelRuntime
 from aetheros.telemetry import TelemetryCollector
 from aetheros.telemetry.models import SystemSnapshot
+from aetheros.twin import (
+    DigitalTwinReport,
+    DigitalTwinSimulator,
+    SimulationScenario,
+    TwinSnapshot,
+    builtin_scenario,
+    create_snapshot,
+)
 
 
 @dataclass
@@ -216,60 +238,32 @@ class InfinityViewState:
     last: InfinityReport | None = None
 
 
-def format_uptime(seconds: float) -> str:
-    """Format boot uptime as a short human string."""
+@dataclass
+class ResourceGraphViewState:
+    """UI state for the Resource Graph Engine panel."""
 
-    total = int(seconds)
-    days, rem = divmod(total, 86400)
-    hours, rem = divmod(rem, 3600)
-    minutes, secs = divmod(rem, 60)
-    if days:
-        return f"{days}d {hours}h {minutes}m"
-    if hours:
-        return f"{hours}h {minutes}m {secs}s"
-    return f"{minutes}m {secs}s"
+    visible: bool = False
+    last: ResourceGraph | None = None
 
 
-def format_battery(system: SystemSnapshot) -> str:
-    """Format battery status for the telemetry panel."""
+@dataclass
+class GraphReasoningViewState:
+    """UI state for the Graph Reasoning Engine panel."""
 
-    if system.battery is None:
-        return "n/a"
-    plugged = "AC" if system.battery.is_plugged_in else "battery"
-    return f"{system.battery.percent:.0f}% ({plugged})"
-
-
-def format_audit_summary(entry: dict[str, object] | None) -> str:
-    """Turn the latest audit row into a one-line summary."""
-
-    if entry is None:
-        return "No audit entries yet."
-    title = str(entry["title"])
-    approved = bool(entry["approved"])
-    stamp = str(entry["timestamp"])
-    verb = "approved" if approved else "blocked"
-    ago = _relative_time(stamp)
-    return f"{title} {verb} {ago}."
+    visible: bool = False
+    last: VerifiedExplanation | None = None
+    observation: Observation | None = None
 
 
-def _relative_time(iso_timestamp: str) -> str:
-    """Approximate relative time from an ISO timestamp string."""
+@dataclass
+class DigitalTwinViewState:
+    """UI state for Digital Twin 2.0 host panel."""
 
-    try:
-        parsed = datetime.fromisoformat(iso_timestamp)
-        if parsed.tzinfo is None:
-            parsed = parsed.replace(tzinfo=UTC)
-    except ValueError:
-        return "recently"
-    delta = datetime.now(UTC) - parsed.astimezone(UTC)
-    seconds = max(0, int(delta.total_seconds()))
-    if seconds < 60:
-        return f"{seconds}s ago"
-    if seconds < 3600:
-        return f"{seconds // 60}m ago"
-    if seconds < 86400:
-        return f"{seconds // 3600}h ago"
-    return f"{seconds // 86400}d ago"
+    visible: bool = False
+    last: DigitalTwinReport | None = None
+    scenario: SimulationScenario | None = None
+    baseline: TwinSnapshot | None = None
+    scenario_index: int = 0
 
 
 def max_cooldown_seconds(engine: DecisionEngine) -> float:
@@ -306,26 +300,6 @@ def _healthy_decision(engine: DecisionEngine) -> Decision:
         action=engine.intent.guidance_text(),
         timestamp=utc_now(),
     )
-
-
-def plugin_console_rows(
-    records: list[PluginRecord],
-) -> tuple[tuple[str, str, str, str, str], ...]:
-    """Map plugin records into developer-console table rows."""
-
-    rows: list[tuple[str, str, str, str, str]] = []
-    for record in records:
-        if not record.verified:
-            status = "Rejected"
-            safety = "Unsafe"
-        elif record.enabled:
-            status = "Enabled"
-            safety = "Verified"
-        else:
-            status = "Disabled"
-            safety = "Verified"
-        rows.append((record.name, record.version, status, record.author, safety))
-    return tuple(rows)
 
 
 def tick_cluster(
@@ -373,6 +347,9 @@ def build_frame(
     sentinel: SentinelViewState | None = None,
     fabric: FabricViewState | None = None,
     infinity: InfinityViewState | None = None,
+    resource_graph: ResourceGraphViewState | None = None,
+    graph_reasoning: GraphReasoningViewState | None = None,
+    digital_twin: DigitalTwinViewState | None = None,
 ) -> DashboardFrame:
     """Map pipeline output into a DashboardFrame for the renderer."""
 
@@ -470,6 +447,9 @@ def build_frame(
     show_sentinel = bool(sentinel and sentinel.visible)
     show_fabric = bool(fabric and fabric.visible)
     show_infinity = bool(infinity and infinity.visible)
+    show_resource_graph = bool(resource_graph and resource_graph.visible)
+    show_graph_reasoning = bool(graph_reasoning and graph_reasoning.visible)
+    show_digital_twin = bool(digital_twin and digital_twin.visible)
     overlay = (
         show_explain
         or show_predict
@@ -482,6 +462,9 @@ def build_frame(
         or show_sentinel
         or show_fabric
         or show_infinity
+        or show_resource_graph
+        or show_graph_reasoning
+        or show_digital_twin
     )
     ai_explanation: Explanation | None = None
     if show_explain and explainability is not None:
@@ -572,6 +555,58 @@ def build_frame(
             infinity.last = infinity.runtime.observe(snapshot)
         infinity_report = infinity.last
 
+    resource_graph_report: ResourceGraph | None = None
+    if show_resource_graph and resource_graph is not None:
+        resource_graph.last = build_resource_graph(
+            system,
+            intent_name=profile.name,
+        )
+        resource_graph_report = resource_graph.last
+
+    graph_reasoning_report: VerifiedExplanation | None = None
+    graph_reasoning_observation: Observation | None = None
+    if show_graph_reasoning and graph_reasoning is not None:
+        host_graph = build_resource_graph(system, intent_name=profile.name)
+        obs = observation_from_metrics(
+            cpu=snapshot.cpu_percent,
+            memory=snapshot.memory_percent,
+            disk=snapshot.disk_percent,
+        )
+        graph_reasoning.observation = obs
+        graph_reasoning.last = graph_reason(
+            host_graph,
+            obs,
+            history=observatory.recorder.points(),
+        )
+        graph_reasoning_report = graph_reasoning.last
+        graph_reasoning_observation = obs
+
+    digital_twin_report: DigitalTwinReport | None = None
+    digital_twin_scenario: SimulationScenario | None = None
+    digital_twin_baseline: TwinSnapshot | None = None
+    if show_digital_twin and digital_twin is not None:
+        host_graph = build_resource_graph(system, intent_name=profile.name)
+        twin_snap = create_snapshot(
+            host_graph,
+            snapshot,
+            intent=profile.name,
+        )
+        kinds = (
+            "CPU_OVERLOAD",
+            "MEMORY_PRESSURE",
+            "BATTERY_LOW",
+            "DISK_SATURATION",
+            "NODE_OFFLINE",
+        )
+        idx = digital_twin.scenario_index % len(kinds)
+        scene = builtin_scenario(kinds[idx])
+        digital_twin.scenario = scene
+        digital_twin.baseline = twin_snap
+        digital_twin.last = DigitalTwinSimulator().run(twin_snap, scene)
+        digital_twin_report = digital_twin.last
+        digital_twin_scenario = scene
+        digital_twin_baseline = twin_snap
+
     return DashboardFrame(
         version=__version__,
         cpu_percent=snapshot.cpu_percent,
@@ -628,7 +663,8 @@ def build_frame(
         and not show_genesis
         and not show_sentinel
         and not show_fabric
-        and not show_infinity,
+        and not show_infinity
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
         explanation=ai_explanation,
         show_predictive=show_predict
         and not show_cognitive
@@ -637,7 +673,8 @@ def build_frame(
         and not show_genesis
         and not show_sentinel
         and not show_fabric
-        and not show_infinity,
+        and not show_infinity
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
         predictive_report=predictive_report,
         show_cluster=show_cluster
         and not show_cognitive
@@ -646,7 +683,8 @@ def build_frame(
         and not show_genesis
         and not show_sentinel
         and not show_fabric
-        and not show_infinity,
+        and not show_infinity
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
         cluster_snapshot=cluster_snapshot,
         cluster_online_ids=cluster_online,
         show_orchestrator=show_orchestrator
@@ -656,7 +694,8 @@ def build_frame(
         and not show_genesis
         and not show_sentinel
         and not show_fabric
-        and not show_infinity,
+        and not show_infinity
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
         execution_plan=execution_plan,
         selected_workload=selected_workload,
         show_cognitive=show_cognitive
@@ -665,32 +704,48 @@ def build_frame(
         and not show_genesis
         and not show_sentinel
         and not show_fabric
-        and not show_infinity,
+        and not show_infinity
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
         cognitive_report=cognitive_report,
         show_multi_agent=show_multi_agent
         and not show_horizon
         and not show_genesis
         and not show_sentinel
         and not show_fabric
-        and not show_infinity,
+        and not show_infinity
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
         agentic_report=agentic_report,
         show_horizon=show_horizon
         and not show_genesis
         and not show_sentinel
         and not show_fabric
-        and not show_infinity,
+        and not show_infinity
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
         horizon_report=horizon_report,
         show_genesis=show_genesis
         and not show_sentinel
         and not show_fabric
-        and not show_infinity,
+        and not show_infinity
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
         genesis_report=genesis_report,
-        show_sentinel=show_sentinel and not show_fabric and not show_infinity,
+        show_sentinel=show_sentinel
+        and not show_fabric
+        and not show_infinity
+        and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
         sentinel_report=sentinel_report,
-        show_fabric=show_fabric and not show_infinity,
+        show_fabric=show_fabric and not show_infinity and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
         fabric_report=fabric_report,
-        show_infinity=show_infinity,
+        show_infinity=show_infinity and not show_resource_graph and not show_graph_reasoning and not show_digital_twin,
         infinity_report=infinity_report,
+        show_resource_graph=show_resource_graph and not show_graph_reasoning and not show_digital_twin,
+        resource_graph=resource_graph_report,
+        show_graph_reasoning=show_graph_reasoning and not show_digital_twin,
+        graph_reasoning=graph_reasoning_report,
+        graph_reasoning_observation=graph_reasoning_observation,
+        show_digital_twin=show_digital_twin,
+        digital_twin_report=digital_twin_report,
+        digital_twin_scenario=digital_twin_scenario,
+        digital_twin_baseline=digital_twin_baseline,
     )
 
 
@@ -835,6 +890,9 @@ def run_dashboard(
     sentinel_view = SentinelViewState(visible=False)
     fabric_view = FabricViewState(visible=False)
     infinity_view = InfinityViewState(visible=False)
+    resource_graph_view = ResourceGraphViewState(visible=False)
+    graph_reasoning_view = GraphReasoningViewState(visible=False)
+    digital_twin_view = DigitalTwinViewState(visible=False)
     core = AetherCore()
     core.registry.state_path = Path("data/plugin_state.json")
     core.bootstrap()
@@ -886,6 +944,9 @@ def run_dashboard(
             sentinel=sentinel_view,
             fabric=fabric_view,
             infinity=infinity_view,
+            resource_graph=resource_graph_view,
+            graph_reasoning=graph_reasoning_view,
+            digital_twin=digital_twin_view,
         )
 
     frame = make_frame()
@@ -915,6 +976,9 @@ def run_dashboard(
                         sentinel_view.visible = False
                         fabric_view.visible = False
                         infinity_view.visible = False
+                        resource_graph_view.visible = False
+                        graph_reasoning_view.visible = False
+                        digital_twin_view.visible = False
                         show_help = False
                         show_developer = False
                     elif key == "?" or lowered == "?":
@@ -933,6 +997,9 @@ def run_dashboard(
                             sentinel_view.visible = False
                             fabric_view.visible = False
                             infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
                     elif lowered == "h":
                         horizon_view.visible = not horizon_view.visible
                         if horizon_view.visible:
@@ -949,6 +1016,9 @@ def run_dashboard(
                             sentinel_view.visible = False
                             fabric_view.visible = False
                             infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
                     elif lowered == "d":
                         show_developer = not show_developer
                         if show_developer:
@@ -965,6 +1035,9 @@ def run_dashboard(
                             sentinel_view.visible = False
                             fabric_view.visible = False
                             infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
                     elif lowered == "m":
                         multi_agent.visible = not multi_agent.visible
                         if multi_agent.visible:
@@ -981,6 +1054,9 @@ def run_dashboard(
                             sentinel_view.visible = False
                             fabric_view.visible = False
                             infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
                     elif lowered == "g":
                         genesis_view.visible = not genesis_view.visible
                         if genesis_view.visible:
@@ -997,6 +1073,9 @@ def run_dashboard(
                             sentinel_view.visible = False
                             fabric_view.visible = False
                             infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
                     elif lowered == "s":
                         sentinel_view.visible = not sentinel_view.visible
                         if sentinel_view.visible:
@@ -1013,6 +1092,9 @@ def run_dashboard(
                             genesis_view.visible = False
                             fabric_view.visible = False
                             infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
                     elif lowered == "f":
                         fabric_view.visible = not fabric_view.visible
                         if fabric_view.visible:
@@ -1029,6 +1111,9 @@ def run_dashboard(
                             genesis_view.visible = False
                             sentinel_view.visible = False
                             infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
                     elif lowered == "i":
                         infinity_view.visible = not infinity_view.visible
                         if infinity_view.visible:
@@ -1046,6 +1131,65 @@ def run_dashboard(
                             genesis_view.visible = False
                             sentinel_view.visible = False
                             fabric_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
+                    elif lowered == "y":
+                        resource_graph_view.visible = not resource_graph_view.visible
+                        if resource_graph_view.visible:
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
+                    elif lowered == "r":
+                        graph_reasoning_view.visible = not graph_reasoning_view.visible
+                        if graph_reasoning_view.visible:
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
+                            resource_graph_view.visible = False
+                    elif lowered == "v":
+                        digital_twin_view.visible = not digital_twin_view.visible
+                        if digital_twin_view.visible:
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
                     elif lowered == "k":
                         cognition.visible = not cognition.visible
                         if cognition.visible:
@@ -1062,6 +1206,9 @@ def run_dashboard(
                             sentinel_view.visible = False
                             fabric_view.visible = False
                             infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
                     elif lowered == "w":
                         orchestrator.visible = not orchestrator.visible
                         if orchestrator.visible:
@@ -1078,8 +1225,13 @@ def run_dashboard(
                             sentinel_view.visible = False
                             fabric_view.visible = False
                             infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
                     elif lowered == "]":
-                        if orchestrator.visible:
+                        if digital_twin_view.visible:
+                            digital_twin_view.scenario_index += 1
+                        elif orchestrator.visible:
                             orchestrator.workload = next_workload(
                                 orchestrator.workload.name
                             )
@@ -1099,6 +1251,9 @@ def run_dashboard(
                             sentinel_view.visible = False
                             fabric_view.visible = False
                             infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
                     elif lowered == "p":
                         predictive.visible = not predictive.visible
                         if predictive.visible:
@@ -1115,6 +1270,9 @@ def run_dashboard(
                             sentinel_view.visible = False
                             fabric_view.visible = False
                             infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
                     elif lowered == "e":
                         explainability.visible = not explainability.visible
                         if explainability.visible:
@@ -1131,6 +1289,9 @@ def run_dashboard(
                             sentinel_view.visible = False
                             fabric_view.visible = False
                             infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
                     elif lowered == "o":
                         observatory.visible = not observatory.visible
                         if observatory.visible:
@@ -1147,6 +1308,9 @@ def run_dashboard(
                             sentinel_view.visible = False
                             fabric_view.visible = False
                             infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
                     elif key == "LEFT":
                         observatory.history_offset = min(
                             max(0, len(observatory.recorder) - 1),

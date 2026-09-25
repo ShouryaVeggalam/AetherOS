@@ -16,7 +16,10 @@ Multi-device intelligence turns AetherOS into a **distributed observation plane*
 | `node.py` | Health classification (color only) |
 | `renderer.py` | Cluster Overview panel |
 
-### `aetheros/agent`
+### `aetheros/agent` (not `aetheros.agents`)
+
+Lightweight **cluster node publisher** — local samples + demo peers. Distinct from
+the multi-agent deliberation package (`aetheros.agents`); see [agents.md](agents.md).
 
 | Module | Role |
 |--------|------|

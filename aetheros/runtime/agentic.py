@@ -12,8 +12,9 @@ from dataclasses import dataclass, field
 from aetheros.agents.base import AgentFinding, DeliberationContext
 from aetheros.agents.battery_agent import BatteryAgent
 from aetheros.agents.cluster_agent import ClusterAgent
-from aetheros.agents.coordinator import Coordinator, CoordinatorDecision
+from aetheros.agents.coordinator import Coordinator
 from aetheros.agents.performance_agent import PerformanceAgent
+from aetheros.agents.report import AgenticReport, AgentStatusRow
 from aetheros.agents.research_agent import ResearchAgent
 from aetheros.agents.security_agent import SecurityAgent
 from aetheros.agents.telemetry_agent import TelemetryAgent
@@ -23,44 +24,6 @@ from aetheros.messaging import AsyncMessageBus, make_event
 from aetheros.messaging.protocol import BROADCAST
 from aetheros.observatory.models import TelemetryPoint
 from aetheros.policy_engine.models import TelemetrySnapshot
-
-
-@dataclass(frozen=True, slots=True)
-class AgentStatusRow:
-    """Dashboard row for one agent."""
-
-    agent_id: str
-    status: str
-    latest_message: str
-    confidence: float
-
-
-@dataclass(frozen=True, slots=True)
-class AgenticReport:
-    """Immutable multi-agent deliberation report for UI and tests."""
-
-    agents: tuple[AgentStatusRow, ...]
-    findings: tuple[AgentFinding, ...]
-    decision: CoordinatorDecision
-    message_count: int
-
-    @property
-    def recommendation(self) -> str:
-        """Coordinator recommendation label."""
-
-        return self.decision.recommendation
-
-    @property
-    def confidence(self) -> float:
-        """Coordinator confidence in [0, 1]."""
-
-        return self.decision.confidence
-
-    @property
-    def reasoning(self) -> str:
-        """Explainable coordinator reasoning."""
-
-        return self.decision.reasoning
 
 
 @dataclass

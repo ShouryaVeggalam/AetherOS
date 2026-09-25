@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING
 
+from aetheros.advice.decision import Decision
 from aetheros.intent.models import IntentProfile
 from aetheros.intent.profiles import (
     DEFAULT_INTENT,
@@ -18,9 +18,6 @@ from aetheros.intent.profiles import (
 )
 from aetheros.intent.storage import IntentStorage
 from aetheros.policy_engine.models import PolicyRecommendation
-
-if TYPE_CHECKING:
-    from aetheros.decision.models import Decision
 
 # How strongly profile weights shift a base score (weights are ~0–35).
 _WEIGHT_SCALE = 0.35
@@ -113,8 +110,6 @@ class IntentEngine:
             A Decision with updated priority_score, action hint, and note.
         """
 
-        from aetheros.decision.models import Decision as DecisionModel
-
         bonus = self._bonus_for_title(decision.title)
         new_score = int(max(0, min(100, decision.priority_score + bonus)))
         note = (
@@ -124,7 +119,7 @@ class IntentEngine:
         explanation = decision.explanation
         if note not in explanation:
             explanation = f"{explanation}\n{note}".strip() if explanation else note
-        return DecisionModel(
+        return Decision(
             title=decision.title,
             severity=decision.severity,
             confidence=decision.confidence,

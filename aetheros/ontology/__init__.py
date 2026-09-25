@@ -4,6 +4,7 @@ from aetheros.ontology.intents import INTENT_ENTITIES, IntentConcept
 from aetheros.ontology.relationships import (
     SEED_RELATIONS,
     OntologyRelation,
+    OntologyRelationKind,
     RelationKind,
     build_ontology_graph,
 )
@@ -17,6 +18,7 @@ __all__ = [
     "WORKLOAD_ENTITIES",
     "IntentConcept",
     "OntologyRelation",
+    "OntologyRelationKind",
     "RelationKind",
     "ResourceConcept",
     "WorkloadConcept",

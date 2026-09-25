@@ -12,7 +12,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-from aetheros.reasoning.explain import CognitiveReport
+from aetheros.cognition.report import CognitiveReport
 
 
 @dataclass(frozen=True, slots=True)

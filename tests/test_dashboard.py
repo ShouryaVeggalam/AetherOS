@@ -198,6 +198,15 @@ def test_render_frame_has_regions() -> None:
         fabric_report=None,
         show_infinity=False,
         infinity_report=None,
+        show_resource_graph=False,
+        resource_graph=None,
+        show_graph_reasoning=False,
+        graph_reasoning=None,
+        graph_reasoning_observation=None,
+        show_digital_twin=False,
+        digital_twin_report=None,
+        digital_twin_scenario=None,
+        digital_twin_baseline=None,
     )
     layout = render_frame(frame)
     assert layout["header"] is not None

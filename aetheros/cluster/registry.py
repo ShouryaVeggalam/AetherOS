@@ -13,6 +13,7 @@ from aetheros.cluster.heartbeat import HeartbeatTracker
 from aetheros.cluster.models import ClusterNode
 from aetheros.cluster.node import node_from_payload, node_to_payload
 from aetheros.cluster.transport import ClusterTransport, TransportMessage
+from aetheros.storage import apply_schema, connect
 
 _CREATE = """
 CREATE TABLE IF NOT EXISTS cluster_nodes (
@@ -62,11 +63,7 @@ class NodeRegistry:
     def __post_init__(self) -> None:
         """Create tables and load any persisted nodes."""
 
-        self.db_path = Path(self.db_path)
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        with self._connect() as conn:
-            conn.execute(_CREATE)
-            conn.commit()
+        self.db_path = apply_schema(self.db_path, _CREATE)
         self._load_from_db()
 
     def ingest(self, *, max_messages: int = 100) -> int:
@@ -162,4 +159,4 @@ class NodeRegistry:
     def _connect(self) -> sqlite3.Connection:
         """Open a SQLite connection."""
 
-        return sqlite3.connect(self.db_path)
+        return connect(self.db_path)

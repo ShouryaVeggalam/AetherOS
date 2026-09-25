@@ -6,13 +6,15 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 
 | Package | Docs | Notes |
 |---------|------|-------|
-| `agent` | [cluster.md](cluster.md) | Lightweight cluster publisher |
+| `agent` | [cluster.md](cluster.md) | Cluster node publisher (**not** multi-agent) |
 | `agents` | [agents.md](agents.md) | Multi-agent specialists + coordinator |
+| `advice` | [architecture.md](architecture.md) | Shared Decision contract (cycle-neutral) |
 | `api` | OpenAPI `/docs` | Read-only FastAPI surface |
 | `atlas` | [architecture.md](architecture.md) | v5 facade → Horizon/Twin |
 | `cli` | README | Demo CLIs |
 | `cluster` | [cluster.md](cluster.md) | Multi-device registry |
 | `cognition` | [cognition.md](cognition.md) | Causal / hypothesis / verify |
+| `context` | [context_engine.md](context_engine.md) | Context Intelligence Engine (P8) |
 | `core` | SDK docs | Plugin host |
 | `dashboard` | README | Rich Live UI |
 | `decision` | architecture | Prioritizer |
@@ -20,31 +22,33 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `explainability` | [explainability.md](explainability.md) | Evidence chains |
 | `fabric` | [fabric.md](fabric.md) | Universal federation |
 | `genesis` | [genesis.md](genesis.md) | Research knowledge |
-| `graph` | [sentinel.md](sentinel.md) | Service dependency graph |
+| `graph` | [resource_graph.md](resource_graph.md) · [sentinel.md](sentinel.md) | Resource Graph Engine + Sentinel deps |
+| `reasoning` | [reasoning.md](reasoning.md) · [cognition.md](cognition.md) | Graph Reasoning Engine + cognitive helpers |
+| `bridge` | [graph_bridge.md](graph_bridge.md) | Graph Intelligence Bridge (P5) |
 | `horizon` | [horizon.md](horizon.md) | Planetary intelligence |
 | `infinity` | [infinity.md](infinity.md) | ∞ unifying layer |
 | `intent` | architecture | Operator profiles |
 | `kernel` | package README | Userspace context only |
-| `knowledge` | [cognition.md](cognition.md) | Ontology concepts |
+| `knowledge` | [ontology-catalogs.md](ontology-catalogs.md) | Causal resource catalog |
 | `learning` | architecture | Pattern summaries |
 | `messaging` | [agents.md](agents.md) | Async agent bus |
 | `observatory` | [observatory.md](observatory.md) | Temporal memory |
-| `ontology` | [genesis.md](genesis.md) | Computing ontology |
+| `ontology` | [ontology-catalogs.md](ontology-catalogs.md) | Genesis entity relations |
 | `orchestrator` | architecture | Workload planner |
 | `policy` | package README | Alias → policy_engine |
 | `policy_engine` | architecture | Rules |
 | `predictive` | architecture | Forecasts |
 | `protocol` | [fabric.md](fabric.md) | Fabric wire protocol |
-| `reasoning` | [cognition.md](cognition.md) | Abductive/deductive/causal |
 | `research` | architecture | Strategy research |
 | `robotics` | [horizon.md](horizon.md) | Fleet inventory |
 | `runtime` | [agents.md](agents.md) | Agentic runtime |
 | `safety` | architecture | Audit + cooldown |
-| `sdk` / `plugins` | architecture | Sandboxed plugins |
+| `sdk` / `plugins` | [sdk README](../aetheros/sdk/README.md) | Sandboxed plugins (load-time trust) |
 | `sentinel` | [sentinel.md](sentinel.md) | Resilience fabric |
-| `simulation` | architecture | What-if engine |
+| `simulation` | [simulation.md](simulation.md) | Host strategy what-if |
+| `storage` | [architecture.md](architecture.md) | Shared SQLite helpers |
 | `telemetry` | architecture | Host metrics |
-| `twin` | [fabric.md](fabric.md) | Global digital twin |
+| `twin` | [digital_twin.md](digital_twin.md) · [fabric.md](fabric.md) | Digital Twin 2.0 (host) + global twin |
 
 ## Documentation standard
 

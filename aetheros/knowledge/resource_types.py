@@ -21,13 +21,16 @@ ResourceKind = Literal[
     "simulation",
 ]
 
-RelationKind = Literal[
+CausalRelationKind = Literal[
     "CAUSES",
     "USES",
     "DEPENDS_ON",
     "PREDICTS",
     "EXPLAINS",
 ]
+
+# Compat alias — prefer CausalRelationKind in new code.
+RelationKind = CausalRelationKind
 
 
 @dataclass(frozen=True, slots=True)

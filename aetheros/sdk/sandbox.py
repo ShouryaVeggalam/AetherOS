@@ -1,8 +1,9 @@
 """Static safety sandbox for plugin source validation.
 
 Scans plugin Python files with the AST module before dynamic import.
-Rejects unsafe imports and dangerous string patterns. This is not a
-full OS sandbox — it is a load-time gate for the SDK.
+Rejects unsafe imports and dangerous call patterns. This is **not** a
+full OS sandbox — it is a load-time gate for the SDK. See
+``docs`` / ``aetheros/sdk/README.md`` for the trust model.
 """
 
 from __future__ import annotations
@@ -21,8 +22,17 @@ FORBIDDEN_MODULES: frozenset[str] = frozenset(
         "fcntl",
         "multiprocessing",
         "signal",
+        "http",
         "http.client",
+        "urllib",
         "urllib.request",
+        "requests",
+        "httpx",
+        "pickle",
+        "importlib",
+        "shutil",
+        "code",
+        "codeop",
     }
 )
 
@@ -31,6 +41,13 @@ FORBIDDEN_PREFIXES: tuple[str, ...] = (
     "subprocess",
     "ctypes",
     "socket",
+    "urllib",
+    "http",
+    "importlib",
+    "pickle",
+    "requests",
+    "httpx",
+    "shutil",
 )
 
 # Text patterns that indicate unsafe intent.
@@ -39,6 +56,49 @@ FORBIDDEN_STRINGS: tuple[str, ...] = (
     "os.system",
     "subprocess.",
     "ctypes.",
+    "__import__",
+)
+
+# Builtin call names blocked when invoked directly.
+FORBIDDEN_CALL_NAMES: frozenset[str] = frozenset(
+    {
+        "eval",
+        "exec",
+        "compile",
+        "__import__",
+    }
+)
+
+# Attribute access on ``os`` that implies process or filesystem mutation.
+FORBIDDEN_OS_ATTRS: frozenset[str] = frozenset(
+    {
+        "system",
+        "popen",
+        "execl",
+        "execle",
+        "execlp",
+        "execlpe",
+        "execv",
+        "execve",
+        "execvp",
+        "execvpe",
+        "spawnl",
+        "spawnle",
+        "spawnlp",
+        "spawnlpe",
+        "spawnv",
+        "spawnve",
+        "spawnvp",
+        "spawnvpe",
+        "remove",
+        "unlink",
+        "rmdir",
+        "removedirs",
+        "chmod",
+        "chown",
+        "kill",
+        "killpg",
+    }
 )
 
 
@@ -120,13 +180,16 @@ class PluginSandbox:
             elif isinstance(node, ast.ImportFrom):
                 module = node.module or ""
                 findings.extend(self._check_module(module, path.name))
-                # from os import system
                 if module == "os":
                     for alias in node.names:
-                        if alias.name == "system":
-                            findings.append(f"{path.name}: forbidden import os.system")
+                        if alias.name in FORBIDDEN_OS_ATTRS or alias.name == "*":
+                            findings.append(
+                                f"{path.name}: forbidden import os.{alias.name}"
+                            )
             elif isinstance(node, ast.Call):
                 findings.extend(self._check_call(node, path.name))
+            elif isinstance(node, ast.Attribute):
+                findings.extend(self._check_attribute(node, path.name))
 
         return findings
 
@@ -144,10 +207,21 @@ class PluginSandbox:
         return []
 
     def _check_call(self, node: ast.Call, filename: str) -> list[str]:
-        """Detect calls like os.system(...)."""
+        """Detect calls like os.system(...), eval(...), exec(...)."""
 
         func = node.func
-        if isinstance(func, ast.Attribute) and func.attr == "system":
+        if isinstance(func, ast.Name) and func.id in FORBIDDEN_CALL_NAMES:
+            return [f"{filename}: forbidden call {func.id}()"]
+        if isinstance(func, ast.Attribute) and func.attr in FORBIDDEN_OS_ATTRS:
             if isinstance(func.value, ast.Name) and func.value.id == "os":
-                return [f"{filename}: forbidden call os.system()"]
+                return [f"{filename}: forbidden call os.{func.attr}()"]
+        return []
+
+    def _check_attribute(self, node: ast.Attribute, filename: str) -> list[str]:
+        """Detect attribute loads like os.system without an immediate call."""
+
+        if node.attr not in FORBIDDEN_OS_ATTRS:
+            return []
+        if isinstance(node.value, ast.Name) and node.value.id == "os":
+            return [f"{filename}: forbidden attribute os.{node.attr}"]
         return []

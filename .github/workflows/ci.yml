@@ -41,6 +41,9 @@ jobs:
       - name: Black
         run: black --check .
 
+      - name: Import cycles
+        run: python scripts/check_import_cycles.py
+
       - name: Pytest + coverage (fail under 80%)
         run: pytest --cov=aetheros --cov-report=term-missing --cov-report=xml --cov-fail-under=80
 

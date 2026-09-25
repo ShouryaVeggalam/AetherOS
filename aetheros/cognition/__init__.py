@@ -21,6 +21,11 @@ from aetheros.cognition.hypotheses import (
 from aetheros.cognition.memory import CognitiveFact, CognitiveMemory
 from aetheros.cognition.planner import CognitivePlanner, InterventionPlan, PlanSet
 from aetheros.cognition.renderer import CognitivePanel
+from aetheros.cognition.report import (
+    CognitiveReport,
+    build_cognitive_report,
+    explain_reasoning,
+)
 from aetheros.cognition.runtime import CognitiveRuntime
 from aetheros.cognition.verifier import (
     VerificationResult,
@@ -35,6 +40,7 @@ __all__ = [
     "CognitiveMemory",
     "CognitivePanel",
     "CognitivePlanner",
+    "CognitiveReport",
     "CognitiveRuntime",
     "GraphEdge",
     "GraphNode",
@@ -45,6 +51,8 @@ __all__ = [
     "PlanSet",
     "VerificationResult",
     "VerifiedExplanation",
+    "build_cognitive_report",
+    "explain_reasoning",
     "generate_hypotheses",
     "observe_from_snapshot",
     "verify_hypotheses",

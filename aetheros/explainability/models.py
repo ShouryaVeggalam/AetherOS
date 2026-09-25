@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal
 
-EvidenceSource = Literal["telemetry", "history", "intent", "simulation"]
+EvidenceSource = Literal["telemetry", "history", "intent", "simulation", "graph"]
 
 
 @dataclass(frozen=True, slots=True)

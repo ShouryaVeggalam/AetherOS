@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from aetheros.knowledge.resource_types import RelationKind, ResourceKind
+from aetheros.knowledge.resource_types import CausalRelationKind, ResourceKind
 
 
 @dataclass(frozen=True, slots=True)
@@ -35,14 +35,14 @@ class GraphEdge:
     Attributes:
         source_id: From node.
         target_id: To node.
-        relation: CAUSES / USES / DEPENDS_ON / PREDICTS / EXPLAINS.
+        relation: CausalRelationKind (CAUSES / USES / DEPENDS_ON / PREDICTS / EXPLAINS).
         weight: Strength 0.0–1.0.
         evidence: Short public justification.
     """
 
     source_id: str
     target_id: str
-    relation: RelationKind
+    relation: CausalRelationKind
     weight: float
     evidence: str
 
@@ -81,7 +81,7 @@ class CausalGraph:
     def related(
         self,
         node_id: str,
-        relation: RelationKind | None = None,
+        relation: CausalRelationKind | None = None,
     ) -> tuple[GraphEdge, ...]:
         """Outgoing edges optionally filtered by relation."""
 

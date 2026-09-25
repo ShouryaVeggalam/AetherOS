@@ -32,6 +32,7 @@ from aetheros.dashboard.widgets import (
 from aetheros.explainability import ExplainabilityPanel, Explanation
 from aetheros.fabric import FabricPanel, FabricReport
 from aetheros.genesis import GenesisPanel, GenesisReport
+from aetheros.graph import ResourceGraph, ResourceGraphPanel
 from aetheros.horizon import HorizonPanel, HorizonReport
 from aetheros.infinity import InfinityPanel, InfinityReport
 from aetheros.observatory import ObservatoryPanel
@@ -43,8 +44,16 @@ from aetheros.orchestrator import (
 )
 from aetheros.predictive import PredictivePanel, PredictiveReport
 from aetheros.reasoning.explain import CognitiveReport
+from aetheros.reasoning.formatter import GraphReasoningPanel
+from aetheros.reasoning.models import Observation, VerifiedExplanation
 from aetheros.runtime import AgenticReport
 from aetheros.sentinel import SentinelPanel, SentinelReport
+from aetheros.twin import (
+    DigitalTwinPanel,
+    DigitalTwinReport,
+    SimulationScenario,
+    TwinSnapshot,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -123,6 +132,15 @@ class DashboardFrame:
     fabric_report: FabricReport | None
     show_infinity: bool
     infinity_report: InfinityReport | None
+    show_resource_graph: bool
+    resource_graph: ResourceGraph | None
+    show_graph_reasoning: bool
+    graph_reasoning: VerifiedExplanation | None
+    graph_reasoning_observation: Observation | None
+    show_digital_twin: bool
+    digital_twin_report: DigitalTwinReport | None
+    digital_twin_scenario: SimulationScenario | None
+    digital_twin_baseline: TwinSnapshot | None
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -150,7 +168,24 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_infinity:
+    if frame.show_digital_twin:
+        layout["center"].update(
+            DigitalTwinPanel(
+                report=frame.digital_twin_report,
+                scenario=frame.digital_twin_scenario,
+                baseline=frame.digital_twin_baseline,
+            )
+        )
+    elif frame.show_graph_reasoning:
+        layout["center"].update(
+            GraphReasoningPanel(
+                explanation=frame.graph_reasoning,
+                observation=frame.graph_reasoning_observation,
+            )
+        )
+    elif frame.show_resource_graph:
+        layout["center"].update(ResourceGraphPanel(graph=frame.resource_graph))
+    elif frame.show_infinity:
         layout["center"].update(InfinityPanel(report=frame.infinity_report))
     elif frame.show_fabric:
         layout["center"].update(FabricPanel(report=frame.fabric_report))

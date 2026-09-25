@@ -11,7 +11,7 @@ from typing import Literal
 
 import networkx as nx
 
-RelationKind = Literal[
+OntologyRelationKind = Literal[
     "CAUSES",
     "USES",
     "ALLOCATES",
@@ -19,6 +19,9 @@ RelationKind = Literal[
     "IMPROVES",
     "DEGRADES",
 ]
+
+# Compat alias — prefer OntologyRelationKind in new code.
+RelationKind = OntologyRelationKind
 
 ExtraEntity = Literal[
     "intent",
@@ -35,7 +38,7 @@ class OntologyRelation:
 
     relation_id: str
     source_id: str
-    relation: RelationKind
+    relation: OntologyRelationKind
     target_id: str
     weight: float
     note: str

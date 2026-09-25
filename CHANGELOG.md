@@ -11,6 +11,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - CELESTRA founding engineering charter (`docs/CELESTRA.md`) with feature acceptance gate
 - Contributor gate linked from `CONTRIBUTING.md`
+- Shared `aetheros.advice` contracts (`Decision`) to break decision ↔ intent imports
+- `aetheros.agents.report` / `aetheros.cognition.report` owning report types (cycle breaks)
+- Import-cycle guard: `scripts/check_import_cycles.py`, `tests/test_import_cycles.py`, CI step
+- `CausalRelationKind` / `OntologyRelationKind` namespaced catalogs (`docs/ontology-catalogs.md`)
+- Simulator family map (`docs/simulation.md`) — host / resilience / cascade / twin
+- Shared SQLite helpers (`aetheros.storage`) adopted by all eight persistence stores
+- Dashboard formatting helpers extracted to `aetheros.dashboard.formatting` (testable outside Live)
+- Tightened plugin sandbox deny-list + trust model (`aetheros/sdk/README.md`, `docs/plugins.md`)
+- Pydantic response models for `/health`, `/infinity`, `/fabric`, `/sentinel`, `/sentinel/anomalies`
+- Docs clarify `aetheros.agent` (cluster publisher) vs `aetheros.agents` (multi-agent)
+- Resource Graph Engine (`aetheros.graph` models/builder/validator/queries/serializer/renderer)
+- Dashboard Resource Graph panel (`Y`; `G` remains Genesis)
+- Docs: `docs/resource_graph.md`
+- Graph Intelligence Bridge (`aetheros.bridge`) — read-only ResourceGraph adapters
+- Docs: `docs/graph_bridge.md`
+- `EvidenceSource` extended with `"graph"` (additive; explainability engines unchanged)
+- Graph Reasoning Engine (`aetheros.reasoning` traversal/hypotheses/verifier/confidence/formatter)
+- Dashboard Graph Reasoning panel (`R`; `K` remains Cognitive)
+- Docs: `docs/reasoning.md`
+- Digital Twin 2.0 (`aetheros.twin` snapshot/scenario/evaluator/diff + `DigitalTwinSimulator`)
+- Dashboard Digital Twin panel (`V`; `D` remains Developer Console)
+- Docs: `docs/digital_twin.md`
+- Context Intelligence Engine (`aetheros.context` builder/intent/history/engine)
+- Optional prediction/reasoning/simulation context adapters (no runtime rewrite)
+- Docs: `docs/context_engine.md`
+
+### Changed
+
+- `reasoning.explain` re-exports cognition report helpers (compat)
+- `decision.models` re-exports `aetheros.advice.Decision` (compat)
+- `runtime` re-exports agentic report types from `agents.report` (compat)
 
 ### Planned
 

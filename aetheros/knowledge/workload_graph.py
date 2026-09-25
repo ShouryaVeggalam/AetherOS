@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from aetheros.knowledge.resource_types import RelationKind, ResourceKind
+from aetheros.knowledge.resource_types import CausalRelationKind, ResourceKind
 
 
 @dataclass(frozen=True, slots=True)
@@ -23,7 +23,7 @@ class WorkloadEdge:
     """
 
     workload_id: str
-    relation: RelationKind
+    relation: CausalRelationKind
     resource: ResourceKind
     intensity: float
     note: str

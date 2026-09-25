@@ -14,6 +14,17 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
 from aetheros import __version__
+from aetheros.api.schemas import (
+    AnomalyOut,
+    FabricOverview,
+    GenerationOut,
+    HealthResponse,
+    InfinityOverview,
+    LayerStatusOut,
+    PipelineStageOut,
+    ResilienceOut,
+    SentinelOverview,
+)
 from aetheros.cognition import CognitiveMemory, CognitiveRuntime
 from aetheros.fabric import FabricRuntime
 from aetheros.genesis import GenesisRuntime
@@ -76,16 +87,16 @@ def create_app(
         fabric=fabric,
     )
 
-    @app.get("/health")
-    def health() -> dict[str, str]:
+    @app.get("/health", response_model=HealthResponse)
+    def health() -> HealthResponse:
         """Liveness probe."""
 
-        return {
-            "status": "ok",
-            "version": __version__,
-            "mode": "simulation-only",
-            "control": "human",
-        }
+        return HealthResponse(
+            status="ok",
+            version=__version__,
+            mode="simulation-only",
+            control="human",
+        )
 
     @app.get("/knowledge/ontology")
     def ontology() -> list[dict[str, Any]]:
@@ -365,13 +376,13 @@ def create_app(
             ],
         }
 
-    @app.get("/sentinel")
+    @app.get("/sentinel", response_model=SentinelOverview)
     def sentinel_overview(
         cpu_percent: float = 72.0,
         memory_percent: float = 55.0,
         disk_percent: float = 40.0,
         battery_percent: float | None = 80.0,
-    ) -> dict[str, Any]:
+    ) -> SentinelOverview:
         """Sentinel resilience overview for a synthetic snapshot."""
 
         snap = TelemetrySnapshot(
@@ -384,30 +395,30 @@ def create_app(
             top_processes=("Cursor", "Indexer", "chrome", "python"),
         )
         report = sentinel.observe(snap)
-        return {
-            "health": report.health,
-            "risk": report.risk,
-            "active_anomalies": len(report.anomalies),
-            "predicted_cascade": (
+        return SentinelOverview(
+            health=report.health,
+            risk=report.risk,
+            active_anomalies=len(report.anomalies),
+            predicted_cascade=(
                 "None" if not report.cascade.active else report.cascade.summary
             ),
-            "recommended_strategy": report.recommended_strategy,
-            "confidence": report.confidence,
-            "status": report.status,
-            "resilience": {
-                "health": report.resilience.health,
-                "stability": report.resilience.stability,
-                "redundancy": report.resilience.redundancy,
-                "risk": report.resilience.risk,
-                "explanation": report.resilience.explanation,
-            },
-        }
+            recommended_strategy=report.recommended_strategy,
+            confidence=report.confidence,
+            status=report.status,
+            resilience=ResilienceOut(
+                health=report.resilience.health,
+                stability=report.resilience.stability,
+                redundancy=report.resilience.redundancy,
+                risk=report.resilience.risk,
+                explanation=report.resilience.explanation,
+            ),
+        )
 
-    @app.get("/sentinel/anomalies")
+    @app.get("/sentinel/anomalies", response_model=list[AnomalyOut])
     def sentinel_anomalies(
         cpu_percent: float = 92.0,
         memory_percent: float = 60.0,
-    ) -> list[dict[str, Any]]:
+    ) -> list[AnomalyOut]:
         """Detect anomalies for a provided snapshot."""
 
         snap = TelemetrySnapshot(
@@ -421,15 +432,15 @@ def create_app(
         )
         report = sentinel.observe(snap)
         return [
-            {
-                "id": a.anomaly_id,
-                "kind": a.kind,
-                "severity": a.severity,
-                "title": a.title,
-                "description": a.description,
-                "metric": a.metric,
-                "value": a.value,
-            }
+            AnomalyOut(
+                id=a.anomaly_id,
+                kind=a.kind,
+                severity=a.severity,
+                title=a.title,
+                description=a.description,
+                metric=a.metric,
+                value=a.value,
+            )
             for a in report.anomalies
         ]
 
@@ -439,63 +450,63 @@ def create_app(
 
         return sentinel.graph.to_dict()
 
-    @app.get("/infinity")
-    def infinity_overview() -> dict[str, Any]:
+    @app.get("/infinity", response_model=InfinityOverview)
+    def infinity_overview() -> InfinityOverview:
         """Infinity platform overview — generations, pipeline, layer status."""
 
         report = infinity.observe()
-        return {
-            "identity": report.identity,
-            "status": report.status,
-            "generation_count": report.generation_count,
-            "layers_ready": report.layers_ready,
-            "principles": list(report.principles),
-            "pipeline": [
-                {
-                    "stage_id": s.stage_id,
-                    "name": s.name,
-                    "package": s.package,
-                    "description": s.description,
-                    "produces": s.produces,
-                }
+        return InfinityOverview(
+            identity=report.identity,
+            status=report.status,
+            generation_count=report.generation_count,
+            layers_ready=report.layers_ready,
+            principles=list(report.principles),
+            pipeline=[
+                PipelineStageOut(
+                    stage_id=s.stage_id,
+                    name=s.name,
+                    package=s.package,
+                    description=s.description,
+                    produces=s.produces,
+                )
                 for s in report.pipeline
             ],
-            "generations": [
-                {
-                    "version": g.version,
-                    "codename": g.codename,
-                    "package": g.package,
-                    "summary": g.summary,
-                    "principles": list(g.principles),
-                }
+            generations=[
+                GenerationOut(
+                    version=g.version,
+                    codename=g.codename,
+                    package=g.package,
+                    summary=g.summary,
+                    principles=list(g.principles),
+                )
                 for g in report.generations
             ],
-            "layers": [
-                {
-                    "name": layer.name,
-                    "ready": layer.ready,
-                    "detail": layer.detail,
-                }
+            layers=[
+                LayerStatusOut(
+                    name=layer.name,
+                    ready=layer.ready,
+                    detail=layer.detail,
+                )
                 for layer in report.layers
             ],
-        }
+        )
 
-    @app.get("/fabric")
-    def fabric_overview() -> dict[str, Any]:
+    @app.get("/fabric", response_model=FabricOverview)
+    def fabric_overview() -> FabricOverview:
         """Aether Fabric universal overview."""
 
         report = fabric.observe()
-        return {
-            "connected_nodes": report.connected_nodes,
-            "regions": report.census.regions,
-            "datacenters": report.census.datacenters,
-            "clusters": report.census.clusters,
-            "synchronization": report.synchronization,
-            "global_health": report.global_health,
-            "status": report.status,
-            "sample_graph_nodes": report.graph_nodes,
-            "sample_graph_edges": report.graph_edges,
-        }
+        return FabricOverview(
+            connected_nodes=report.connected_nodes,
+            regions=report.census.regions,
+            datacenters=report.census.datacenters,
+            clusters=report.census.clusters,
+            synchronization=report.synchronization,
+            global_health=report.global_health,
+            status=report.status,
+            sample_graph_nodes=report.graph_nodes,
+            sample_graph_edges=report.graph_edges,
+        )
 
     @app.get("/federation")
     def federation() -> dict[str, Any]:

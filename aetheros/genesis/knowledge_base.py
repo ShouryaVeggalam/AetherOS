@@ -13,6 +13,8 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
+from aetheros.storage import apply_schema, closing_connection
+
 _CREATE = """
 CREATE TABLE IF NOT EXISTS genesis_knowledge (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -150,11 +152,7 @@ class KnowledgeBase:
     def __post_init__(self) -> None:
         """Create schema and seed verified baseline knowledge."""
 
-        self.db_path = Path(self.db_path)
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        with self._connection() as conn:
-            conn.execute(_CREATE)
-            conn.commit()
+        self.db_path = apply_schema(self.db_path, _CREATE)
         if not self.list_knowledge():
             for record in SEED_KNOWLEDGE:
                 self.store(record)
@@ -207,11 +205,8 @@ class KnowledgeBase:
     def _connection(self) -> Iterator[sqlite3.Connection]:
         """Open a SQLite connection that always closes."""
 
-        conn = sqlite3.connect(self.db_path)
-        try:
+        with closing_connection(self.db_path) as conn:
             yield conn
-        finally:
-            conn.close()
 
 
 def _row_to_record(row: tuple) -> KnowledgeRecord:

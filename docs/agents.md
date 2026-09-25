@@ -4,6 +4,18 @@ AetherOS v4 adds a multi-agent collaboration layer. Specialists publish
 immutable findings on an async message bus; a coordinator merges conflicts
 into one explainable recommendation.
 
+## Naming: `agent` vs `agents`
+
+These are **different packages** — do not rename casually:
+
+| Package | Role | Docs |
+|---------|------|------|
+| `aetheros.agent` | Cluster **node telemetry publisher** (local + demo peers) | [cluster.md](cluster.md) |
+| `aetheros.agents` | Multi-agent **specialists + coordinator** (deliberation) | this page |
+| `aetheros.runtime` | `AgenticRuntime` loop that drives `agents` | this page |
+
+Dashboard imports both: cluster panel uses `agent`; Multi-Agent View (key **M**) uses `agents`.
+
 ## Constraints
 
 - Read-only / recommendation-only

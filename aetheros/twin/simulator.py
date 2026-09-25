@@ -1,12 +1,21 @@
 """Global Twin simulator — worldwide infrastructure what-ifs.
 
-Simulation only. Never affects real regions or devices.
+Also hosts Digital Twin 2.0 (P7) ``DigitalTwinSimulator`` for ResourceGraph
+scenarios. Simulation only. Never affects real regions, devices, or the host OS.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Literal
+
+from aetheros.twin.models import (
+    SimulationResult,
+    SimulationScenario,
+    SnapshotDiff,
+    TwinSnapshot,
+)
 
 ScenarioKind = Literal[
     "region_outage",
@@ -121,4 +130,53 @@ class TwinSimulator:
             risk=round(risk, 1),
             explanation=explanation,
             confidence=confidence,
+        )
+
+
+# ---------------------------------------------------------------------------
+# Digital Twin 2.0 — host ResourceGraph what-if runner (P7)
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True, slots=True)
+class DigitalTwinReport:
+    """Immutable host twin run: baseline, simulated, result, and diff."""
+
+    baseline: TwinSnapshot
+    simulated: TwinSnapshot
+    result: SimulationResult
+    diff: SnapshotDiff
+
+
+@dataclass
+class DigitalTwinSimulator:
+    """Run host Digital Twin scenarios on cloned snapshots only.
+
+    Pipeline: snapshot → clone → apply scenario → evaluate → diff.
+    Never reads or writes live host state beyond the provided snapshot.
+    """
+
+    def run(
+        self,
+        snapshot: TwinSnapshot,
+        scenario: SimulationScenario,
+        *,
+        now: datetime | None = None,
+    ) -> DigitalTwinReport:
+        """Execute one scenario against a cloned twin sandbox."""
+
+        from aetheros.twin.diff import diff_twins
+        from aetheros.twin.evaluator import evaluate
+        from aetheros.twin.scenario import apply_scenario
+        from aetheros.twin.snapshot import clone_snapshot
+
+        baseline = clone_snapshot(snapshot, now=now)
+        simulated = apply_scenario(baseline, scenario, now=now)
+        result = evaluate(baseline, simulated, scenario)
+        diff = diff_twins(baseline, simulated)
+        return DigitalTwinReport(
+            baseline=baseline,
+            simulated=simulated,
+            result=result,
+            diff=diff,
         )

@@ -13,6 +13,7 @@ from pathlib import Path
 
 from aetheros.policy_engine.models import PolicyRecommendation
 from aetheros.safety.models import SafetyResult
+from aetheros.storage import apply_schema, connect
 
 _CREATE_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS safety_audit (
@@ -46,16 +47,12 @@ class AuditLogger:
     def __post_init__(self) -> None:
         """Ensure the parent directory and table exist."""
 
-        self.db_path = Path(self.db_path)
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        with self._connect() as conn:
-            conn.execute(_CREATE_TABLE_SQL)
-            conn.commit()
+        self.db_path = apply_schema(self.db_path, _CREATE_TABLE_SQL)
 
     def _connect(self) -> sqlite3.Connection:
         """Open a SQLite connection with row factory disabled (simple)."""
 
-        return sqlite3.connect(self.db_path)
+        return connect(self.db_path)
 
     def log(
         self,

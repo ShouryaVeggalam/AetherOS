@@ -60,27 +60,40 @@ flowchart LR
 | `cluster` / `agent` | v1+ | Multi-device bus |
 | `orchestrator` | v1+ | Workload placement advice |
 | `kernel` | v2 | **Userspace** resource context (not OS kernel) |
-| `knowledge` / `ontology` | v2–v7 | Catalogs and relations |
+| `knowledge` / `ontology` | v2–v7 | Catalogs — see [ontology-catalogs.md](ontology-catalogs.md) |
 | `cognition` / `reasoning` | v3 | Causal / hypothesis / verify |
 | `agents` / `messaging` | v4 | Multi-agent bus |
 | `atlas` | v5 | Facade over Horizon + Twin |
 | `horizon` / `edge` / `robotics` | v6 | Planetary intelligence |
 | `genesis` | v7 | Research knowledge engine |
-| `sentinel` / `graph` | v8 | Resilience intelligence |
+| `sentinel` / `graph` | v8 + P4 | Resilience deps + Resource Graph Engine |
 | `fabric` / `protocol` / `twin` | v9 | Universal federation |
+| `simulation` | [simulation.md](simulation.md) | Host what-if (simulator family) |
+| `storage` | architecture | Shared SQLite connect/schema helpers |
 | `infinity` | ∞ | Unifying pipeline + status |
 | `api` / `dashboard` | all | Read-only API + Rich UI |
+| `sdk` / `plugins` | all | Sandboxed plugins |
 
 ## Compatibility aliases
 
 - `aetheros.policy` → `aetheros.policy_engine`
 - `aetheros.atlas` → Horizon world graph + Global Twin
 - `aetheros.kernel` → userspace resource context only
+- `aetheros.advice.Decision` → shared by decision + intent (no package cycle)
+- `aetheros.reasoning.explain` → re-exports `cognition.report` (compat)
+- `aetheros.runtime.AgenticReport` → owned by `agents.report` (compat)
 
 ## Related docs
 
 - [CELESTRA charter](CELESTRA.md)
 - [Infinity](infinity.md)
 - [Module index](MODULES.md)
+- [Ontology catalogs](ontology-catalogs.md) · [Simulation family](simulation.md)
+- [Plugins / trust](plugins.md) · [agent vs agents](agents.md#naming-agent-vs-agents)
+- [Resource Graph](resource_graph.md)
+- [Graph Intelligence Bridge](graph_bridge.md)
+- [Graph Reasoning](reasoning.md)
+- [Digital Twin 2.0](digital_twin.md)
+- [Context Engine](context_engine.md)
 - [Fabric](fabric.md) · [Sentinel](sentinel.md) · [Genesis](genesis.md) · [Horizon](horizon.md)
 - [Agents](agents.md) · [Cognition](cognition.md) · [Observatory](observatory.md)

@@ -66,9 +66,22 @@ def create_app(
         version=__version__,
         description=(
             "Explainable Operating Intelligence API (Infinity ∞). "
-            "Read-only / simulation-first. Humans approve actions."
+            "Read-only / simulation-first. Humans approve actions. "
+            "CELESTRA GII Module 1 exposes cognition under `/v9`."
         ),
+        openapi_tags=[
+            {
+                "name": "gii-cognition",
+                "description": (
+                    "CELESTRA GII v9 — Cognition Engine "
+                    "(understand · decompose · allocate)."
+                ),
+            },
+        ],
     )
+    from services.intelligence.api.router import router as gii_v9_router
+
+    app.include_router(gii_v9_router)
     runtime = CognitiveRuntime(
         memory=CognitiveMemory(memory_db or Path("data/cognition_memory.db"))
     )

@@ -43,6 +43,7 @@ Issues = "https://github.com/shouryaveggalam/AetherOS/issues"
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
     "pytest-cov>=5.0.0",
     "ruff>=0.6.0",
     "black>=24.0.0",
@@ -61,11 +62,12 @@ aetheros-sdk = "aetheros.cli.sdk_demo:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["aetheros*"]
+include = ["aetheros*", "services*"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "services/intelligence/tests"]
 pythonpath = ["."]
+asyncio_mode = "auto"
 
 [tool.coverage.run]
 source = ["aetheros"]

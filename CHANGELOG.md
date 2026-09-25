@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- CELESTRA GII Module 1 — Cognition Engine (`services/intelligence/`, Phase 16 / `/v9`)
+- `/v9/cognition` create/list/get and `/v9/intelligence` health
+- Append-only cognition plans + `li_gii_cognition_plans` migration contract
+- Docs: `docs/PHASE16.md`
 - CELESTRA founding engineering charter (`docs/CELESTRA.md`) with feature acceptance gate
 - Contributor gate linked from `CONTRIBUTING.md`
 - Shared `aetheros.advice` contracts (`Decision`) to break decision ↔ intent imports

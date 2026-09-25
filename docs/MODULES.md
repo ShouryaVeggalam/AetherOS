@@ -49,6 +49,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `storage` | [architecture.md](architecture.md) | Shared SQLite helpers |
 | `telemetry` | architecture | Host metrics |
 | `twin` | [digital_twin.md](digital_twin.md) · [fabric.md](fabric.md) | Digital Twin 2.0 (host) + global twin |
+| `services/intelligence` | [PHASE16.md](PHASE16.md) | CELESTRA GII v9 — Cognition Engine (`/v9`) |
 
 ## Documentation standard
 

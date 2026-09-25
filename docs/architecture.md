@@ -73,6 +73,7 @@ flowchart LR
 | `infinity` | ∞ | Unifying pipeline + status |
 | `api` / `dashboard` | all | Read-only API + Rich UI |
 | `sdk` / `plugins` | all | Sandboxed plugins |
+| `services/intelligence` | GII v9 | Cognition Engine — see [PHASE16.md](PHASE16.md) |
 
 ## Compatibility aliases
 
@@ -95,5 +96,6 @@ flowchart LR
 - [Graph Reasoning](reasoning.md)
 - [Digital Twin 2.0](digital_twin.md)
 - [Context Engine](context_engine.md)
+- [Phase 16 GII](PHASE16.md)
 - [Fabric](fabric.md) · [Sentinel](sentinel.md) · [Genesis](genesis.md) · [Horizon](horizon.md)
 - [Agents](agents.md) · [Cognition](cognition.md) · [Observatory](observatory.md)

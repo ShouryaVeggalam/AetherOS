@@ -217,6 +217,12 @@ def test_render_frame_has_regions() -> None:
         show_causal_knowledge=False,
         causal_knowledge_graph=None,
         causal_knowledge_view="causal",
+        show_consensus=False,
+        consensus_decision=None,
+        consensus_findings=(),
+        consensus_conflicts=(),
+        consensus_bus_events=(),
+        consensus_view="consensus",
     )
     layout = render_frame(frame)
     assert layout["header"] is not None

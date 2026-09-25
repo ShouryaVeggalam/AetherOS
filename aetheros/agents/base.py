@@ -22,6 +22,43 @@ AgentStatus = Literal["idle", "running", "ok", "warning", "error"]
 
 
 @dataclass(frozen=True, slots=True)
+class ConsensusFinding:
+    """P4 consensus finding — public evidence-only specialist output.
+
+    Distinct from legacy ``AgentFinding`` (used by AgenticRuntime). Confidence
+    is 0–100 for dashboard display.
+    """
+
+    agent: str
+    summary: str
+    evidence: tuple[str, ...]
+    confidence: float
+
+    def __post_init__(self) -> None:
+        if not self.agent.strip():
+            raise ValueError("agent must be non-empty")
+        if not self.summary.strip():
+            raise ValueError("summary must be non-empty")
+        if not 0.0 <= self.confidence <= 100.0:
+            raise ValueError("confidence must be in [0, 100]")
+
+
+@dataclass(frozen=True, slots=True)
+class Conflict:
+    """One recorded disagreement between specialist stances."""
+
+    source: str
+    target: str
+    disagreement: str
+
+    def __post_init__(self) -> None:
+        if not self.source.strip() or not self.target.strip():
+            raise ValueError("conflict endpoints must be non-empty")
+        if not self.disagreement.strip():
+            raise ValueError("disagreement must be non-empty")
+
+
+@dataclass(frozen=True, slots=True)
 class AgentFinding:
     """Immutable specialist output from one agent.
 
@@ -52,6 +89,16 @@ class AgentFinding:
             self, "confidence", max(0.0, min(1.0, float(self.confidence)))
         )
         object.__setattr__(self, "priority", max(0.0, min(1.0, float(self.priority))))
+
+    def to_consensus_finding(self) -> ConsensusFinding:
+        """Project to the P4 consensus finding shape (confidence 0–100)."""
+
+        return ConsensusFinding(
+            agent=self.agent_id,
+            summary=self.summary,
+            evidence=self.evidence,
+            confidence=round(self.confidence * 100.0, 2),
+        )
 
 
 @dataclass(frozen=True, slots=True)

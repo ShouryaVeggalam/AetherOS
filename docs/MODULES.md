@@ -7,7 +7,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | Package | Docs | Notes |
 |---------|------|-------|
 | `agent` | [cluster.md](cluster.md) | Cluster node publisher (**not** multi-agent) |
-| `agents` | [agents.md](agents.md) | Multi-agent specialists + coordinator |
+| `agents` | [agents.md](agents.md) · [multi_agent_consensus.md](multi_agent_consensus.md) | Multi-agent specialists + v3 P4 consensus |
 | `advice` | [architecture.md](architecture.md) | Shared Decision contract (cycle-neutral) |
 | `api` | OpenAPI `/docs` | Read-only FastAPI surface |
 | `atlas` | [architecture.md](architecture.md) | v5 facade → Horizon/Twin |

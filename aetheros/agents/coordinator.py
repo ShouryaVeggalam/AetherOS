@@ -6,15 +6,24 @@ Humans always approve any follow-up.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
 
-from aetheros.agents.base import AgentFinding, BaseAgent, DeliberationContext
+from aetheros.agents.base import (
+    AgentFinding,
+    BaseAgent,
+    Conflict,
+    ConsensusFinding,
+    DeliberationContext,
+)
+from aetheros.agents.bus import BROADCAST, EventBus
+from aetheros.agents.events import make_consensus_event
 from aetheros.messaging import (
     AsyncMessageBus,
     decision_payload,
     make_event,
 )
-from aetheros.messaging.protocol import BROADCAST
+from aetheros.messaging.protocol import BROADCAST as ASYNC_BROADCAST
 
 # Stances that pull toward performance vs efficiency.
 _PERF_STANCES = frozenset(
@@ -51,6 +60,38 @@ class CoordinatorDecision:
         object.__setattr__(
             self, "confidence", max(0.0, min(1.0, float(self.confidence)))
         )
+
+    def to_consensus_decision(
+        self, conflicts: tuple[Conflict, ...] = ()
+    ) -> ConsensusDecision:
+        """Project to the P4 consensus decision shape (confidence 0–100)."""
+
+        return ConsensusDecision(
+            recommendation=self.recommendation,
+            supporting_agents=self.supporting_agents,
+            conflicting_agents=self.conflicting_agents,
+            confidence=round(self.confidence * 100.0, 2),
+            reasoning=self.reasoning,
+            conflicts=conflicts,
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class ConsensusDecision:
+    """P4 consensus decision — human-approval recommendation only."""
+
+    recommendation: str
+    supporting_agents: tuple[str, ...]
+    conflicting_agents: tuple[str, ...]
+    confidence: float
+    reasoning: str
+    conflicts: tuple[Conflict, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not self.recommendation.strip():
+            raise ValueError("recommendation must be non-empty")
+        if not 0.0 <= self.confidence <= 100.0:
+            raise ValueError("confidence must be in [0, 100]")
 
 
 class Coordinator(BaseAgent):
@@ -101,7 +142,7 @@ class Coordinator(BaseAgent):
         await self.bus.publish(
             make_event(
                 sender=self.agent_id,
-                receiver=BROADCAST,
+                receiver=ASYNC_BROADCAST,
                 type="coordinator.decision",
                 payload=decision_payload(
                     recommendation=decision.recommendation,
@@ -113,6 +154,17 @@ class Coordinator(BaseAgent):
                 ),
             )
         )
+        return decision
+
+    def merge_sync(
+        self,
+        findings: tuple[AgentFinding, ...],
+        context: DeliberationContext,
+    ) -> CoordinatorDecision:
+        """Synchronous merge used by the P4 ConsensusEngine (no bus I/O)."""
+
+        decision = self._merge(findings, context)
+        self.last_decision = decision
         return decision
 
     def _merge(
@@ -164,8 +216,7 @@ class Coordinator(BaseAgent):
             else:
                 recommendation = "Balanced Mode"
                 reasoning = (
-                    "Performance gain is small while battery loss is significant "
-                    "enough to avoid a pure performance bias. "
+                    "Performance gain is small while battery impact is significant. "
                     "Balanced Mode preserves responsiveness with efficiency guardrails."
                 )
                 confidence = min(0.95, 0.7 + abs(perf_gain - batt_loss) * 0.2)
@@ -174,7 +225,6 @@ class Coordinator(BaseAgent):
                 )
             consensus = False
         else:
-            # Soft consensus path — lean on research + majority stance family.
             recommendation, confidence, reasoning, supporting, consensus = (
                 self._consensus_path(findings, research)
             )
@@ -188,7 +238,6 @@ class Coordinator(BaseAgent):
                 supporting.append("security")
             confidence = max(0.4, confidence - 0.05)
 
-        # Intent soft bias.
         if (
             context.intent.efficiency_weight >= 70
             and recommendation == "Performance Mode"
@@ -269,3 +318,102 @@ class Coordinator(BaseAgent):
             agents,
             True,
         )
+
+
+def detect_conflicts(findings: tuple[AgentFinding, ...]) -> tuple[Conflict, ...]:
+    """Derive explicit Conflict records from opposing specialist stances."""
+
+    by_id = {f.agent_id: f for f in findings}
+    conflicts: list[Conflict] = []
+    perf = by_id.get("performance")
+    batt = by_id.get("battery")
+    if perf and batt and perf.stance in _PERF_STANCES and batt.stance in _EFF_STANCES:
+        conflicts.append(
+            Conflict(
+                source="performance",
+                target="battery",
+                disagreement=(
+                    f"Performance wants '{perf.stance}' while battery wants "
+                    f"'{batt.stance}'."
+                ),
+            )
+        )
+    return tuple(conflicts)
+
+
+@dataclass
+class ConsensusEngine:
+    """P4 synchronous multi-agent consensus orchestrator.
+
+    Runs specialists independently, publishes findings on the sync EventBus,
+    and merges via the Coordinator. Never executes recommendations.
+    """
+
+    bus: EventBus = field(default_factory=EventBus)
+    last_decision: ConsensusDecision | None = None
+    last_findings: tuple[ConsensusFinding, ...] = ()
+    last_conflicts: tuple[Conflict, ...] = ()
+    last_raw_findings: tuple[AgentFinding, ...] = ()
+
+    def deliberate(self, context: DeliberationContext) -> ConsensusDecision:
+        """Run one evidence-driven consensus round (read-only)."""
+
+        from aetheros.agents.battery_agent import BatteryAgent
+        from aetheros.agents.performance_agent import PerformanceAgent
+        from aetheros.agents.research_agent import ResearchAgent
+        from aetheros.agents.security_agent import SecurityAgent
+        from aetheros.agents.telemetry_agent import TelemetryAgent
+        from aetheros.messaging import AsyncMessageBus
+
+        shadow = AsyncMessageBus()
+        specialists = (
+            TelemetryAgent(shadow),
+            PerformanceAgent(shadow),
+            BatteryAgent(shadow),
+            SecurityAgent(shadow),
+            ResearchAgent(shadow),
+        )
+        coordinator = Coordinator(shadow)
+
+        raw: list[AgentFinding] = []
+        for agent in specialists:
+            finding = agent.analyze(context)
+            raw.append(finding)
+            self.bus.publish(
+                make_consensus_event(
+                    sender=finding.agent_id,
+                    receiver="coordinator",
+                    type="agent.finding",
+                    payload={
+                        "summary": finding.summary,
+                        "stance": finding.stance,
+                        "confidence": finding.confidence,
+                        "evidence": finding.evidence,
+                    },
+                    timestamp=datetime.now(UTC),
+                )
+            )
+
+        decision = coordinator.merge_sync(tuple(raw), context)
+        conflicts = detect_conflicts(tuple(raw))
+        consensus = decision.to_consensus_decision(conflicts)
+        self.bus.publish(
+            make_consensus_event(
+                sender="coordinator",
+                receiver=BROADCAST,
+                type="coordinator.decision",
+                payload={
+                    "recommendation": consensus.recommendation,
+                    "confidence": consensus.confidence,
+                    "reasoning": consensus.reasoning,
+                    "supporting": ",".join(consensus.supporting_agents),
+                    "conflicting": ",".join(consensus.conflicting_agents),
+                },
+                timestamp=datetime.now(UTC),
+            )
+        )
+        self.last_raw_findings = tuple(raw)
+        self.last_findings = tuple(f.to_consensus_finding() for f in raw)
+        self.last_conflicts = conflicts
+        self.last_decision = consensus
+        return consensus

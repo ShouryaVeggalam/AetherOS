@@ -13,7 +13,10 @@ from rich.layout import Layout
 from rich.panel import Panel
 from rich.text import Text
 
-from aetheros.agents import MultiAgentPanel
+from aetheros.agents import ConsensusPanel, MultiAgentPanel
+from aetheros.agents.base import Conflict, ConsensusFinding
+from aetheros.agents.coordinator import ConsensusDecision
+from aetheros.agents.events import Event
 from aetheros.cluster import ClusterPanel, ClusterSnapshot
 from aetheros.cognition import CognitivePanel
 from aetheros.dashboard.layout import build_layout
@@ -155,6 +158,12 @@ class DashboardFrame:
     show_causal_knowledge: bool
     causal_knowledge_graph: CausalKnowledgeGraph | None
     causal_knowledge_view: str
+    show_consensus: bool
+    consensus_decision: ConsensusDecision | None
+    consensus_findings: tuple[ConsensusFinding, ...]
+    consensus_conflicts: tuple[Conflict, ...]
+    consensus_bus_events: tuple[Event, ...]
+    consensus_view: str
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -182,7 +191,17 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_causal_knowledge:
+    if frame.show_consensus:
+        layout["center"].update(
+            ConsensusPanel(
+                findings=frame.consensus_findings,
+                decision=frame.consensus_decision,
+                conflicts=frame.consensus_conflicts,
+                bus_events=frame.consensus_bus_events,
+                view=frame.consensus_view,
+            )
+        )
+    elif frame.show_causal_knowledge:
         layout["center"].update(
             CausalKnowledgePanel(
                 graph=frame.causal_knowledge_graph,

@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- v3.0 P4 Multi-Agent Consensus — sync `EventBus` + `ConsensusEngine` (human-approval recommendations)
+- Dashboard **J** → Multi-Agent Consensus (Status / Findings / Bus / Consensus / Conflicts); **A** stays Research, **M** stays Multi-Agent View
+- Docs: `docs/multi_agent_consensus.md`
 - v3.0 P3 Causal Knowledge Graph — `aetheros.knowledge` builder/traversal/validator (verified relations only)
 - Dashboard **N** → Causal Knowledge Graph (Ontology / Causal / Discoveries / Relationships / Evidence); **K** stays Cognitive
 - Docs: `docs/causal_knowledge_graph.md`

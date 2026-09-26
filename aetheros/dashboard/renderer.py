@@ -94,6 +94,11 @@ from aetheros.orchestrator import (
     WorkloadPlannerPanel,
     WorkloadProfile,
 )
+from aetheros.planetary import (
+    GlobalWorkload as PlanetaryWorkload,
+    PlanetarySchedulerPanel,
+    ScheduleDecision as PlanetaryDecision,
+)
 from aetheros.policy import (
     EvaluationResult,
     PolicyStudioPanel,
@@ -293,6 +298,10 @@ class DashboardFrame:
     global_graph_evidence: EvidenceIndex | None
     global_graph_validation: ValidationReport | None
     global_graph_view: str
+    show_planetary: bool
+    planetary_workload: PlanetaryWorkload | None
+    planetary_decision: PlanetaryDecision | None
+    planetary_view: str
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -320,7 +329,15 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_global_graph:
+    if frame.show_planetary:
+        layout["center"].update(
+            PlanetarySchedulerPanel(
+                workload=frame.planetary_workload,
+                decision=frame.planetary_decision,
+                view=frame.planetary_view,
+            )
+        )
+    elif frame.show_global_graph:
         layout["center"].update(
             GlobalKnowledgePanel(
                 graph=frame.global_graph_graph,

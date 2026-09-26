@@ -33,6 +33,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `marketplace` | [marketplace.md](marketplace.md) | v5.0 P3 Extension Marketplace (discover · install · verify) |
 | `genesis` | [genesis.md](genesis.md) | Research knowledge |
 | `global_graph` | [global_knowledge_graph.md](global_knowledge_graph.md) | v6.0 P3 Global Knowledge Graph (Horizon canonical model) |
+| `planetary` | [planetary_scheduler.md](planetary_scheduler.md) | v6.0 P4 Planetary Scheduler (simulation-only placement advice) |
 | `graph` | [resource_graph.md](resource_graph.md) · [sentinel.md](sentinel.md) | Resource Graph Engine + Sentinel deps |
 | `reasoning` | [reasoning.md](reasoning.md) · [cognition.md](cognition.md) | Graph Reasoning Engine + cognitive helpers |
 | `bridge` | [graph_bridge.md](graph_bridge.md) | Graph Intelligence Bridge (P5) |

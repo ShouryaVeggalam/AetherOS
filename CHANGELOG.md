@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- v6.0 P4 Planetary Scheduler — `aetheros.planetary` (constraints · scoring · twin sim · top-5)
+- Dashboard **W** → Worldwide Scheduler (Map / Regions / Candidates / Trade-offs / Simulation); **%** → Workload Planner
+- Docs: `docs/planetary_scheduler.md`
 - v6.0 P3 Global Knowledge Graph — `aetheros.global_graph` (ontology · evidence · traversal)
 - Dashboard **K** → Global Graph (World / Regions / Clusters / Knowledge / Discoveries / Evidence); **^** → Cognitive
 - Docs: `docs/global_knowledge_graph.md`

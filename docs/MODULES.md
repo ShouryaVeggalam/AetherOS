@@ -13,6 +13,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `atlas` | [architecture.md](architecture.md) | v5 facade → Horizon/Twin |
 | `cli` | README | Demo CLIs |
 | `cluster` | [cluster.md](cluster.md) | Multi-device registry |
+| `cloud` | [cloud_federation.md](cloud_federation.md) | v6.0 P1 Cloud Federation Engine (read-only multi-cloud) |
 | `cognition` | [cognition.md](cognition.md) · [cognition_core.md](cognition_core.md) | Causal / hypothesis / verify + v3 Cognition Core |
 | `context` | [context_engine.md](context_engine.md) | Context Intelligence Engine (P8) |
 | `research` | [research_engine.md](research_engine.md) | Strategy research + P9 Research Intelligence |

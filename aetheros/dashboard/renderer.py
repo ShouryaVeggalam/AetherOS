@@ -17,6 +17,12 @@ from aetheros.agents import ConsensusPanel, MultiAgentPanel
 from aetheros.agents.base import Conflict, ConsensusFinding
 from aetheros.agents.coordinator import ConsensusDecision
 from aetheros.agents.events import Event
+from aetheros.cloud import (
+    CloudFederationPanel,
+    FederationHealth,
+    InfrastructureSnapshot,
+    ProviderRecord,
+)
 from aetheros.cluster import ClusterPanel, ClusterSnapshot
 from aetheros.cognition import CognitivePanel
 from aetheros.dashboard.layout import build_layout
@@ -255,6 +261,12 @@ class DashboardFrame:
     enterprise_compliance_status: str
     enterprise_metrics: UsageMetrics | None
     enterprise_view: str
+    show_cloud: bool
+    cloud_snapshot: InfrastructureSnapshot | None
+    cloud_health: FederationHealth | None
+    cloud_records: tuple[ProviderRecord, ...]
+    cloud_age: float
+    cloud_view: str
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -282,7 +294,17 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_enterprise:
+    if frame.show_cloud:
+        layout["center"].update(
+            CloudFederationPanel(
+                snapshot=frame.cloud_snapshot,
+                health=frame.cloud_health,
+                records=frame.cloud_records,
+                snapshot_age_seconds=frame.cloud_age,
+                view=frame.cloud_view,
+            )
+        )
+    elif frame.show_enterprise:
         layout["center"].update(
             EnterprisePanel(
                 organization=frame.enterprise_organization,

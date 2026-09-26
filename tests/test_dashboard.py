@@ -265,6 +265,12 @@ def test_render_frame_has_regions() -> None:
         enterprise_compliance_status="SOC2 Ready",
         enterprise_metrics=None,
         enterprise_view="organizations",
+        show_cloud=False,
+        cloud_snapshot=None,
+        cloud_health=None,
+        cloud_records=(),
+        cloud_age=0.0,
+        cloud_view="providers",
     )
     layout = render_frame(frame)
     assert layout["header"] is not None

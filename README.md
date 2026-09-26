@@ -236,7 +236,8 @@ health = client.health()
 | `H` | Horizon |
 | `M` | Multi-Agent View |
 | `K` | Cognitive Graph |
-| `C` | Cluster overview |
+| `C` | Cloud Federation |
+| `;` | Cluster overview |
 | `W` | Workload Planner |
 | `A` | Run autonomous research |
 | `D` | Developer / plugin console |
@@ -288,6 +289,7 @@ Charter: [docs/CELESTRA.md](docs/CELESTRA.md)
 | Version | Focus |
 |---------|--------|
 | **v5.0.0 Nexus** | Plugin SDK · Public API · Marketplace · Policy Studio · Enterprise |
+| **v6.x (in progress)** | Cloud Federation Engine (read-only multi-cloud) |
 | v4.x | Federation · Topology · Scheduler · Atlas |
 | v3.x | Cognition · Memory · Causal KG · Consensus · Research Lab |
 | v2.0 Intelligence | Resource Graph · Reasoning · Twin · Context · Research Intel |

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- v6.0 P1 Cloud Federation Engine — `aetheros.cloud` (AWS · Azure · GCP · Kubernetes · Docker · Edge)
+- Dashboard **C** → Cloud Federation (Providers / Regions / Resources / Health / Snapshots); **;** → Cluster overview
+- Docs: `docs/cloud_federation.md`
+
 ### Changed
 
 ### Fixed

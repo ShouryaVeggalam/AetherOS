@@ -2,7 +2,8 @@
 
 Every first-class package under `aetheros/` with its role and doc entry point.
 
-Engineering charter: [CELESTRA.md](CELESTRA.md).
+Engineering charter: [CELESTRA.md](CELESTRA.md).  
+Research paper draft: [papers/aetheros_explainable_operating_intelligence.md](papers/aetheros_explainable_operating_intelligence.md).
 
 | Package | Docs | Notes |
 |---------|------|-------|

@@ -2,16 +2,16 @@
 
 Next.js marketing site for [aetheros-pied.vercel.app](https://aetheros-pied.vercel.app/).
 
-## GitHub links (important)
+## GitHub links
 
 All public GitHub CTAs resolve through [`lib/site.ts`](lib/site.ts):
 
 | Constant | Value |
 |----------|-------|
-| Repo | https://github.com/ShouryaVeggalam/AetherOS |
-| Owner | https://github.com/ShouryaVeggalam |
+| Owner | [Celestra](https://github.com/Celestra) |
+| Repo | [Celestra/AetherOS](https://github.com/Celestra/AetherOS) |
 
-Do **not** link to `https://github.com/celestra` — that organization is unrelated and has zero public repositories.
+CTAs must open the **repository** (`/Celestra/AetherOS`), not the org home alone — so visitors never land on an empty org page.
 
 ## Local
 
@@ -25,4 +25,4 @@ npm run dev
 
 1. Project **Root Directory** = `website`
 2. Framework = Next.js
-3. Redeploy after merge so `/open-source` GitHub buttons hit AetherOS
+3. Redeploy after merge so `/open-source` GitHub buttons hit `Celestra/AetherOS`

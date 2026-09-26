@@ -38,7 +38,7 @@ Built by **[CELESTRA](docs/CELESTRA.md)** under a research- and enterprise-grade
 
 **Docs:** [Installation](docs/installation.md) · [Architecture](docs/architecture.md) · [Release notes](docs/releases/v6.0.0.md) · [Benchmarks](docs/benchmarks.md) · [Modules](docs/MODULES.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
-**Website:** [`website/`](website/) (Vercel root directory) · GitHub CTAs → [ShouryaVeggalam/AetherOS](https://github.com/ShouryaVeggalam/AetherOS)
+**Website:** [`website/`](website/) (Vercel root directory) · GitHub CTAs → [Celestra/AetherOS](https://github.com/Celestra/AetherOS)
 
 ---
 

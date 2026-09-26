@@ -8,17 +8,17 @@ export const site = {
     "AetherOS is explainable operating intelligence — observe, reason, simulate, and recommend without mutating live infrastructure.",
   url: "https://aetheros-pied.vercel.app",
 
-  /** Public GitHub — must point at the real AetherOS repo, not github.com/celestra */
+  /** Public GitHub — CELESTRA org repo (not the org home, which can look empty). */
   github: {
-    orgUrl: "https://github.com/ShouryaVeggalam",
-    repoUrl: "https://github.com/ShouryaVeggalam/AetherOS",
-    repoClone: "https://github.com/ShouryaVeggalam/AetherOS.git",
+    orgUrl: "https://github.com/Celestra",
+    repoUrl: "https://github.com/Celestra/AetherOS",
+    repoClone: "https://github.com/Celestra/AetherOS.git",
     repoName: "AetherOS",
-    owner: "ShouryaVeggalam",
+    owner: "Celestra",
   },
 
   install: [
-    "git clone https://github.com/ShouryaVeggalam/AetherOS.git",
+    "git clone https://github.com/Celestra/AetherOS.git",
     "cd AetherOS",
     "python3.12 -m venv .venv && source .venv/bin/activate",
     'pip install -U pip && pip install -e ".[dev]"',

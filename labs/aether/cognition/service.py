@@ -79,9 +79,7 @@ class CognitionEngine:
             memory_relevance=memory_relevance,
             uncertainty=uncertainty,
         )
-        graph = await self.decomposition.decompose(
-            goal, max_depth=max_depth, now=stamp
-        )
+        graph = await self.decomposition.decompose(goal, max_depth=max_depth, now=stamp)
         plan = await self.planning.plan(goal, allocation, graph, now=stamp)
         return CognitionBundle(
             goal=goal,

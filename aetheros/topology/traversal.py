@@ -77,9 +77,7 @@ def find_path(
         return ()
     adj = adjacency(graph, relations=relations)
     # Ensure world reachable keys exist
-    if WORLD_ID not in adj and any(
-        e.source_id == WORLD_ID for e in graph.edges
-    ):
+    if WORLD_ID not in adj and any(e.source_id == WORLD_ID for e in graph.edges):
         pass
     queue: deque[str] = deque([source_id])
     prev: dict[str, str | None] = {source_id: None}

@@ -23,7 +23,9 @@ from labs.aether.models.types import (
 )
 
 
-def allocation_to_response(allocation: AttentionAllocation) -> AttentionAllocationResponse:
+def allocation_to_response(
+    allocation: AttentionAllocation,
+) -> AttentionAllocationResponse:
     return AttentionAllocationResponse(
         id=allocation.id,
         goal_id=allocation.goal_id,

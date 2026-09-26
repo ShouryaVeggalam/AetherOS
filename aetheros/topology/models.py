@@ -151,9 +151,7 @@ class TopologyGraph:
                 raise ValueError(f"datacenter region missing: {dc.region_id}")
         for cluster in self.clusters:
             if cluster.datacenter_id not in dc_ids:
-                raise ValueError(
-                    f"cluster datacenter missing: {cluster.datacenter_id}"
-                )
+                raise ValueError(f"cluster datacenter missing: {cluster.datacenter_id}")
         for node in self.nodes:
             if node.cluster_id and node.cluster_id not in cluster_ids:
                 raise ValueError(f"node cluster missing: {node.cluster_id}")

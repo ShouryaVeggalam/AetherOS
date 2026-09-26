@@ -186,8 +186,12 @@ def test_allocate_attention_deterministic() -> None:
         memory_relevance=0.7,
         uncertainty=0.6,
     )
-    a = allocate_attention(signals, goal_id="g1", now=_stamp(), allocation_id="attn_fixed")
-    b = allocate_attention(signals, goal_id="g1", now=_stamp(), allocation_id="attn_fixed")
+    a = allocate_attention(
+        signals, goal_id="g1", now=_stamp(), allocation_id="attn_fixed"
+    )
+    b = allocate_attention(
+        signals, goal_id="g1", now=_stamp(), allocation_id="attn_fixed"
+    )
     assert a.weights == b.weights
     assert a.reasoning_budget == b.reasoning_budget
     assert abs(sum(a.weights.values()) - 1.0) < 1e-6
@@ -280,7 +284,9 @@ async def test_runtime_health() -> None:
 
 def test_observatory_heatmap_and_replay() -> None:
     signals = AttentionSignals(0.7, 0.4, 0.6, 0.5)
-    alloc = allocate_attention(signals, goal_id="g", now=_stamp(), allocation_id="attn_map")
+    alloc = allocate_attention(
+        signals, goal_id="g", now=_stamp(), allocation_id="attn_map"
+    )
     view = build_attention_map(alloc)
     assert len(view.cells) == 4
     ascii_map = render_attention_ascii(view)
@@ -412,14 +418,20 @@ def test_api_decompose_reflect_critique_and_health(client: TestClient) -> None:
     )
     assert crit.status_code == 200
     assert crit.json()["verdict"] in ("pass", "revise", "reject")
-    assert client.post(
-        "/aether/reflect",
-        json={"plan_id": "missing", "reasoning_summary": "x"},
-    ).status_code == 404
-    assert client.post(
-        "/aether/critique",
-        json={"plan_id": "missing", "reasoning_summary": "x"},
-    ).status_code == 404
+    assert (
+        client.post(
+            "/aether/reflect",
+            json={"plan_id": "missing", "reasoning_summary": "x"},
+        ).status_code
+        == 404
+    )
+    assert (
+        client.post(
+            "/aether/critique",
+            json={"plan_id": "missing", "reasoning_summary": "x"},
+        ).status_code
+        == 404
+    )
 
 
 def test_api_attention_validation_error(client: TestClient) -> None:

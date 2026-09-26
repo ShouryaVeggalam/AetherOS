@@ -33,9 +33,7 @@ def build_plan_from_graph(
     confidence = round(
         min(
             0.99,
-            allocation.confidence * 0.7
-            + min(1.0, len(graph.tasks) / 12.0) * 0.2
-            + 0.1,
+            allocation.confidence * 0.7 + min(1.0, len(graph.tasks) / 12.0) * 0.2 + 0.1,
         ),
         4,
     )

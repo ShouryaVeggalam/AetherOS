@@ -71,7 +71,9 @@ class TransportHub:
 
     _peers: dict[str, LocalTransport] = field(default_factory=dict)
 
-    def register(self, node_id: str, transport: LocalTransport | None = None) -> LocalTransport:
+    def register(
+        self, node_id: str, transport: LocalTransport | None = None
+    ) -> LocalTransport:
         if not node_id.strip():
             raise ValueError("node_id must be non-empty")
         bus = transport if transport is not None else LocalTransport()
@@ -102,9 +104,7 @@ class TransportHub:
     ) -> int:
         """Publish to all peers except optional ``exclude`` source."""
 
-        recipients = [
-            nid for nid in self._peers if exclude is None or nid != exclude
-        ]
+        recipients = [nid for nid in self._peers if exclude is None or nid != exclude]
         return self.publish_to(recipients, message)
 
     def get(self, node_id: str) -> LocalTransport | None:

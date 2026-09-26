@@ -121,7 +121,9 @@ def encode_message(message: ProtocolMessage) -> bytes:
         "sent_at": _dt_to_str(message.sent_at),
         "payload": message.payload,
     }
-    text = json.dumps(envelope, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    text = json.dumps(
+        envelope, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+    )
     return text.encode("utf-8")
 
 

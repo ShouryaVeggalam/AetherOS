@@ -39,7 +39,9 @@ class FederationRegistry:
         if self.online_ttl_sec <= 0:
             raise ValueError("online_ttl_sec must be > 0")
 
-    def register(self, identity: NodeIdentity, *, now: datetime | None = None) -> NodeRecord:
+    def register(
+        self, identity: NodeIdentity, *, now: datetime | None = None
+    ) -> NodeRecord:
         """Announce a node identity (status unknown until heartbeat)."""
 
         stamp = now or datetime.now(UTC)
@@ -110,7 +112,9 @@ class FederationRegistry:
         self._nodes[snapshot.node.node_id] = record
         return record
 
-    def mark_offline(self, node_id: str, *, now: datetime | None = None) -> NodeRecord | None:
+    def mark_offline(
+        self, node_id: str, *, now: datetime | None = None
+    ) -> NodeRecord | None:
         """Explicit goodbye / offline mark."""
 
         prev = self._nodes.get(node_id)
@@ -163,9 +167,7 @@ class FederationRegistry:
     def view(self, *, now: datetime | None = None) -> RegistryView:
         """Immutable aggregate registry view."""
 
-        nodes = tuple(
-            sorted(self._nodes.values(), key=lambda r: r.identity.node_id)
-        )
+        nodes = tuple(sorted(self._nodes.values(), key=lambda r: r.identity.node_id))
         online = sum(1 for n in nodes if n.status == "online")
         offline = sum(1 for n in nodes if n.status == "offline")
         unknown = sum(1 for n in nodes if n.status == "unknown")

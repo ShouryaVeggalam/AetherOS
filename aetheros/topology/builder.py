@@ -98,9 +98,7 @@ def build_topology(
         require_unassigned_for=tuple(need_unassigned_dc),
     )
     dc_by_region_unassigned = {
-        d.region_id: d
-        for d in datacenters
-        if d.id.startswith("dc-unassigned-")
+        d.region_id: d for d in datacenters if d.id.startswith("dc-unassigned-")
     }
 
     for rec in records:
@@ -152,9 +150,7 @@ def build_topology(
         (a, b) for a, b in meta.peer_links if a in known_ids and b in known_ids
     )
     reps = tuple(
-        (a, b)
-        for a, b in meta.replicate_links
-        if a in known_ids and b in known_ids
+        (a, b) for a, b in meta.replicate_links if a in known_ids and b in known_ids
     )
     edges = edges + connect_nodes(peers, relation="CONNECTED_TO")
     edges = edges + connect_nodes(reps, relation="REPLICATES")

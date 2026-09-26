@@ -116,9 +116,7 @@ def test_builder_never_fabricates_unobserved_regions() -> None:
     meta = TopologyMetadata(
         regions={
             "us-west": Region(id="us-west", name="US West", country="United States"),
-            "asia-south": Region(
-                id="asia-south", name="Asia South", country="India"
-            ),
+            "asia-south": Region(id="asia-south", name="Asia South", country="India"),
         },
         datacenters=(
             Datacenter(
@@ -230,7 +228,9 @@ def test_topology_panel_views() -> None:
     graph = build_topology(reg, metadata=demo_topology_metadata(), now=_stamp())
     console = Console(record=True, width=100)
     console.print(TopologyPanel())
-    assert "idle" in console.export_text().lower() or "TOPOLOGY" in console.export_text()
+    assert (
+        "idle" in console.export_text().lower() or "TOPOLOGY" in console.export_text()
+    )
     for view in ("tree", "world", "regions", "clusters", "health"):
         console = Console(record=True, width=110)
         console.print(TopologyPanel(graph=graph, view=view))
@@ -284,12 +284,8 @@ def test_coverage_edges() -> None:
     with pytest.raises(ValueError):
         TopologyGraph(
             regions=(Region(id="r", name="R", country="C"),),
-            datacenters=(
-                Datacenter(id="d", region_id="r", name="D", capacity=1),
-            ),
-            clusters=(
-                Cluster(id="c", datacenter_id="d", name="C", node_count=0),
-            ),
+            datacenters=(Datacenter(id="d", region_id="r", name="D", capacity=1),),
+            clusters=(Cluster(id="c", datacenter_id="d", name="C", node_count=0),),
             nodes=(
                 TopologyNode(
                     node_id="n",
@@ -301,26 +297,32 @@ def test_coverage_edges() -> None:
             ),
             edges=(),
         )
-    assert cluster_health(
-        TopologyGraph(
-            regions=(),
-            datacenters=(),
-            clusters=(),
-            nodes=(),
-            edges=(),
-        ),
-        "nope",
-    ) is None
-    assert region_summary(
-        TopologyGraph(
-            regions=(),
-            datacenters=(),
-            clusters=(),
-            nodes=(),
-            edges=(),
-        ),
-        "nope",
-    ) is None
+    assert (
+        cluster_health(
+            TopologyGraph(
+                regions=(),
+                datacenters=(),
+                clusters=(),
+                nodes=(),
+                edges=(),
+            ),
+            "nope",
+        )
+        is None
+    )
+    assert (
+        region_summary(
+            TopologyGraph(
+                regions=(),
+                datacenters=(),
+                clusters=(),
+                nodes=(),
+                edges=(),
+            ),
+            "nope",
+        )
+        is None
+    )
     # empty cluster health
     g = TopologyGraph(
         regions=(Region(id="r", name="R", country="C"),),

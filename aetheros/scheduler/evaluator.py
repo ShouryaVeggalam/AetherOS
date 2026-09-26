@@ -52,9 +52,7 @@ def evaluate_schedule(
             node = capacities.get(plan.target_node)
             if node is not None:
                 healths.append(node.cluster_health)
-    cluster_health = (
-        round(sum(healths) / len(healths), 2) if healths else best.score
-    )
+    cluster_health = round(sum(healths) / len(healths), 2) if healths else best.score
 
     # Confidence blends score, twin stability signals, and candidate depth.
     twin_conf = 0.0
@@ -100,9 +98,7 @@ def run_scheduler(
 
     if not isinstance(workload, Workload):
         raise TypeError("workload must be a Workload")
-    constr = tuple(
-        c for c in constraints if isinstance(c, ScheduleConstraint)
-    )
+    constr = tuple(c for c in constraints if isinstance(c, ScheduleConstraint))
     plans, rejected = plan_placements(
         workload,
         nodes,
@@ -117,9 +113,7 @@ def run_scheduler(
             # Use best unscored capacity as twin seed (cloned later).
             seed_node = cap_map.get(plans[0].target_node) or nodes[0]
             baseline = synthetic_baseline_from_capacity(seed_node, now=now)
-        plans, sim_results = simulate_plans(
-            plans, cap_map, baseline, now=now
-        )
+        plans, sim_results = simulate_plans(plans, cap_map, baseline, now=now)
     result = evaluate_schedule(
         plans,
         capacities=cap_map,

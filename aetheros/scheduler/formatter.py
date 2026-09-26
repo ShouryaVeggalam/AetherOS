@@ -50,9 +50,7 @@ class SchedulerPanel:
             body = self._tradeoffs_view()
         else:
             body = self._summary_view()
-        return Panel(
-            body, title="Distributed Scheduler", border_style="bright_magenta"
-        )
+        return Panel(body, title="Distributed Scheduler", border_style="bright_magenta")
 
     def _summary_view(self) -> RenderableType:
         assert self.workload is not None and self.result is not None
@@ -74,11 +72,7 @@ class SchedulerPanel:
             Text(f"  {best.predicted_cpu:.0f}%" if best else "  —"),
             Text(""),
             Text("Latency", style="bold"),
-            Text(
-                f"  {best.predicted_latency_ms:.0f} ms"
-                if best
-                else "  —"
-            ),
+            Text(f"  {best.predicted_latency_ms:.0f} ms" if best else "  —"),
             Text(""),
             Text("Confidence", style="bold"),
             Text(f"  {self.result.confidence:.0f}%"),
@@ -121,11 +115,7 @@ class SchedulerPanel:
         if not self.result.plans:
             parts.append(Text("  (none)", style="dim"))
         for i, plan in enumerate(self.result.plans, start=1):
-            parts.append(
-                Text(
-                    f"  {i}. {plan.target_node:<20} score={plan.score:.1f}"
-                )
-            )
+            parts.append(Text(f"  {i}. {plan.target_node:<20} score={plan.score:.1f}"))
         if self.result.rejected:
             parts.append(Text(""))
             parts.append(Text("Rejected", style="bold"))

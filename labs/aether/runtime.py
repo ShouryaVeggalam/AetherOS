@@ -34,9 +34,7 @@ class AetherRuntime:
         self.plan_repo = plan_repo if plan_repo is not None else PlanRepository()
         self.task_repo = task_repo if task_repo is not None else TaskGraphRepository()
         self.reflection_repo = (
-            reflection_repo
-            if reflection_repo is not None
-            else ReflectionRepository()
+            reflection_repo if reflection_repo is not None else ReflectionRepository()
         )
         self.critique_repo = (
             critique_repo if critique_repo is not None else CritiqueRepository()

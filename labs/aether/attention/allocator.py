@@ -58,8 +58,8 @@ def _raw_weights(signals: AttentionSignals) -> dict[AttentionChannel, float]:
     # Base priors — slight preference for focus under balanced conditions.
     focus = 0.28 + 0.35 * signals.task_complexity + 0.15 * signals.available_context
     memory = 0.18 + 0.45 * signals.memory_relevance
-    exploration = 0.15 + 0.4 * signals.uncertainty + 0.1 * (
-        1.0 - signals.available_context
+    exploration = (
+        0.15 + 0.4 * signals.uncertainty + 0.1 * (1.0 - signals.available_context)
     )
     verification = 0.2 + 0.35 * signals.uncertainty + 0.15 * signals.task_complexity
 

@@ -169,9 +169,7 @@ def validate_dag(graph: TaskGraph) -> tuple[str, ...]:
 
 def _select_tactical(goal: Goal) -> tuple[str, ...]:
     templates = list(_TACTICAL_TEMPLATES)
-    corpus = " ".join(
-        [goal.objective.lower(), *[c.lower() for c in goal.constraints]]
-    )
+    corpus = " ".join([goal.objective.lower(), *[c.lower() for c in goal.constraints]])
     if any(k in corpus for k in ("research", "evidence", "experiment")):
         templates.append("Design evidence protocol for: {objective}")
     if any(k in corpus for k in ("system", "architecture", "platform")):

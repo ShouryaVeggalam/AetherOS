@@ -281,7 +281,9 @@ def test_federation_panel_views() -> None:
     view = reg.refresh_statuses(now=_stamp())
     console = Console(record=True, width=100)
     console.print(FederationPanel())
-    assert "idle" in console.export_text().lower() or "FEDERATION" in console.export_text()
+    assert (
+        "idle" in console.export_text().lower() or "FEDERATION" in console.export_text()
+    )
     for v in ("nodes", "registry", "heartbeats", "protocol"):
         console = Console(record=True, width=110)
         console.print(
@@ -414,7 +416,9 @@ def test_coverage_edges() -> None:
     with pytest.raises(ValueError):
         decode_message(b"[1,2,3]")
     # str decode path
-    msg = heartbeat_message(_node(), build_heartbeat(_node(), _Tel(), now=_stamp()), now=_stamp())
+    msg = heartbeat_message(
+        _node(), build_heartbeat(_node(), _Tel(), now=_stamp()), now=_stamp()
+    )
     text = encode_message(msg).decode("utf-8")
     assert decode_message(text).kind == "heartbeat"
     # hub skip missing recipient
@@ -427,7 +431,9 @@ def test_coverage_edges() -> None:
     b = _node(node_id="b", hostname="hb")
     reg.register(a, now=_stamp())
     reg.register(b, now=_stamp())
-    reg.ingest_heartbeat(build_heartbeat(a, _Tel(), now=_stamp()), identity=a, now=_stamp())
+    reg.ingest_heartbeat(
+        build_heartbeat(a, _Tel(), now=_stamp()), identity=a, now=_stamp()
+    )
     reg.mark_offline("a", now=_stamp())
     reg.mark_offline("b", now=_stamp())
     assert reg.view(now=_stamp()).status == "degraded"
@@ -466,4 +472,6 @@ def test_coverage_edges() -> None:
     console.print(
         FederationPanel(registry=view, heartbeats=(), view="heartbeats", last_sync=None)
     )
-    assert "Heartbeats" in console.export_text() or "FEDERATION" in console.export_text()
+    assert (
+        "Heartbeats" in console.export_text() or "FEDERATION" in console.export_text()
+    )

@@ -138,7 +138,5 @@ def seed_demo_federation(
     _ = LocalTransport()  # ensure import used for type surface in demos
 
     view = registry.refresh_statuses(now=stamp)
-    beats = tuple(
-        r.last_heartbeat for r in view.nodes if r.last_heartbeat is not None
-    )
+    beats = tuple(r.last_heartbeat for r in view.nodes if r.last_heartbeat is not None)
     return beats, stamp

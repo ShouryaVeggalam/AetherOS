@@ -28,9 +28,7 @@ class TopologyPanel:
     view: str = "tree"
 
     def __rich__(self) -> RenderableType:
-        if self.graph is None or (
-            not self.graph.regions and not self.graph.nodes
-        ):
+        if self.graph is None or (not self.graph.regions and not self.graph.nodes):
             return Panel(
                 Text(
                     "TOPOLOGY idle.\n"

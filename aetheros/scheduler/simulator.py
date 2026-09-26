@@ -95,9 +95,7 @@ def synthetic_baseline_from_capacity(
     mem_used = 100.0 - node.available_memory
     rg = ResourceGraph(
         nodes=(
-            ResourceNode(
-                "cpu", "CPU", "CPU", (("percent", f"{cpu_used:.1f}"),), stamp
-            ),
+            ResourceNode("cpu", "CPU", "CPU", (("percent", f"{cpu_used:.1f}"),), stamp),
             ResourceNode(
                 "memory",
                 "Memory",
@@ -105,9 +103,7 @@ def synthetic_baseline_from_capacity(
                 (("percent", f"{mem_used:.1f}"),),
                 stamp,
             ),
-            ResourceNode(
-                "disk", "Disk", "Disk", (("percent", "30.0"),), stamp
-            ),
+            ResourceNode("disk", "Disk", "Disk", (("percent", "30.0"),), stamp),
             ResourceNode(
                 "gpu",
                 "GPU",

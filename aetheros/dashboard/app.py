@@ -435,7 +435,6 @@ class FederationViewState:
         return self.views[self.view_index % len(self.views)]
 
 
-
 @dataclass
 class TopologyViewState:
     """UI state for v4 P2 Cluster Topology panel (shortcut Z)."""
@@ -1355,7 +1354,8 @@ def build_frame(
         and not show_scheduler,
         causal_knowledge_graph=causal_knowledge_graph,
         causal_knowledge_view=causal_knowledge_view,
-        show_consensus=show_consensus and not show_research_lab
+        show_consensus=show_consensus
+        and not show_research_lab
         and not show_federation
         and not show_topology
         and not show_scheduler,
@@ -1364,7 +1364,8 @@ def build_frame(
         consensus_conflicts=consensus_conflicts,
         consensus_bus_events=consensus_bus_events,
         consensus_view=consensus_view,
-        show_research_lab=show_research_lab and not show_federation
+        show_research_lab=show_research_lab
+        and not show_federation
         and not show_topology
         and not show_scheduler,
         research_lab_questions=research_lab_questions,
@@ -1374,8 +1375,7 @@ def build_frame(
         research_lab_rejected=research_lab_rejected,
         research_lab_journal=research_lab_journal,
         research_lab_view=research_lab_view,
-        show_federation=show_federation and not show_topology
-        and not show_scheduler,
+        show_federation=show_federation and not show_topology and not show_scheduler,
         show_topology=show_topology and not show_scheduler,
         topology_graph=topology_graph,
         topology_view=topology_view,
@@ -2343,9 +2343,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             scheduler_view_state.visible = False
                     elif key == "/" or lowered == "/":
-                        scheduler_view_state.visible = (
-                            not scheduler_view_state.visible
-                        )
+                        scheduler_view_state.visible = not scheduler_view_state.visible
                         if scheduler_view_state.visible:
                             scheduler_view_state.seeded = False
                             show_help = False

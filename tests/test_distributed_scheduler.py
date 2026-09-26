@@ -70,13 +70,31 @@ def _node(node_id: str = "A", **kwargs: object) -> NodeCapacity:
 
 def test_workload_validation() -> None:
     with pytest.raises(ValueError):
-        Workload(id=" ", name="n", cpu_request=1, memory_request=1, gpu_request=0, priority=1)
+        Workload(
+            id=" ", name="n", cpu_request=1, memory_request=1, gpu_request=0, priority=1
+        )
     with pytest.raises(ValueError):
-        Workload(id="w", name=" ", cpu_request=1, memory_request=1, gpu_request=0, priority=1)
+        Workload(
+            id="w", name=" ", cpu_request=1, memory_request=1, gpu_request=0, priority=1
+        )
     with pytest.raises(ValueError):
-        Workload(id="w", name="n", cpu_request=-1, memory_request=1, gpu_request=0, priority=1)
+        Workload(
+            id="w",
+            name="n",
+            cpu_request=-1,
+            memory_request=1,
+            gpu_request=0,
+            priority=1,
+        )
     with pytest.raises(ValueError):
-        Workload(id="w", name="n", cpu_request=1, memory_request=1, gpu_request=0, priority=101)
+        Workload(
+            id="w",
+            name="n",
+            cpu_request=1,
+            memory_request=1,
+            gpu_request=0,
+            priority=101,
+        )
 
 
 def test_node_capacity_validation() -> None:
@@ -151,7 +169,9 @@ def test_intrinsic_capacity_rejects() -> None:
     wl = _workload(cpu_request=90)
     ok, reason = check_constraints(wl, _node(available_cpu=50))
     assert not ok and "CPU" in reason
-    ok, reason = check_constraints(_workload(memory_request=90), _node(available_memory=10))
+    ok, reason = check_constraints(
+        _workload(memory_request=90), _node(available_memory=10)
+    )
     assert not ok and "memory" in reason.lower()
     ok, reason = check_constraints(_workload(gpu_request=50), _node(available_gpu=5))
     assert not ok and "GPU" in reason
@@ -261,7 +281,9 @@ def test_score_node_normalized_and_deterministic() -> None:
 
 def test_score_availability_and_latency_edges() -> None:
     wl = _workload(cpu_request=0, memory_request=0, gpu_request=0)
-    score, _ = score_node(wl, _node(available_cpu=70, available_memory=60, available_gpu=50))
+    score, _ = score_node(
+        wl, _node(available_cpu=70, available_memory=60, available_gpu=50)
+    )
     assert score > 0
     wl2 = _workload(cpu_request=90)
     score2, _ = score_node(wl2, _node(available_cpu=10))
@@ -341,9 +363,7 @@ def test_simulate_plans_skips_missing_capacity() -> None:
         SchedulePlan(workload=wl, target_node="missing", score=60, reasoning="m"),
     )
     baseline = synthetic_baseline_from_capacity(node, now=_stamp())
-    enriched, results = simulate_plans(
-        plans, {"A": node}, baseline, now=_stamp()
-    )
+    enriched, results = simulate_plans(plans, {"A": node}, baseline, now=_stamp())
     assert len(enriched) == 1 and enriched[0].target_node == "A"
     assert len(results) == 1
 
@@ -377,9 +397,30 @@ def test_evaluate_schedule_twin_confidence_normalized() -> None:
     assert empty.best_plan is None and empty.confidence == 0.0
     wl = _workload()
     plans = (
-        SchedulePlan(workload=wl, target_node="B", score=90, reasoning="b", predicted_cpu=61, predicted_latency_ms=3),
-        SchedulePlan(workload=wl, target_node="A", score=70, reasoning="a", predicted_cpu=75, predicted_latency_ms=8),
-        SchedulePlan(workload=wl, target_node="C", score=65, reasoning="c", predicted_cpu=80, predicted_latency_ms=12),
+        SchedulePlan(
+            workload=wl,
+            target_node="B",
+            score=90,
+            reasoning="b",
+            predicted_cpu=61,
+            predicted_latency_ms=3,
+        ),
+        SchedulePlan(
+            workload=wl,
+            target_node="A",
+            score=70,
+            reasoning="a",
+            predicted_cpu=75,
+            predicted_latency_ms=8,
+        ),
+        SchedulePlan(
+            workload=wl,
+            target_node="C",
+            score=65,
+            reasoning="c",
+            predicted_cpu=80,
+            predicted_latency_ms=12,
+        ),
     )
     caps = {"A": _node("A"), "B": _node("B", cluster_health=90), "C": _node("C")}
     result = evaluate_schedule(plans, capacities=caps, now=_stamp())

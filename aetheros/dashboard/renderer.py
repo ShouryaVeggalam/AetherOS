@@ -55,6 +55,14 @@ from aetheros.orchestrator import (
     WorkloadPlannerPanel,
     WorkloadProfile,
 )
+from aetheros.policy import (
+    EvaluationResult,
+    PolicyStudioPanel,
+    SimulationImpact,
+)
+from aetheros.policy import (
+    Policy as StudioPolicy,
+)
 from aetheros.predictive import PredictivePanel, PredictiveReport
 from aetheros.reasoning.explain import CognitiveReport
 from aetheros.reasoning.formatter import GraphReasoningPanel
@@ -214,6 +222,12 @@ class DashboardFrame:
     marketplace_updates: tuple[UpdateRecommendation, ...]
     marketplace_selected: MarketPluginManifest | None
     marketplace_view: str
+    show_policy_studio: bool
+    policy_studio_policies: tuple[StudioPolicy, ...]
+    policy_studio_results: tuple[EvaluationResult, ...]
+    policy_studio_impact: SimulationImpact | None
+    policy_studio_selected: StudioPolicy | None
+    policy_studio_view: str
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -241,7 +255,17 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_marketplace:
+    if frame.show_policy_studio:
+        layout["center"].update(
+            PolicyStudioPanel(
+                policies=frame.policy_studio_policies,
+                results=frame.policy_studio_results,
+                impact=frame.policy_studio_impact,
+                selected=frame.policy_studio_selected,
+                view=frame.policy_studio_view,
+            )
+        )
+    elif frame.show_marketplace:
         layout["center"].update(
             MarketplacePanel(
                 catalog=frame.marketplace_catalog,

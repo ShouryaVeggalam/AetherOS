@@ -44,8 +44,8 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `observatory` | [observatory.md](observatory.md) | Temporal memory |
 | `ontology` | [ontology-catalogs.md](ontology-catalogs.md) | Genesis entity relations |
 | `orchestrator` | architecture | Workload planner |
-| `policy` | package README | Alias → policy_engine |
-| `policy_engine` | architecture | Rules |
+| `policy` | [policy_studio.md](policy_studio.md) · package README | v5.0 P4 Policy Studio (+ legacy policy_engine alias) |
+| `policy_engine` | architecture | Legacy telemetry recommendation rules |
 | `predictive` | architecture | Forecasts |
 | `protocol` | [fabric.md](fabric.md) | Fabric wire protocol |
 | `research` | architecture | Strategy research |

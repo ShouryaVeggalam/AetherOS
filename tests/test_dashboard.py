@@ -249,6 +249,12 @@ def test_render_frame_has_regions() -> None:
         marketplace_updates=(),
         marketplace_selected=None,
         marketplace_view="marketplace",
+        show_policy_studio=False,
+        policy_studio_policies=(),
+        policy_studio_results=(),
+        policy_studio_impact=None,
+        policy_studio_selected=None,
+        policy_studio_view="active",
     )
     layout = render_frame(frame)
     assert layout["header"] is not None

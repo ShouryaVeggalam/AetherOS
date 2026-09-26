@@ -15,9 +15,19 @@ export default function EnterprisePage() {
         title="Enterprise pilots. Read-only."
         lede="Eight weeks. Customer VPC or dedicated tenant. Up to three read-only connectors. Two cognition use cases. Zero writes to systems of record."
         actions={
-          <Link className="btn btn-solid btn-lg" href="/open-source">
-            Prefer open source first?
-          </Link>
+          <>
+            <a
+              className="btn btn-solid btn-lg"
+              href="https://getcelestra.tech/book-demo"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Contact enterprise
+            </a>
+            <Link className="btn btn-outline btn-lg" href="/open-source">
+              Prefer open source first?
+            </Link>
+          </>
         }
       />
       <Section title="Pilot shape" copy="Commercial, security, deploy, and ROI artifacts ship as a single kit.">
@@ -36,7 +46,15 @@ export default function EnterprisePage() {
           <Feature title="Option B" body="CELESTRA dedicated tenant — faster start" />
         </div>
         <div className="cta-row">
-          <Link className="btn btn-solid btn-lg" href="/research">
+          <a
+            className="btn btn-solid btn-lg"
+            href="https://getcelestra.tech/book-demo"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Book enterprise demo
+          </a>
+          <Link className="btn btn-outline btn-lg" href="/research">
             Research program
           </Link>
         </div>

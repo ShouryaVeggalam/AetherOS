@@ -87,6 +87,20 @@ from aetheros.genesis import GenesisReport, GenesisRuntime
 from aetheros.graph import ResourceGraph, build_resource_graph
 from aetheros.horizon import HorizonReport, HorizonRuntime
 from aetheros.infinity import InfinityReport, InfinityRuntime
+from aetheros.infra_twin import (
+    InfrastructureSnapshot as TwinInfraSnapshot,
+)
+from aetheros.infra_twin import (
+    InfrastructureTwinSimulator,
+    TwinRun,
+    from_cloud_snapshot,
+)
+from aetheros.infra_twin import (
+    TwinScenario as InfraTwinScenario,
+)
+from aetheros.infra_twin import (
+    demo_snapshot as infra_demo_snapshot,
+)
 from aetheros.intent import IntentEngine, IntentStorage
 from aetheros.knowledge import (
     CausalKnowledgeGraph,
@@ -625,6 +639,32 @@ class CloudViewState:
         return self.views[self.view_index % len(self.views)]
 
 
+@dataclass
+class InfraTwinViewState:
+    """UI state for v6 P2 Infrastructure Digital Twin panel (shortcut I)."""
+
+    visible: bool = False
+    simulator: InfrastructureTwinSimulator = field(
+        default_factory=InfrastructureTwinSimulator
+    )
+    snapshot: TwinInfraSnapshot | None = None
+    scenarios: tuple[InfraTwinScenario, ...] = ()
+    run: TwinRun | None = None
+    seeded: bool = False
+    view_index: int = 0
+    views: tuple[str, ...] = (
+        "snapshot",
+        "library",
+        "simulation",
+        "diff",
+        "availability",
+    )
+
+    @property
+    def view(self) -> str:
+        return self.views[self.view_index % len(self.views)]
+
+
 def max_cooldown_seconds(engine: DecisionEngine) -> float:
     """Return the longest active cooldown across known categories."""
 
@@ -721,6 +761,7 @@ def build_frame(
     policy_studio: PolicyStudioViewState | None = None,
     enterprise: EnterpriseViewState | None = None,
     cloud: CloudViewState | None = None,
+    infra_twin: InfraTwinViewState | None = None,
 ) -> DashboardFrame:
     """Map pipeline output into a DashboardFrame for the renderer."""
 
@@ -833,6 +874,7 @@ def build_frame(
     show_policy_studio = bool(policy_studio and policy_studio.visible)
     show_enterprise = bool(enterprise and enterprise.visible)
     show_cloud = bool(cloud and cloud.visible)
+    show_infra_twin = bool(infra_twin and infra_twin.visible)
     overlay = (
         show_explain
         or show_predict
@@ -860,6 +902,7 @@ def build_frame(
         or show_policy_studio
         or show_enterprise
         or show_cloud
+        or show_infra_twin
     )
     ai_explanation: Explanation | None = None
     if show_explain and explainability is not None:
@@ -1192,6 +1235,32 @@ def build_frame(
         cloud_health = cloud.health
         cloud_records = cloud.records
         cloud_age = cloud.snapshot_age_seconds
+
+    infra_twin_snapshot = None
+    infra_twin_scenarios: tuple = ()
+    infra_twin_run = None
+    infra_twin_view = "snapshot"
+    if show_infra_twin and infra_twin is not None:
+        infra_twin_view = infra_twin.view
+        if not infra_twin.seeded:
+            # Prefer cloud federation census when available; else demo topology.
+            try:
+                cloud_snap = seed_demo_cloud().last_snapshot
+                if cloud_snap is not None:
+                    infra_twin.simulator.set_baseline(from_cloud_snapshot(cloud_snap))
+                else:
+                    infra_twin.simulator.set_baseline(infra_demo_snapshot())
+            except Exception:
+                infra_twin.simulator.set_baseline(infra_demo_snapshot())
+            infra_twin.seeded = True
+        infra_twin.snapshot = infra_twin.simulator.baseline
+        infra_twin.scenarios = infra_twin.simulator.scenarios()
+        # Default simulation: region outage for panel richness.
+        if infra_twin.run is None:
+            infra_twin.run = infra_twin.simulator.simulate_kind("REGION_OUTAGE")
+        infra_twin_snapshot = infra_twin.snapshot
+        infra_twin_scenarios = infra_twin.scenarios
+        infra_twin_run = infra_twin.run
 
     policy_studio_policies: tuple = ()
     policy_studio_results: tuple = ()
@@ -1770,12 +1839,17 @@ def build_frame(
         enterprise_compliance_status=enterprise_compliance_status,
         enterprise_metrics=enterprise_metrics,
         enterprise_view=enterprise_view,
-        show_cloud=show_cloud,
+        show_cloud=show_cloud and not show_infra_twin,
         cloud_snapshot=cloud_snapshot,
         cloud_health=cloud_health,
         cloud_records=cloud_records,
         cloud_age=cloud_age,
         cloud_view=cloud_view,
+        show_infra_twin=show_infra_twin,
+        infra_twin_snapshot=infra_twin_snapshot,
+        infra_twin_scenarios=infra_twin_scenarios,
+        infra_twin_run=infra_twin_run,
+        infra_twin_view=infra_twin_view,
     )
 
 
@@ -1935,6 +2009,7 @@ def run_dashboard(
     policy_studio_view_state = PolicyStudioViewState(visible=False)
     enterprise_view_state = EnterpriseViewState(visible=False)
     cloud_view_state = CloudViewState(visible=False)
+    infra_twin_view_state = InfraTwinViewState(visible=False)
     core = AetherCore()
     core.registry.state_path = Path("data/plugin_state.json")
     core.bootstrap()
@@ -2001,6 +2076,7 @@ def run_dashboard(
             policy_studio=policy_studio_view_state,
             enterprise=enterprise_view_state,
             cloud=cloud_view_state,
+            infra_twin=infra_twin_view_state,
         )
 
     frame = make_frame()
@@ -2045,6 +2121,7 @@ def run_dashboard(
                         policy_studio_view_state.visible = False
                         enterprise_view_state.visible = False
                         cloud_view_state.visible = False
+                        infra_twin_view_state.visible = False
                         show_help = False
                         show_developer = False
                     elif key == "?" or lowered == "?":
@@ -2078,6 +2155,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif lowered == "h":
                         horizon_view.visible = not horizon_view.visible
                         if horizon_view.visible:
@@ -2109,6 +2187,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif lowered == "d":
                         show_developer = not show_developer
                         if show_developer:
@@ -2140,6 +2219,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif lowered == "m":
                         multi_agent.visible = not multi_agent.visible
                         if multi_agent.visible:
@@ -2171,6 +2251,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif lowered == "g":
                         genesis_view.visible = not genesis_view.visible
                         if genesis_view.visible:
@@ -2202,6 +2283,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif lowered == "s":
                         sentinel_view.visible = not sentinel_view.visible
                         if sentinel_view.visible:
@@ -2233,6 +2315,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif lowered == "f":
                         fabric_view.visible = not fabric_view.visible
                         if fabric_view.visible:
@@ -2264,7 +2347,44 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif lowered == "i":
+                        infra_twin_view_state.visible = (
+                            not infra_twin_view_state.visible
+                        )
+                        if infra_twin_view_state.visible:
+                            infra_twin_view_state.seeded = False
+                            infra_twin_view_state.run = None
+                            infinity_view.visible = False
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
+                            research_intel_view.visible = False
+                            op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
+                            consensus_view_state.visible = False
+                            research_lab_view_state.visible = False
+                            federation_view_state.visible = False
+                            topology_view_state.visible = False
+                            scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
+                            policy_studio_view_state.visible = False
+                            enterprise_view_state.visible = False
+                            cloud_view_state.visible = False
+                    elif key == "~" or lowered == "~":
                         infinity_view.visible = not infinity_view.visible
                         if infinity_view.visible:
                             infinity_view.last = None
@@ -2296,6 +2416,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif lowered == "y":
                         resource_graph_view.visible = not resource_graph_view.visible
                         if resource_graph_view.visible:
@@ -2327,6 +2448,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif lowered == "r":
                         graph_reasoning_view.visible = not graph_reasoning_view.visible
                         if graph_reasoning_view.visible:
@@ -2358,6 +2480,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif lowered == "v":
                         digital_twin_view.visible = not digital_twin_view.visible
                         if digital_twin_view.visible:
@@ -2389,6 +2512,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif lowered == "x":
                         research_intel_view.visible = not research_intel_view.visible
                         if research_intel_view.visible:
@@ -2420,6 +2544,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
 
                     elif lowered == "l":
                         op_memory_view.visible = not op_memory_view.visible
@@ -2452,6 +2577,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
 
                     elif lowered == "n":
                         causal_knowledge_view.visible = (
@@ -2486,6 +2612,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
 
                     elif lowered == "j":
                         consensus_view_state.visible = not consensus_view_state.visible
@@ -2518,6 +2645,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
 
                     elif lowered == "b":
                         research_lab_view_state.visible = (
@@ -2553,6 +2681,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif lowered == "u":
                         federation_view_state.visible = (
                             not federation_view_state.visible
@@ -2565,6 +2694,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                             show_help = False
                             show_developer = False
                             observatory.visible = False
@@ -2618,6 +2748,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif lowered == "w":
                         orchestrator.visible = not orchestrator.visible
                         if orchestrator.visible:
@@ -2649,8 +2780,11 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif lowered == "]":
-                        if cloud_view_state.visible:
+                        if infra_twin_view_state.visible:
+                            infra_twin_view_state.view_index += 1
+                        elif cloud_view_state.visible:
                             cloud_view_state.view_index += 1
                         elif enterprise_view_state.visible:
                             enterprise_view_state.view_index += 1
@@ -2743,6 +2877,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif lowered == "p":
                         policy_studio_view_state.visible = (
                             not policy_studio_view_state.visible
@@ -2781,6 +2916,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                             show_help = False
                             show_developer = False
                             observatory.visible = False
@@ -2848,6 +2984,7 @@ def run_dashboard(
                             marketplace_view_state.seeded = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                             show_help = False
                             show_developer = False
                             observatory.visible = False
@@ -2882,6 +3019,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                             show_help = False
                             show_developer = False
                             observatory.visible = False
@@ -2938,6 +3076,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif key == "LEFT":
                         observatory.history_offset = min(
                             max(0, len(observatory.recorder) - 1),
@@ -2981,6 +3120,7 @@ def run_dashboard(
                             policy_studio_view_state.visible = False
                             enterprise_view_state.visible = False
                             cloud_view_state.visible = False
+                            infra_twin_view_state.visible = False
                     elif key == "/" or lowered == "/":
                         scheduler_view_state.visible = not scheduler_view_state.visible
                         if scheduler_view_state.visible:

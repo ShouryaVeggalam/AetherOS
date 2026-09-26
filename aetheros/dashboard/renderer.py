@@ -63,6 +63,16 @@ from aetheros.genesis import GenesisPanel, GenesisReport
 from aetheros.graph import ResourceGraph, ResourceGraphPanel
 from aetheros.horizon import HorizonPanel, HorizonReport
 from aetheros.infinity import InfinityPanel, InfinityReport
+from aetheros.infra_twin import (
+    InfrastructureSnapshot as TwinInfraSnapshot,
+)
+from aetheros.infra_twin import (
+    InfrastructureTwinPanel,
+    TwinRun,
+)
+from aetheros.infra_twin import (
+    TwinScenario as InfraTwinScenario,
+)
 from aetheros.knowledge import CausalKnowledgeGraph, CausalKnowledgePanel
 from aetheros.marketplace import (
     InstalledPlugin,
@@ -267,6 +277,11 @@ class DashboardFrame:
     cloud_records: tuple[ProviderRecord, ...]
     cloud_age: float
     cloud_view: str
+    show_infra_twin: bool
+    infra_twin_snapshot: TwinInfraSnapshot | None
+    infra_twin_scenarios: tuple[InfraTwinScenario, ...]
+    infra_twin_run: TwinRun | None
+    infra_twin_view: str
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -294,7 +309,16 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_cloud:
+    if frame.show_infra_twin:
+        layout["center"].update(
+            InfrastructureTwinPanel(
+                snapshot=frame.infra_twin_snapshot,
+                scenarios=frame.infra_twin_scenarios,
+                run=frame.infra_twin_run,
+                view=frame.infra_twin_view,
+            )
+        )
+    elif frame.show_cloud:
         layout["center"].update(
             CloudFederationPanel(
                 snapshot=frame.cloud_snapshot,

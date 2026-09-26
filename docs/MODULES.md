@@ -37,6 +37,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `bridge` | [graph_bridge.md](graph_bridge.md) | Graph Intelligence Bridge (P5) |
 | `horizon` | [horizon.md](horizon.md) | Planetary intelligence |
 | `infinity` | [infinity.md](infinity.md) | ∞ unifying layer |
+| `infra_twin` | [infrastructure_twin.md](infrastructure_twin.md) | v6.0 P2 Infrastructure Digital Twin (simulation only) |
 | `intent` | architecture | Operator profiles |
 | `kernel` | package README | Userspace context only |
 | `knowledge` | [ontology-catalogs.md](ontology-catalogs.md) · [causal_knowledge_graph.md](causal_knowledge_graph.md) | Ontology catalogs + v3 P3 Causal Knowledge Graph |

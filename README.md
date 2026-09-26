@@ -212,7 +212,8 @@ health = client.health()
 |-----|--------|
 | `Q` | Quit |
 | `?` | Help |
-| `I` | Infinity (platform overview) |
+| `I` | Infrastructure Twin |
+| `~` | Infinity (platform overview) |
 | `E` | Enterprise |
 | `@` | Extensions / Marketplace |
 | `P` | Policy Studio |
@@ -289,7 +290,7 @@ Charter: [docs/CELESTRA.md](docs/CELESTRA.md)
 | Version | Focus |
 |---------|--------|
 | **v5.0.0 Nexus** | Plugin SDK · Public API · Marketplace · Policy Studio · Enterprise |
-| **v6.x (in progress)** | Cloud Federation Engine (read-only multi-cloud) |
+| **v6.x (in progress)** | Cloud Federation · Infrastructure Digital Twin |
 | v4.x | Federation · Topology · Scheduler · Atlas |
 | v3.x | Cognition · Memory · Causal KG · Consensus · Research Lab |
 | v2.0 Intelligence | Resource Graph · Reasoning · Twin · Context · Research Intel |

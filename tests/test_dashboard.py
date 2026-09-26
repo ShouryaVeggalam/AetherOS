@@ -271,6 +271,11 @@ def test_render_frame_has_regions() -> None:
         cloud_records=(),
         cloud_age=0.0,
         cloud_view="providers",
+        show_infra_twin=False,
+        infra_twin_snapshot=None,
+        infra_twin_scenarios=(),
+        infra_twin_run=None,
+        infra_twin_view="snapshot",
     )
     layout = render_frame(frame)
     assert layout["header"] is not None

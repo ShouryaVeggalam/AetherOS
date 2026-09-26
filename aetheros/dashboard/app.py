@@ -517,7 +517,7 @@ class SchedulerViewState:
 
 @dataclass
 class MarketplaceViewState:
-    """UI state for v5 P3 Extension Marketplace panel (shortcut E)."""
+    """UI state for v5 P3 Extension Marketplace panel (shortcut @)."""
 
     visible: bool = False
     registry: MarketplaceRegistry = field(default_factory=MarketplaceRegistry)

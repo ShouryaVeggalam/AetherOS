@@ -74,7 +74,7 @@ def test_infinity_api(tmp_path: Path) -> None:
 
     client = TestClient(create_app(memory_db=tmp_path / "cog.db"))
     health = client.get("/health").json()
-    assert health["version"].startswith("2.")
+    assert health["version"].startswith("5.")
     payload = client.get("/infinity").json()
     assert payload["generation_count"] == 10
     assert payload["layers_ready"] >= 1

@@ -1,0 +1,54 @@
+name: Feature request
+description: Propose an additive, explainable, userspace capability
+title: "[feat] "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Features must preserve **observe · reason · simulate · explain**, remain userspace/read-only, and keep humans in the loop.
+        Read the [CELESTRA charter](../../docs/CELESTRA.md) and [CONTRIBUTING.md](../../CONTRIBUTING.md).
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What operator or research problem does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: Desired behavior (no host mutation paths).
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence & explainability
+      description: What inputs support the claim? How does an operator reconstruct why?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+  - type: checkboxes
+    id: gate
+    attributes:
+      label: Acceptance gate
+      options:
+        - label: Problem-backed
+          required: true
+        - label: Evidence-based
+          required: true
+        - label: Explainable
+          required: true
+        - label: Testable in CI
+          required: true
+        - label: Reproducible from docs + code
+          required: true
+        - label: No shell / sudo / kernel / automatic OS mutation
+          required: true

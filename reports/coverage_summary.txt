@@ -1,3 +1,6 @@
-AetherOS v2.0.0 coverage
-statements=9296 covered=8586 missing=710 percent=92.36
-gate=90.0 status=PASS
+AetherOS v5.0.0 Nexus — coverage summary
+========================================
+Command: pytest --cov=aetheros --cov-report=term-missing --cov-report=xml --cov-fail-under=90
+Measured (release engineering host, 2026-09-26): TOTAL ~15768, Miss ~750, Cover ~95.24%
+Gate: fail_under = 90
+Artifact: coverage.xml (CI upload-artifact: coverage-xml)

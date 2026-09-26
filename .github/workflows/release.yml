@@ -34,7 +34,7 @@ jobs:
         run: |
           ruff check .
           black --check .
-          python -m compileall -q aetheros services
+          python -m compileall -q aetheros services plugins
           python scripts/check_import_cycles.py
           pytest --cov=aetheros --cov-fail-under=90
 
@@ -49,14 +49,21 @@ jobs:
         with:
           draft: true
           generate_release_notes: true
-          name: AetherOS ${{ github.ref_name }} — Intelligence
+          name: AetherOS ${{ github.ref_name }} — Nexus
           files: |
             dist/*.whl
             dist/*.tar.gz
           body: |
-            AetherOS **${{ github.ref_name }}** — Intelligence (Release Candidate draft).
+            # AetherOS ${{ github.ref_name }} — Nexus
+
+            Explainable Operating Intelligence Platform · **Observe · Reason · Simulate · Explain**
 
             This release was created as a **draft**. Human review required before publish.
+
+            ## What's new
+
+            - Plugin SDK · Public API / `AetherClient` · Marketplace · Policy Studio · Enterprise Edition
+            - Full notes: [docs/releases/v5.0.0.md](https://github.com/shouryaveggalam/AetherOS/blob/main/docs/releases/v5.0.0.md)
 
             ## Install
 
@@ -65,9 +72,12 @@ jobs:
             python -m aetheros
             ```
 
-            See [docs/releases/v2.0.0.md](https://github.com/shouryaveggalam/AetherOS/blob/main/docs/releases/v2.0.0.md),
-            [CHANGELOG.md](https://github.com/shouryaveggalam/AetherOS/blob/main/CHANGELOG.md),
-            and [SECURITY.md](https://github.com/shouryaveggalam/AetherOS/blob/main/SECURITY.md).
+            ## Docs
+
+            - [CHANGELOG.md](https://github.com/shouryaveggalam/AetherOS/blob/main/CHANGELOG.md)
+            - [Architecture](https://github.com/shouryaveggalam/AetherOS/blob/main/docs/architecture.md)
+            - [Benchmarks](https://github.com/shouryaveggalam/AetherOS/blob/main/docs/benchmarks.md)
+            - [SECURITY.md](https://github.com/shouryaveggalam/AetherOS/blob/main/SECURITY.md)
 
             Recommendation-only. Userspace. MIT License.
         env:

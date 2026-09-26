@@ -4,8 +4,9 @@
 
 | Version | Supported |
 |---------|-----------|
-| 2.0.x (Intelligence RC) | Yes |
-| 1.5.x-alpha | Security fixes on a best-effort basis |
+| 5.0.x (Nexus) | Yes |
+| 2.0.x (Intelligence RC) | Security fixes on a best-effort basis |
+| 1.5.x-alpha | No |
 | &lt; 1.5 | No |
 
 ## Product security posture

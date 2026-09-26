@@ -3,7 +3,7 @@
 Thank you for helping **CELESTRA** build an explainable, userspace operating
 intelligence platform. Read the founding charter: [docs/CELESTRA.md](docs/CELESTRA.md).
 
-AetherOS is an **alpha** research project. Contributions should preserve these
+AetherOS is a **production** research-and-operations platform. Contributions should preserve these
 invariants:
 
 1. Observe before acting.

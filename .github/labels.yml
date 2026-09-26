@@ -1,0 +1,68 @@
+# Repository labels for AetherOS (apply via gh or GitHub UI)
+# gh label create <name> --color <hex> --description "<text>"
+#
+# Color convention: dark neutrals for triage; semantic hues for type.
+
+- name: bug
+  color: "b60205"
+  description: Something is not working as documented
+
+- name: enhancement
+  color: "0e8a16"
+  description: Additive capability request
+
+- name: documentation
+  color: "0075ca"
+  description: Docs, diagrams, release packaging
+
+- name: good first issue
+  color: "7057ff"
+  description: Good for newcomers
+
+- name: help wanted
+  color: "008672"
+  description: Extra attention is needed
+
+- name: needs-triage
+  color: "fbca04"
+  description: Maintainer triage required
+
+- name: security
+  color: "000000"
+  description: Security-sensitive (prefer private advisory)
+
+- name: area/api
+  color: "5319e7"
+  description: Public API / AetherClient
+
+- name: area/dashboard
+  color: "5319e7"
+  description: Rich dashboard / Atlas
+
+- name: area/plugins
+  color: "5319e7"
+  description: Plugin SDK / Marketplace
+
+- name: area/enterprise
+  color: "5319e7"
+  description: Enterprise / RBAC / audit
+
+- name: area/policy
+  color: "5319e7"
+  description: Policy Studio / policy engine
+
+- name: area/ci
+  color: "c5def5"
+  description: CI / tooling / release engineering
+
+- name: release
+  color: "1d76db"
+  description: Release packaging / tags / notes
+
+- name: question
+  color: "d876e3"
+  description: Clarification request
+
+- name: wontfix
+  color: "ffffff"
+  description: Will not be worked

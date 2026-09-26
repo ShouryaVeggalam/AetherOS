@@ -1,0 +1,31 @@
+name: Documentation
+description: Improve docs, diagrams, or release packaging
+title: "[docs] "
+labels: ["documentation", "needs-triage"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options:
+        - README / getting started
+        - Architecture / Mermaid
+        - Module doc
+        - Benchmarks / release notes
+        - Templates / CI docs
+        - Typo / clarity
+    validations:
+      required: true
+  - type: textarea
+    id: location
+    attributes:
+      label: Location
+      placeholder: e.g. docs/architecture.md, README.md#installation
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggestion
+    validations:
+      required: true

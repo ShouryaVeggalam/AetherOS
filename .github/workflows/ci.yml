@@ -1,4 +1,4 @@
-# Continuous integration for AetherOS v2.0 Intelligence RC
+# Continuous integration for AetherOS v5.0 Nexus
 name: CI
 
 on:
@@ -36,14 +36,14 @@ jobs:
           pip install -e ".[dev]"
           pip install build
 
-      - name: Ruff
+      - name: Ruff (lint)
         run: ruff check .
 
-      - name: Black
+      - name: Black (format)
         run: black --check .
 
       - name: Type surface (bytecode compile)
-        run: python -m compileall -q aetheros services
+        run: python -m compileall -q aetheros services plugins
 
       - name: Import cycles
         run: python scripts/check_import_cycles.py

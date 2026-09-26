@@ -4,17 +4,26 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aetheros"
-version = "2.0.0"
-description = "AetherOS — Explainable Operating Intelligence Platform (v2.0 Intelligence RC)"
+version = "5.0.0"
+description = "AetherOS — Explainable Operating Intelligence Platform (v5.0 Nexus)"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
     { name = "Shourya Veggalam" },
 ]
 requires-python = ">=3.12"
-keywords = ["aetheros", "telemetry", "explainability", "rich", "observability"]
+keywords = [
+    "aetheros",
+    "telemetry",
+    "explainability",
+    "rich",
+    "observability",
+    "digital-twin",
+    "plugin-sdk",
+    "enterprise",
+]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
@@ -98,13 +107,15 @@ extend-exclude = '''
   \.venv
   | dist
   | build
+  | node_modules
+  | \.next
 )/
 '''
 
 [tool.ruff]
 line-length = 88
 target-version = "py312"
-extend-exclude = [".venv", "dist", "build"]
+extend-exclude = [".venv", "dist", "build", "node_modules", ".next"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]

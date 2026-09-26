@@ -61,7 +61,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `twin` | [digital_twin.md](digital_twin.md) · [fabric.md](fabric.md) | Digital Twin 2.0 (host) + global twin |
 | `services/intelligence` | [PHASE16.md](PHASE16.md) | CELESTRA GII v9 — Cognition Engine (`/v9`) |
 | `labs/aether` | [aether_lab.md](aether_lab.md) | CELESTRA X Aether Lab — Attention → Decompose → Plan → Reflect → Critique (`/aether`) |
-| Release eng. | [release_checklist.md](release_checklist.md) · [releases/v2.0.0.md](releases/v2.0.0.md) · [benchmarks.md](benchmarks.md) · [adr/](adr/) | P10 RC artifacts |
+| Release eng. | [RELEASE_CHECKLIST.md](../RELEASE_CHECKLIST.md) · [releases/v5.0.0.md](releases/v5.0.0.md) · [benchmarks.md](benchmarks.md) · [adr/](adr/) | v5.0.0 Nexus packaging |
 
 ## Documentation standard
 

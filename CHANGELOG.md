@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [5.0.0] — 2026-09-26 — Nexus
+
+Production release of the AetherOS Explainable Operating Intelligence Platform.
+
+### Added
+
 - v5.0 P5 Enterprise Edition — `aetheros.enterprise` (orgs · RBAC · API keys · audit · compliance)
 - Dashboard **E** → Enterprise (Orgs / Workspaces / Roles / Keys / Audit / Compliance / Analytics); **@** → Extensions
 - Docs: `docs/enterprise.md`
@@ -16,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dashboard **P** → Policies (Active / Versions / Builder / Evaluation / Simulation); **#** → Predictive
 - Docs: `docs/policy_studio.md`
 - v5.0 P3 Extension Marketplace — `aetheros.marketplace` (catalog · install · verify · enable)
-- Dashboard **E** → Extensions (Marketplace / Installed / Updates / Permissions / Details); **=** → Explainability
+- Dashboard **@** → Extensions (Marketplace / Installed / Updates / Permissions / Details); **=** → Explainability
 - Docs: `docs/marketplace.md`
 - v5.0 P2 Public API & Python SDK — `/api/v1` FastAPI routes + `AetherClient`
 - Docs: `docs/public_api.md`, `docs/python_sdk.md`
@@ -61,7 +71,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Package version set to **5.0.0** (codename **Nexus**, production release)
+- Development status classifier: Production/Stable
+- Release engineering: publication-grade README, architecture diagrams, benchmarks, GitHub templates, CI coverage artifacts
+
 ### Fixed
+
+### Planned
+
+- Horizon roadmap deepening (planetary overlays, recorded demo GIFs)
+- Optional WebSocket cluster transport (read-only)
 
 ## [2.0.0] — 2026-09-25 — Intelligence (Release Candidate)
 
@@ -351,7 +370,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI monitor prototype
 - Project skeleton under `aetheros/`
 
-[Unreleased]: https://github.com/shouryaveggalam/AetherOS/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/shouryaveggalam/AetherOS/compare/v5.0.0...HEAD
+[5.0.0]: https://github.com/shouryaveggalam/AetherOS/releases/tag/v5.0.0
 [2.0.0]: https://github.com/shouryaveggalam/AetherOS/releases/tag/v2.0.0
 [1.5.0-alpha]: https://github.com/shouryaveggalam/AetherOS/releases/tag/v1.5.0-alpha
 [1.4.0]: https://github.com/shouryaveggalam/AetherOS/releases/tag/v1.4.0

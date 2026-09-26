@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reproducible micro-benchmarks for AetherOS v2.0 release engineering.
+"""Reproducible micro-benchmarks for AetherOS v5.0 Nexus release engineering.
 
 Measures userspace CPU time only — no network, no privileged calls.
 Writes JSON to reports/benchmarks.json and prints a Markdown table.

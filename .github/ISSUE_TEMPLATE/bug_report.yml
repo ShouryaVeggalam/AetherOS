@@ -1,0 +1,62 @@
+name: Bug report
+description: Report a defect in AetherOS (userspace / read-only / HITL)
+title: "[bug] "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping AetherOS. Please **do not** report security issues here — see [SECURITY.md](../../SECURITY.md).
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Package or git tag (e.g. 5.0.0 / commit SHA)
+      placeholder: 5.0.0
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Dashboard / Rich UI
+        - Public API / SDK
+        - Plugin SDK / Marketplace
+        - Policy Studio
+        - Enterprise
+        - Telemetry / Graph / Twin
+        - Docs / CI
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Clear, minimal reproduction.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: |
+        OS:
+        Python:
+        Install method: pip editable / wheel
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: This report does not require or describe host mutation, sudo, or shell execution by AetherOS.
+          required: true

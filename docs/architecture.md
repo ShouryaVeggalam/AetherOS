@@ -1,4 +1,4 @@
-# Architecture — AetherOS ∞
+# Architecture — AetherOS v5.0 Nexus
 
 AetherOS is an **Explainable Operating Intelligence Platform**. It is not an
 operating system, kernel, driver, or autonomous controller.
@@ -6,6 +6,8 @@ operating system, kernel, driver, or autonomous controller.
 Engineering decisions follow the **CELESTRA** founding charter:
 [CELESTRA.md](CELESTRA.md) (human-centered, explainable, simulation-first,
 read-only, open architecture, enterprise-grade).
+
+**Release:** `v5.0.0` · **Codename:** Nexus · **License:** MIT
 
 ## Design invariants
 
@@ -17,6 +19,15 @@ read-only, open architecture, enterprise-grade).
 6. Research-grade architecture.
 7. Modular by design — no circular dependencies into higher layers.
 
+## Diagram index
+
+| Diagram | File |
+|---------|------|
+| Intelligence pipeline | [architecture/pipeline.md](architecture/pipeline.md) |
+| Platform stack (Nexus) | [architecture/platform-stack.md](architecture/platform-stack.md) |
+| Extensibility & enterprise | [architecture/extensibility.md](architecture/extensibility.md) |
+| Generation map | [architecture/generations.md](architecture/generations.md) |
+
 ## Intelligence pipeline
 
 ```mermaid
@@ -24,7 +35,7 @@ flowchart TD
     T[Telemetry] --> O[Observatory]
     O --> Ev[Evidence]
     Ev --> R[Reasoning]
-    R --> S[Simulation]
+    R --> S[Simulation / Twin]
     S --> P[Prediction]
     P --> X[Explainability]
     X --> Rec[Recommendation]
@@ -35,15 +46,11 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    V1[v1 Operating] --> V2[v2 Resource]
+    V1[v1 Operating] --> V2[v2 Intelligence]
     V2 --> V3[v3 Cognitive]
-    V3 --> V4[v4 Agents]
-    V4 --> V5[v5 Atlas]
-    V5 --> V6[v6 Horizon]
-    V6 --> V7[v7 Genesis]
-    V7 --> V8[v8 Sentinel]
-    V8 --> V9[v9 Fabric]
-    V9 --> INF[∞ Infinity]
+    V3 --> V4[v4 Distributed]
+    V4 --> V5[v5 Nexus]
+    V5 --> HZ[Horizon+]
 ```
 
 ## Module map
@@ -51,7 +58,8 @@ flowchart LR
 | Package | Generation | Responsibility |
 |---------|------------|----------------|
 | `telemetry` | v1 | Host metrics (read-only) |
-| `policy` / `policy_engine` | v1 | Advice-only rules |
+| `policy_engine` | v1 | Advice-only rules (legacy engine) |
+| `policy` | v5 | Policy Studio (versioned · simulate · advisory) |
 | `safety` | v1 | Approval, cooldowns, audit |
 | `decision` | v1 | Prioritized recommendations |
 | `observatory` | v1 | Temporal memory |
@@ -59,49 +67,38 @@ flowchart LR
 | `predictive` | v1+ | Statistical forecasts |
 | `cluster` / `agent` | v1+ | Multi-device bus |
 | `orchestrator` | v1+ | Workload placement advice |
-| `kernel` | v2 | **Userspace** resource context (not OS kernel) |
-| `knowledge` / `ontology` | v2–v7 | Catalogs — see [ontology-catalogs.md](ontology-catalogs.md) |
-| `cognition` / `reasoning` | v3 | Causal / hypothesis / verify |
-| `agents` / `messaging` | v4 | Multi-agent bus |
-| `atlas` | v5 | Facade over Horizon + Twin |
+| `graph` / `bridge` / `reasoning` | v2 | Resource graph + reasoning |
+| `twin` / `context` / `research` | v2 | Twin · context · research intel |
+| `memory` / `knowledge` / `cognition` | v3 | Operational memory · causal KG · cognition core |
+| `research_ai` | v3 | Autonomous research lab (twin-only) |
+| `federation` / `topology` / `scheduler` | v4 | Protocol · topology · scheduler advice |
+| `atlas` | v4–v5 | Rich presentation observatory |
+| `marketplace` | v5 | Extension catalog · install · verify |
+| `enterprise` | v5 | Orgs · RBAC · API keys · audit · compliance |
+| `api` / `sdk` | v5 | `/api/v1` + `AetherClient` |
 | `horizon` / `edge` / `robotics` | v6 | Planetary intelligence |
 | `genesis` | v7 | Research knowledge engine |
-| `sentinel` / `graph` | v8 + P4 | Resilience deps + Resource Graph Engine |
-| `fabric` / `protocol` / `twin` | v9 | Universal federation |
+| `sentinel` | v8 | Resilience intelligence |
+| `fabric` / `protocol` | v9 | Universal federation |
 | `simulation` | [simulation.md](simulation.md) | Host what-if (simulator family) |
-| `storage` | architecture | Shared SQLite connect/schema helpers |
+| `storage` | architecture | Shared SQLite helpers |
 | `infinity` | ∞ | Unifying pipeline + status |
-| `api` / `dashboard` | all | Read-only API + Rich UI |
-| `sdk` / `plugins` | all | Sandboxed plugins |
-| `services/intelligence` | GII v9 | Cognition Engine — see [PHASE16.md](PHASE16.md) |
+| `dashboard` | all | Rich operator UI |
+| `plugins` / Plugin SDK | all | Sandboxed plugins |
+| `services/intelligence` | GII | Cognition Engine — see [PHASE16.md](PHASE16.md) |
 
-## Compatibility aliases
+## Compatibility notes
 
-- `aetheros.policy` → `aetheros.policy_engine`
-- `aetheros.atlas` → Horizon world graph + Global Twin
-- `aetheros.kernel` → userspace resource context only
-- `aetheros.advice.Decision` → shared by decision + intent (no package cycle)
-- `aetheros.reasoning.explain` → re-exports `cognition.report` (compat)
-- `aetheros.runtime.AgenticReport` → owned by `agents.report` (compat)
+- `aetheros.policy` is the **Policy Studio** package (v5). Legacy advice-only evaluation remains in `aetheros.policy_engine`.
+- `aetheros.kernel` is **userspace** resource context only — never an OS kernel.
+- `aetheros.advice.Decision` is shared by decision + intent (no package cycle).
+- `aetheros.sdk.client.AetherClient` is the supported public Python client.
 
 ## Related docs
 
 - [CELESTRA charter](CELESTRA.md)
-- [Infinity](infinity.md)
 - [Module index](MODULES.md)
-- [Ontology catalogs](ontology-catalogs.md) · [Simulation family](simulation.md)
-- [Plugins / trust](plugins.md) · [agent vs agents](agents.md#naming-agent-vs-agents)
-- [Resource Graph](resource_graph.md)
-- [Graph Intelligence Bridge](graph_bridge.md)
-- [Graph Reasoning](reasoning.md)
-- [Digital Twin 2.0](digital_twin.md)
-- [Context Engine](context_engine.md)
-- [Cognition Core v3](cognition_core.md)
-- [Operational Memory v3 P2](operational_memory.md)
-- [Causal Knowledge Graph v3 P3](causal_knowledge_graph.md)
-- [Multi-Agent Consensus v3 P4](multi_agent_consensus.md)
-- [Autonomous Research Engine v3 P5](autonomous_research.md)
-- [Research Intelligence P9](research_engine.md)
-- [Phase 16 GII](PHASE16.md)
-- [Fabric](fabric.md) · [Sentinel](sentinel.md) · [Genesis](genesis.md) · [Horizon](horizon.md)
-- [Agents](agents.md) · [Cognition](cognition.md) · [Observatory](observatory.md)
+- [Plugin SDK](plugin_sdk.md) · [Public API](public_api.md) · [Python SDK](python_sdk.md)
+- [Marketplace](marketplace.md) · [Policy Studio](policy_studio.md) · [Enterprise](enterprise.md)
+- [Benchmarks](benchmarks.md) · [Release notes v5.0.0](releases/v5.0.0.md)
+- [Horizon roadmap](horizon.md)

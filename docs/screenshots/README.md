@@ -6,6 +6,7 @@ This directory holds terminal recordings for the public README.
 
 | File | Subject |
 |------|---------|
+| `demo.gif` | **Primary demo loop** — Nexus dashboard (8–12s) |
 | `dashboard.gif` | Main operator dashboard (telemetry + decision + safety) |
 | `observatory.gif` | Observatory graphs, timeline, observations |
 | `cluster.gif` | Cluster overview with multiple nodes |
@@ -28,12 +29,14 @@ The root README references:
 ![Observatory](docs/screenshots/observatory.gif)
 ![Cluster Overview](docs/screenshots/cluster.gif)
 ![Predictive Intelligence](docs/screenshots/predictive.gif)
+![Demo (placeholder)](docs/screenshots/demo.gif)
 ```
 
-Until GIFs are recorded, GitHub will show broken-image placeholders. That is expected for documentation-first alpha packaging.
+Until GIFs are recorded, GitHub will show broken-image placeholders. That is expected for documentation-first packaging of **v5.0.0 Nexus**.
 
 ## Checklist for maintainers
 
+- [ ] Record `demo.gif` (primary README hero demo)
 - [ ] Record `dashboard.gif`
 - [ ] Record `observatory.gif`
 - [ ] Record `cluster.gif`

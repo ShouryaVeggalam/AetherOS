@@ -21,6 +21,10 @@ coverage.xml
 coverage.json
 *.cover
 
+# Node / Next.js (labs observatory)
+node_modules/
+.next/
+
 # OS / editor
 .DS_Store
 .idea/

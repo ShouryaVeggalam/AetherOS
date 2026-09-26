@@ -281,6 +281,10 @@ def test_render_frame_has_regions() -> None:
         global_graph_evidence=None,
         global_graph_validation=None,
         global_graph_view="world",
+        show_planetary=False,
+        planetary_workload=None,
+        planetary_decision=None,
+        planetary_view="map",
     )
     layout = render_frame(frame)
     assert layout["header"] is not None

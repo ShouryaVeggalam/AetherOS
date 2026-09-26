@@ -26,6 +26,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `federation` | [federation_protocol.md](federation_protocol.md) | v4.0 P1 Federation Protocol (read-only node snapshots) |
 | `topology` | [cluster_topology.md](cluster_topology.md) | v4.0 P2 Cluster Topology Engine (World → Nodes) |
 | `scheduler` | [distributed_scheduler.md](distributed_scheduler.md) | v4.0 P3 Distributed Scheduler (Digital Twin simulation only) |
+| `atlas` | [atlas_dashboard.md](atlas_dashboard.md) · [horizon.md](horizon.md) | v4.0 P5 Atlas Dashboard (+ v5 Horizon/Twin facade) |
 | `genesis` | [genesis.md](genesis.md) | Research knowledge |
 | `graph` | [resource_graph.md](resource_graph.md) · [sentinel.md](sentinel.md) | Resource Graph Engine + Sentinel deps |
 | `reasoning` | [reasoning.md](reasoning.md) · [cognition.md](cognition.md) | Graph Reasoning Engine + cognitive helpers |

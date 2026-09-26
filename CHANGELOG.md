@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- v4.0 P5 Atlas Dashboard — `aetheros.atlas` Rich observatory (O/F/T/S/G/D/R/H navigation)
+- Entry: `aetheros-atlas` / `python -m aetheros.atlas` (presentation only, read-only)
+- Docs: `docs/atlas_dashboard.md`
 - v4.0 P3 Distributed Scheduler — `aetheros.scheduler` (constraint → score → twin-simulate → evaluate)
 - Dashboard **/** → Distributed Scheduler (Workloads / Candidates / Scores / Simulation / Trade-offs); **S** stays Sentinel
 - Docs: `docs/distributed_scheduler.md`

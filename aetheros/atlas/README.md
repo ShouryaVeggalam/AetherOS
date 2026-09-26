@@ -1,21 +1,22 @@
-# Atlas (v5)
+# Atlas (v4.0 P5 + v5 facade)
 
-Global infrastructure reasoning facade.
+**Atlas Dashboard** is the Rich terminal observatory for distributed
+infrastructure (presentation only).
 
-Atlas maps to the existing Horizon world graph and Global Twin. It does
-**not** introduce a second planetary model.
-
-## Hierarchy
-
-```mermaid
-flowchart TD
-    W[World / Earth] --> R[Regions]
-    R --> D[Datacenters]
-    D --> C[Clusters]
-    C --> N[Nodes]
+```bash
+aetheros-atlas
+python -m aetheros.atlas --page overview
 ```
 
-## Public API
+Hotkeys: **O** Overview · **F** Federation · **T** Topology · **S** Scheduler ·
+**G** Consensus · **D** Twin · **R** Research · **H** Health · **Q** Quit
+
+Docs: [atlas_dashboard.md](../../docs/atlas_dashboard.md)
+
+## Compatibility facade
+
+Atlas still re-exports Horizon world graph + Global Twin under the historical
+generation name:
 
 ```python
 from aetheros.atlas import WorldGraph, HorizonRuntime, GlobalTwin
@@ -23,6 +24,7 @@ from aetheros.atlas import WorldGraph, HorizonRuntime, GlobalTwin
 
 ## Invariants
 
-- Read-only / simulation-only
+- Read-only / simulation-only presentation
+- Rich only (no Textual)
 - No remote execution
-- Humans approve recommendations
+- No telemetry / twin / schema mutations

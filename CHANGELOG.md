@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - v6.0 P5 Horizon Observatory — `aetheros.horizon` presentation layer (Rich · read-only)
 - Entry: `aetheros-horizon` · pages Overview / Cloud / Topology / Knowledge / Scheduler / Twin / Consensus / Research / Health
 - Docs: `docs/horizon_observatory.md`
+- Research paper draft: `docs/papers/aetheros_explainable_operating_intelligence.md`
 - v6.0 P4 Planetary Scheduler — `aetheros.planetary` (constraints · scoring · twin sim · top-5)
 - Dashboard **W** → Worldwide Scheduler (Map / Regions / Candidates / Trade-offs / Simulation); **%** → Workload Planner
 - Docs: `docs/planetary_scheduler.md`

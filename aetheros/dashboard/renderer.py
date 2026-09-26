@@ -38,6 +38,7 @@ from aetheros.federation import FederationPanel
 from aetheros.federation.models import Heartbeat, RegistryView
 from aetheros.genesis import GenesisPanel, GenesisReport
 from aetheros.topology import TopologyGraph, TopologyPanel
+from aetheros.scheduler import ScheduleResult, SchedulerPanel, Workload
 from aetheros.graph import ResourceGraph, ResourceGraphPanel
 from aetheros.horizon import HorizonPanel, HorizonReport
 from aetheros.infinity import InfinityPanel, InfinityReport
@@ -197,6 +198,10 @@ class DashboardFrame:
     show_topology: bool
     topology_graph: TopologyGraph | None
     topology_view: str
+    show_scheduler: bool
+    scheduler_workload: Workload | None
+    scheduler_result: ScheduleResult | None
+    scheduler_view: str
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -224,7 +229,15 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_topology:
+    if frame.show_scheduler:
+        layout["center"].update(
+            SchedulerPanel(
+                workload=frame.scheduler_workload,
+                result=frame.scheduler_result,
+                view=frame.scheduler_view,
+            )
+        )
+    elif frame.show_topology:
         layout["center"].update(
             TopologyPanel(
                 graph=frame.topology_graph,

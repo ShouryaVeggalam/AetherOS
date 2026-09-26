@@ -239,6 +239,10 @@ def test_render_frame_has_regions() -> None:
         show_topology=False,
         topology_graph=None,
         topology_view="tree",
+        show_scheduler=False,
+        scheduler_workload=None,
+        scheduler_result=None,
+        scheduler_view="summary",
     )
     layout = render_frame(frame)
     assert layout["header"] is not None

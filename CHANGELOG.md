@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- v4.0 P3 Distributed Scheduler — `aetheros.scheduler` (constraint → score → twin-simulate → evaluate)
+- Dashboard **/** → Distributed Scheduler (Workloads / Candidates / Scores / Simulation / Trade-offs); **S** stays Sentinel
+- Docs: `docs/distributed_scheduler.md`
 - v4.0 P2 Cluster Topology Engine — `aetheros.topology` (World → Regions → DCs → Clusters → Nodes)
 - Dashboard **Z** → Cluster Topology (Tree / World / Regions / Clusters / Health); **T** stays graph toggle
 - Docs: `docs/cluster_topology.md`

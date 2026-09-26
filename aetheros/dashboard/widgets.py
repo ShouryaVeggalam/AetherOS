@@ -329,6 +329,7 @@ class HelpPanel:
             "[bold]F[/bold]  Fabric (universal intelligence)\n"
             "[bold]U[/bold]  Federation Protocol (node snapshots)\n"
             "[bold]Z[/bold]  Cluster Topology (world → nodes)\n"
+            "[bold]/[/bold]  Distributed Scheduler (simulation only)\n"
             "[bold]I[/bold]  Infinity (∞ platform overview)\n"
             "[bold]Y[/bold]  Resource Graph (host intelligence)\n"
             "[bold]R[/bold]  Graph Reasoning (causal paths)\n"

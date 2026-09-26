@@ -28,6 +28,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `scheduler` | [distributed_scheduler.md](distributed_scheduler.md) | v4.0 P3 Distributed Scheduler (Digital Twin simulation only) |
 | `atlas` | [atlas_dashboard.md](atlas_dashboard.md) · [horizon.md](horizon.md) | v4.0 P5 Atlas Dashboard (+ v5 Horizon/Twin facade) |
 | `plugins.sdk` | [plugin_sdk.md](plugin_sdk.md) | v5.0 P1 Plugin SDK (YAML manifest · sandbox · loader) |
+| `marketplace` | [marketplace.md](marketplace.md) | v5.0 P3 Extension Marketplace (discover · install · verify) |
 | `genesis` | [genesis.md](genesis.md) | Research knowledge |
 | `graph` | [resource_graph.md](resource_graph.md) · [sentinel.md](sentinel.md) | Resource Graph Engine + Sentinel deps |
 | `reasoning` | [reasoning.md](reasoning.md) · [cognition.md](cognition.md) | Graph Reasoning Engine + cognitive helpers |

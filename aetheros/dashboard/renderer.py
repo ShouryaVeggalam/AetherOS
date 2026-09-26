@@ -41,6 +41,12 @@ from aetheros.graph import ResourceGraph, ResourceGraphPanel
 from aetheros.horizon import HorizonPanel, HorizonReport
 from aetheros.infinity import InfinityPanel, InfinityReport
 from aetheros.knowledge import CausalKnowledgeGraph, CausalKnowledgePanel
+from aetheros.marketplace import (
+    InstalledPlugin,
+    MarketplacePanel,
+    UpdateRecommendation,
+)
+from aetheros.marketplace import PluginManifest as MarketPluginManifest
 from aetheros.memory import MemoryRecord, OperationalMemoryPanel, Pattern
 from aetheros.observatory import ObservatoryPanel
 from aetheros.observatory.models import GraphMetric, SystemEvent
@@ -202,6 +208,12 @@ class DashboardFrame:
     scheduler_workload: Workload | None
     scheduler_result: ScheduleResult | None
     scheduler_view: str
+    show_marketplace: bool
+    marketplace_catalog: tuple[MarketPluginManifest, ...]
+    marketplace_installed: tuple[InstalledPlugin, ...]
+    marketplace_updates: tuple[UpdateRecommendation, ...]
+    marketplace_selected: MarketPluginManifest | None
+    marketplace_view: str
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -229,7 +241,17 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_scheduler:
+    if frame.show_marketplace:
+        layout["center"].update(
+            MarketplacePanel(
+                catalog=frame.marketplace_catalog,
+                installed=frame.marketplace_installed,
+                updates=frame.marketplace_updates,
+                selected=frame.marketplace_selected,
+                view=frame.marketplace_view,
+            )
+        )
+    elif frame.show_scheduler:
         layout["center"].update(
             SchedulerPanel(
                 workload=frame.scheduler_workload,

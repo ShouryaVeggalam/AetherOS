@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- v5.0 P3 Extension Marketplace — `aetheros.marketplace` (catalog · install · verify · enable)
+- Dashboard **E** → Extensions (Marketplace / Installed / Updates / Permissions / Details); **=** → Explainability
+- Docs: `docs/marketplace.md`
 - v5.0 P2 Public API & Python SDK — `/api/v1` FastAPI routes + `AetherClient`
 - Docs: `docs/public_api.md`, `docs/python_sdk.md`
 - v5.0 P1 Plugin SDK — `plugins/sdk` (YAML manifest, capabilities, events, sandbox, loader, Rich inspector)

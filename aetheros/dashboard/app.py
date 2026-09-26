@@ -68,6 +68,14 @@ from aetheros.knowledge import (
     build_knowledge_graph,
 )
 from aetheros.learning import LearningEngine
+from aetheros.marketplace import (
+    MarketplaceRegistry,
+    MarketplaceUpdater,
+    seed_demo_marketplace,
+)
+from aetheros.marketplace import (
+    PluginManifest as MarketPluginManifest,
+)
 from aetheros.memory import MemoryEngine, MemoryQuery
 from aetheros.observatory import (
     EventTimeline,
@@ -479,6 +487,28 @@ class SchedulerViewState:
         return self.views[self.view_index % len(self.views)]
 
 
+@dataclass
+class MarketplaceViewState:
+    """UI state for v5 P3 Extension Marketplace panel (shortcut E)."""
+
+    visible: bool = False
+    registry: MarketplaceRegistry = field(default_factory=MarketplaceRegistry)
+    catalog: tuple[MarketPluginManifest, ...] = ()
+    seeded: bool = False
+    view_index: int = 0
+    views: tuple[str, ...] = (
+        "marketplace",
+        "installed",
+        "updates",
+        "permissions",
+        "details",
+    )
+
+    @property
+    def view(self) -> str:
+        return self.views[self.view_index % len(self.views)]
+
+
 def max_cooldown_seconds(engine: DecisionEngine) -> float:
     """Return the longest active cooldown across known categories."""
 
@@ -571,6 +601,7 @@ def build_frame(
     federation: FederationViewState | None = None,
     topology: TopologyViewState | None = None,
     scheduler: SchedulerViewState | None = None,
+    marketplace: MarketplaceViewState | None = None,
 ) -> DashboardFrame:
     """Map pipeline output into a DashboardFrame for the renderer."""
 
@@ -679,6 +710,7 @@ def build_frame(
     show_federation = bool(federation and federation.visible)
     show_topology = bool(topology and topology.visible)
     show_scheduler = bool(scheduler and scheduler.visible)
+    show_marketplace = bool(marketplace and marketplace.visible)
     overlay = (
         show_explain
         or show_predict
@@ -702,6 +734,7 @@ def build_frame(
         or show_federation
         or show_topology
         or show_scheduler
+        or show_marketplace
     )
     ai_explanation: Explanation | None = None
     if show_explain and explainability is not None:
@@ -982,6 +1015,22 @@ def build_frame(
         research_lab_rejected = research_lab.engine.store.list_rejected(limit=20)
         research_lab_journal = research_lab.engine.journal.entries(limit=40)
 
+    marketplace_catalog: tuple = ()
+    marketplace_installed: tuple = ()
+    marketplace_updates: tuple = ()
+    marketplace_selected = None
+    marketplace_view = "marketplace"
+    if show_marketplace and marketplace is not None:
+        marketplace_view = marketplace.view
+        if not marketplace.seeded:
+            seed_demo_marketplace(marketplace.registry)
+            marketplace.seeded = True
+        marketplace.catalog = marketplace.registry.list_plugins()
+        marketplace_catalog = marketplace.catalog
+        marketplace_installed = marketplace.registry.list_installed()
+        marketplace_updates = MarketplaceUpdater(marketplace.registry).check_all()
+        marketplace_selected = marketplace.registry.get_plugin("nvidia-intelligence")
+
     federation_registry = None
     federation_heartbeats: tuple = ()
     federation_view = "nodes"
@@ -1114,7 +1163,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         explanation=ai_explanation,
         show_predictive=show_predict
         and not show_cognitive
@@ -1134,7 +1184,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         predictive_report=predictive_report,
         show_cluster=show_cluster
         and not show_cognitive
@@ -1154,7 +1205,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         cluster_snapshot=cluster_snapshot,
         cluster_online_ids=cluster_online,
         show_orchestrator=show_orchestrator
@@ -1175,7 +1227,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         execution_plan=execution_plan,
         selected_workload=selected_workload,
         show_cognitive=show_cognitive
@@ -1195,7 +1248,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         cognitive_report=cognitive_report,
         show_multi_agent=show_multi_agent
         and not show_horizon
@@ -1213,7 +1267,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         agentic_report=agentic_report,
         show_horizon=show_horizon
         and not show_genesis
@@ -1230,7 +1285,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         horizon_report=horizon_report,
         show_genesis=show_genesis
         and not show_sentinel
@@ -1246,7 +1302,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         genesis_report=genesis_report,
         show_sentinel=show_sentinel
         and not show_fabric
@@ -1261,7 +1318,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         sentinel_report=sentinel_report,
         show_fabric=show_fabric
         and not show_infinity
@@ -1275,7 +1333,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         fabric_report=fabric_report,
         show_infinity=show_infinity
         and not show_resource_graph
@@ -1288,7 +1347,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         infinity_report=infinity_report,
         show_resource_graph=show_resource_graph
         and not show_graph_reasoning
@@ -1300,7 +1360,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         resource_graph=resource_graph_report,
         show_graph_reasoning=show_graph_reasoning
         and not show_digital_twin
@@ -1311,7 +1372,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         graph_reasoning=graph_reasoning_report,
         graph_reasoning_observation=graph_reasoning_observation,
         show_digital_twin=show_digital_twin
@@ -1322,7 +1384,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         digital_twin_report=digital_twin_report,
         digital_twin_scenario=digital_twin_scenario,
         digital_twin_baseline=digital_twin_baseline,
@@ -1333,7 +1396,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         research_intel_report=research_intel_report,
         research_intel_view=research_intel_view,
         show_op_memory=show_op_memory
@@ -1342,7 +1406,8 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         op_memory_verified=op_memory_verified,
         op_memory_patterns=op_memory_patterns,
         op_memory_view=op_memory_view,
@@ -1351,14 +1416,16 @@ def build_frame(
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         causal_knowledge_graph=causal_knowledge_graph,
         causal_knowledge_view=causal_knowledge_view,
         show_consensus=show_consensus
         and not show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         consensus_decision=consensus_decision,
         consensus_findings=consensus_findings,
         consensus_conflicts=consensus_conflicts,
@@ -1367,7 +1434,8 @@ def build_frame(
         show_research_lab=show_research_lab
         and not show_federation
         and not show_topology
-        and not show_scheduler,
+        and not show_scheduler
+        and not show_marketplace,
         research_lab_questions=research_lab_questions,
         research_lab_experiments=research_lab_experiments,
         research_lab_results=research_lab_results,
@@ -1375,18 +1443,27 @@ def build_frame(
         research_lab_rejected=research_lab_rejected,
         research_lab_journal=research_lab_journal,
         research_lab_view=research_lab_view,
-        show_federation=show_federation and not show_topology and not show_scheduler,
-        show_topology=show_topology and not show_scheduler,
+        show_federation=show_federation
+        and not show_topology
+        and not show_scheduler
+        and not show_marketplace,
+        show_topology=show_topology and not show_scheduler and not show_marketplace,
         topology_graph=topology_graph,
         topology_view=topology_view,
         federation_registry=federation_registry,
         federation_heartbeats=federation_heartbeats,
         federation_view=federation_view,
         federation_last_sync=federation_last_sync,
-        show_scheduler=show_scheduler,
+        show_scheduler=show_scheduler and not show_marketplace,
         scheduler_workload=scheduler_workload,
         scheduler_result=scheduler_result,
         scheduler_view=scheduler_view,
+        show_marketplace=show_marketplace,
+        marketplace_catalog=marketplace_catalog,
+        marketplace_installed=marketplace_installed,
+        marketplace_updates=marketplace_updates,
+        marketplace_selected=marketplace_selected,
+        marketplace_view=marketplace_view,
     )
 
 
@@ -1542,6 +1619,7 @@ def run_dashboard(
     federation_view_state = FederationViewState(visible=False)
     topology_view_state = TopologyViewState(visible=False)
     scheduler_view_state = SchedulerViewState(visible=False)
+    marketplace_view_state = MarketplaceViewState(visible=False)
     core = AetherCore()
     core.registry.state_path = Path("data/plugin_state.json")
     core.bootstrap()
@@ -1604,6 +1682,7 @@ def run_dashboard(
             federation=federation_view_state,
             topology=topology_view_state,
             scheduler=scheduler_view_state,
+            marketplace=marketplace_view_state,
         )
 
     frame = make_frame()
@@ -1644,6 +1723,7 @@ def run_dashboard(
                         federation_view_state.visible = False
                         topology_view_state.visible = False
                         scheduler_view_state.visible = False
+                        marketplace_view_state.visible = False
                         show_help = False
                         show_developer = False
                     elif key == "?" or lowered == "?":
@@ -1673,6 +1753,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "h":
                         horizon_view.visible = not horizon_view.visible
                         if horizon_view.visible:
@@ -1700,6 +1781,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "d":
                         show_developer = not show_developer
                         if show_developer:
@@ -1727,6 +1809,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "m":
                         multi_agent.visible = not multi_agent.visible
                         if multi_agent.visible:
@@ -1754,6 +1837,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "g":
                         genesis_view.visible = not genesis_view.visible
                         if genesis_view.visible:
@@ -1781,6 +1865,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "s":
                         sentinel_view.visible = not sentinel_view.visible
                         if sentinel_view.visible:
@@ -1808,6 +1893,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "f":
                         fabric_view.visible = not fabric_view.visible
                         if fabric_view.visible:
@@ -1835,6 +1921,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "i":
                         infinity_view.visible = not infinity_view.visible
                         if infinity_view.visible:
@@ -1863,6 +1950,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "y":
                         resource_graph_view.visible = not resource_graph_view.visible
                         if resource_graph_view.visible:
@@ -1890,6 +1978,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "r":
                         graph_reasoning_view.visible = not graph_reasoning_view.visible
                         if graph_reasoning_view.visible:
@@ -1917,6 +2006,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "v":
                         digital_twin_view.visible = not digital_twin_view.visible
                         if digital_twin_view.visible:
@@ -1944,6 +2034,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "x":
                         research_intel_view.visible = not research_intel_view.visible
                         if research_intel_view.visible:
@@ -1971,6 +2062,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
 
                     elif lowered == "l":
                         op_memory_view.visible = not op_memory_view.visible
@@ -1999,6 +2091,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
 
                     elif lowered == "n":
                         causal_knowledge_view.visible = (
@@ -2029,6 +2122,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
 
                     elif lowered == "j":
                         consensus_view_state.visible = not consensus_view_state.visible
@@ -2057,6 +2151,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
 
                     elif lowered == "b":
                         research_lab_view_state.visible = (
@@ -2088,6 +2183,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "u":
                         federation_view_state.visible = (
                             not federation_view_state.visible
@@ -2096,6 +2192,7 @@ def run_dashboard(
                             federation_view_state.seeded = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                             show_help = False
                             show_developer = False
                             observatory.visible = False
@@ -2145,6 +2242,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "w":
                         orchestrator.visible = not orchestrator.visible
                         if orchestrator.visible:
@@ -2172,8 +2270,11 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "]":
-                        if scheduler_view_state.visible:
+                        if marketplace_view_state.visible:
+                            marketplace_view_state.view_index += 1
+                        elif scheduler_view_state.visible:
                             scheduler_view_state.view_index += 1
                         elif topology_view_state.visible:
                             topology_view_state.view_index += 1
@@ -2222,6 +2323,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "p":
                         predictive.visible = not predictive.visible
                         if predictive.visible:
@@ -2249,9 +2351,42 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif lowered == "e":
+                        marketplace_view_state.visible = (
+                            not marketplace_view_state.visible
+                        )
+                        if marketplace_view_state.visible:
+                            marketplace_view_state.seeded = False
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
+                            research_intel_view.visible = False
+                            op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
+                            consensus_view_state.visible = False
+                            research_lab_view_state.visible = False
+                            federation_view_state.visible = False
+                            topology_view_state.visible = False
+                            scheduler_view_state.visible = False
+                    elif key == "=" or lowered == "=":
                         explainability.visible = not explainability.visible
                         if explainability.visible:
+                            marketplace_view_state.visible = False
                             show_help = False
                             show_developer = False
                             observatory.visible = False
@@ -2276,6 +2411,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+
                     elif lowered == "o":
                         observatory.visible = not observatory.visible
                         if observatory.visible:
@@ -2303,6 +2439,7 @@ def run_dashboard(
                             federation_view_state.visible = False
                             topology_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif key == "LEFT":
                         observatory.history_offset = min(
                             max(0, len(observatory.recorder) - 1),
@@ -2342,6 +2479,7 @@ def run_dashboard(
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
                             scheduler_view_state.visible = False
+                            marketplace_view_state.visible = False
                     elif key == "/" or lowered == "/":
                         scheduler_view_state.visible = not scheduler_view_state.visible
                         if scheduler_view_state.visible:

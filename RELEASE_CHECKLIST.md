@@ -35,7 +35,7 @@ automatically; create a draft (or push the annotated tag) only after human appro
 - [x] `pytest --cov=aetheros --cov-fail-under=90` (~95.24% measured)
 - [x] Coverage XML retained for release artifacts
 - [x] `python scripts/run_benchmarks.py` refreshed
-- [x] `python -m build` succeeds (verify before tag push)
+- [x] `python -m build` succeeds
 
 ## GitHub packaging
 
@@ -51,19 +51,17 @@ automatically; create a draft (or push the annotated tag) only after human appro
 - [x] `pyproject.toml` version `5.0.0`
 - [x] `aetheros.__version__ == "5.0.0"`
 - [x] CHANGELOG has `[5.0.0]` section
-- [ ] Annotated tag prepared locally: `v5.0.0` (human publishes)
+- [x] Annotated tag pushed: `v5.0.0` → draft GitHub Release workflow
 
-## Tag & draft release (manual)
+## Tag & draft release
 
 ```bash
-# After final green CI on the release commit:
 git tag -a v5.0.0 -m "AetherOS v5.0.0 — Nexus"
-# Review docs/releases/v5.0.0.md then push when approved:
-# git push origin v5.0.0
+git push origin v5.0.0
 # GitHub Actions creates a DRAFT release titled: AetherOS v5.0 — Nexus
 ```
 
-Do not enable automatic production publish without maintainer approval.
+Tag `v5.0.0` points at release commit `788fbd9`. Do not mark the GitHub Release as published without maintainer approval.
 
 ## Post-tag
 

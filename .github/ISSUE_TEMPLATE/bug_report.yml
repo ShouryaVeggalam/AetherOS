@@ -6,13 +6,15 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for helping AetherOS. Please **do not** report security issues here — see [SECURITY.md](../../SECURITY.md).
+        Thanks for helping AetherOS.
+
+        **Security issues are not bugs.** See [SECURITY.md](../../SECURITY.md) for private disclosure.
   - type: input
     id: version
     attributes:
       label: Version
-      description: Package or git tag (e.g. 5.0.0 / commit SHA)
-      placeholder: 5.0.0
+      description: Package or git tag (e.g. 6.0.0-Horizon / 5.0.0 / commit SHA)
+      placeholder: 6.0.0
     validations:
       required: true
   - type: dropdown
@@ -21,12 +23,18 @@ body:
       label: Area
       options:
         - Dashboard / Rich UI
+        - Horizon Observatory
+        - Cloud Federation
+        - Infrastructure Twin
+        - Global Knowledge Graph
+        - Planetary Scheduler
         - Public API / SDK
         - Plugin SDK / Marketplace
         - Policy Studio
         - Enterprise
-        - Telemetry / Graph / Twin
-        - Docs / CI
+        - Telemetry / Resource Graph / Host Twin
+        - Federation / Topology / Cluster Scheduler
+        - Docs / CI / Packaging
         - Other
     validations:
       required: true
@@ -51,6 +59,7 @@ body:
         OS:
         Python:
         Install method: pip editable / wheel
+        Entry point: aetheros / aetheros-horizon / API
     validations:
       required: true
   - type: checkboxes
@@ -58,5 +67,5 @@ body:
     attributes:
       label: Safety confirmation
       options:
-        - label: This report does not require or describe host mutation, sudo, or shell execution by AetherOS.
+        - label: This report does not require or describe host mutation, sudo, shell execution, Terraform apply, or kubectl apply by AetherOS.
           required: true

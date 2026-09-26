@@ -1,31 +1,38 @@
 name: Documentation
-description: Improve docs, diagrams, or release packaging
+description: Improve docs, diagrams, screenshots, or release packaging
 title: "[docs] "
 labels: ["documentation", "needs-triage"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Doc-only changes are welcome. Prefer linking the page under `docs/` or the root README.
   - type: dropdown
-    id: kind
+    id: doc-area
     attributes:
-      label: Kind
+      label: Documentation area
       options:
-        - README / getting started
-        - Architecture / Mermaid
-        - Module doc
-        - Benchmarks / release notes
-        - Templates / CI docs
-        - Typo / clarity
+        - README / installation
+        - Architecture / diagrams
+        - Module docs (MODULES.md)
+        - Screenshots / demo GIFs
+        - Release notes / CHANGELOG
+        - Benchmarks
+        - Research paper
+        - Issue / PR templates
+        - Other
     validations:
       required: true
   - type: textarea
-    id: location
+    id: request
     attributes:
-      label: Location
-      placeholder: e.g. docs/architecture.md, README.md#installation
+      label: What should change?
+      description: Missing, outdated, or unclear content.
     validations:
       required: true
-  - type: textarea
-    id: suggestion
+  - type: input
+    id: links
     attributes:
-      label: Suggestion
-    validations:
-      required: true
+      label: Links
+      description: Paths or URLs (optional)
+      placeholder: docs/installation.md

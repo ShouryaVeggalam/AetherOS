@@ -1,83 +1,92 @@
 # AetherOS
 
-**Explainable Operating Intelligence Platform**
+**Explainable Operating Intelligence for Human-Centered Infrastructure**
 
-**Observe · Reason · Simulate · Explain**
+**Observe · Reason · Simulate · Explain · Recommend**
 
-AetherOS turns telemetry into trustworthy operator advice while remaining entirely
-**userspace**, **read-only**, and **human-in-the-loop**.
-
-It is **not** an operating system, Linux distribution, kernel, device driver,
-or autonomous controller. Humans always approve actions. No shell execution,
-no kernel mutation, no sudo.
-
+[![CI](https://img.shields.io/github/actions/workflow/status/ShouryaVeggalam/AetherOS/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/ShouryaVeggalam/AetherOS/actions)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-black?style=flat-square)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-black?style=flat-square)](LICENSE)
-[![Coverage 95%+](https://img.shields.io/badge/coverage-95%25%2B-black?style=flat-square)](pytest.ini)
-[![CI](https://img.shields.io/badge/CI-lint%20%C2%B7%20format%20%C2%B7%20tests-black?style=flat-square)](.github/workflows/ci.yml)
+[![Coverage ≥90%](https://img.shields.io/badge/coverage-%E2%89%A590%25-black?style=flat-square)](docs/benchmarks.md)
+[![Release: Horizon](https://img.shields.io/badge/release-v6.0--Horizon-black?style=flat-square)](docs/releases/v6.0.0.md)
 [![Rich UI](https://img.shields.io/badge/UI-Rich-black?style=flat-square)](https://github.com/Textualize/rich)
-[![Linux](https://img.shields.io/badge/os-Linux-black?style=flat-square)](#installation)
-[![WSL2](https://img.shields.io/badge/os-WSL2-black?style=flat-square)](#installation)
-[![Release: Nexus](https://img.shields.io/badge/release-v5.0.0--Nexus-black?style=flat-square)](docs/releases/v5.0.0.md)
+
+AetherOS turns host and multi-cloud telemetry into **trustworthy operator advice**.
+It stays **userspace**, **read-only**, and **human-in-the-loop**.
+
+It is **not** an operating system, kernel, hypervisor, or autonomous controller.
+Humans always approve. No shell execution. No kubectl apply. No Terraform apply. No sudo.
 
 ---
 
-## Introduction
+## Why AetherOS
 
-AetherOS is an **operator console for system intelligence**.
+| Problem | AetherOS response |
+|---------|-------------------|
+| Metrics without narrative | Resource graphs + verified causal paths |
+| Opaque AIOps scores | Evidence · confidence · reconstructible explanations |
+| Dangerous autopilots | Simulation-first advice — never mutates live infra |
+| Multi-cloud sprawl | Read-only federation census + planetary placement *recommendations* |
 
-It collects local telemetry, evaluates policy, validates safety, ranks decisions,
-records history, forecasts load, builds resource and causal graphs, runs digital-twin
-simulations, federates topology views, hosts sandboxed plugins, exposes a public API
-and Python SDK, and — for organizations — adds RBAC, API keys, and audit trails.
-
-Every recommendation ships with **evidence**. Nothing is executed on your behalf.
+Built by **[CELESTRA](docs/CELESTRA.md)** under a research- and enterprise-grade charter.
 
 | | |
 |---|---|
-| **Release** | `v5.0.0` |
-| **Codename** | **Nexus** |
-| **Status** | Production |
+| **Lineage** | v5 Nexus → **v6 Horizon** |
 | **License** | MIT |
-| **Team** | [CELESTRA](docs/CELESTRA.md) |
+| **Paper** | [Explainable Operating Intelligence](docs/papers/aetheros_explainable_operating_intelligence.md) ([PDF](docs/papers/AetherOS_Explainable_Operating_Intelligence.pdf)) |
 
-Docs: [Architecture](docs/architecture.md) · [Release notes](docs/releases/v5.0.0.md) · [Benchmarks](docs/benchmarks.md) · [Modules](docs/MODULES.md) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md)
-
----
-
-## Why AetherOS exists
-
-Modern systems are observable. Few are *intelligible*.
-
-Operators drown in metrics without a trustworthy narrative. Autopilots that mutate
-hosts without explanation create risk. AetherOS sits in between:
-
-- **Observe** — resource pressure in real time
-- **Reason** — graph-backed hypotheses with confidence
-- **Simulate** — twin and what-if outcomes without touching the OS
-- **Explain** — evidence chains operators can reconstruct
+**Docs:** [Installation](docs/installation.md) · [Architecture](docs/architecture.md) · [Release notes](docs/releases/v6.0.0.md) · [Benchmarks](docs/benchmarks.md) · [Modules](docs/MODULES.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 ---
 
-## Features
+## Quick start
 
-| Capability | What it does |
-|------------|--------------|
-| **Telemetry & Safety** | Read-only `psutil` metrics, advice-only policy, audit log, cooldowns |
-| **Decision & Observatory** | Prioritized recommendations + SQLite temporal memory |
-| **Explainability & Predictive** | Evidence chains; statistical 5 / 15 / 60 minute forecasts |
-| **Resource Graph & Reasoning** | Host resource graphs, traversal, verified hypotheses |
-| **Digital Twin & Research** | Scenario simulation + research intelligence journals |
-| **Cognition & Consensus** | Cognition core, causal knowledge, multi-agent consensus |
-| **Federation & Topology** | Protocol snapshots, world→cluster topology, distributed scheduler advice |
-| **Atlas Dashboard** | Presentation-layer Rich observatory (`aetheros-atlas`) |
-| **Horizon Observatory** | Global Rich observatory (`aetheros-horizon`) |
-| **Plugin SDK** | YAML manifests, capabilities, sandbox, Rich inspector |
-| **Public API & SDK** | FastAPI `/api/v1` + `AetherClient` |
-| **Marketplace** | Catalog · install · verify · enable (userspace) |
-| **Policy Studio** | Versioned rules, simulate, advisory evaluation |
-| **Enterprise** | Orgs, workspaces, RBAC, API keys, audit, compliance |
-| **Horizon / Genesis / Sentinel / Fabric / Infinity** | Planetary, research, resilience, federation, unifying layers |
+```bash
+git clone https://github.com/ShouryaVeggalam/AetherOS.git
+cd AetherOS
+python3.12 -m venv .venv && source .venv/bin/activate
+pip install -U pip && pip install -e ".[dev]"
+
+python -m aetheros          # Rich operator dashboard
+aetheros-horizon            # Horizon Observatory (global views)
+aetheros-atlas              # Atlas presentation surface
+uvicorn aetheros.api.app:app --reload   # read-only HTTP API
+```
+
+Full guide: **[docs/installation.md](docs/installation.md)** · Press `?` in the dashboard for help · `Q` to quit.
+
+---
+
+## Demo gallery
+
+> Placeholder GIFs ship until maintainers record live captures.
+> Capture guide: [docs/screenshots/README.md](docs/screenshots/README.md)
+
+| Demo | Preview |
+|------|---------|
+| **Hero loop** | ![Demo](docs/screenshots/demo.gif) |
+| Operator dashboard | ![Dashboard](docs/screenshots/dashboard.gif) |
+| Horizon Observatory | ![Horizon](docs/screenshots/horizon.gif) |
+| Cloud Federation | ![Cloud](docs/screenshots/cloud.gif) |
+| Planetary Scheduler | ![Planetary](docs/screenshots/planetary.gif) |
+| Observatory | ![Observatory](docs/screenshots/observatory.gif) |
+| Cluster | ![Cluster](docs/screenshots/cluster.gif) |
+| Predictive | ![Predictive](docs/screenshots/predictive.gif) |
+
+---
+
+## What's in Horizon (v6)
+
+| Pillar | Package | One-liner |
+|--------|---------|-----------|
+| **P1 Cloud Federation** | `aetheros.cloud` | Read-only AWS · Azure · GCP · K8s · Docker · Edge census |
+| **P2 Infra Twin** | `aetheros.infra_twin` | Clone · scenario · evaluate · diff (never live mutate) |
+| **P3 Global Knowledge Graph** | `aetheros.global_graph` | Verified relationships + evidence |
+| **P4 Planetary Scheduler** | `aetheros.planetary` | Top-5 placement *advice* only |
+| **P5 Horizon Observatory** | `aetheros.horizon` | Rich global console (`aetheros-horizon`) |
+
+Plus the full Nexus stack: Plugin SDK · Marketplace · Policy Studio · Enterprise · Public API / SDK · Resource Graph · Reasoning · Host Twin · Consensus · Federation · Atlas.
 
 ---
 
@@ -94,200 +103,107 @@ flowchart LR
     E -.->|human decides| A
 ```
 
-### Platform stack (Nexus)
+### Platform stack (Horizon)
 
 ```mermaid
 flowchart TB
-    subgraph UI["Operator surfaces"]
+    subgraph Surfaces["Operator surfaces"]
       DASH[Rich Dashboard]
+      HOR[Horizon Observatory]
       ATLAS[Atlas]
-      API["/api/v1 FastAPI"]
+      API["FastAPI /api/v1"]
       SDK[AetherClient]
+    end
+
+    subgraph Horizon["v6 Horizon"]
+      CLOUD[Cloud Federation]
+      ITWIN[Infra Twin]
+      GKG[Global Graph]
+      PLAN[Planetary Scheduler]
+    end
+
+    subgraph Nexus["v5 Nexus"]
+      PLG[Plugins]
+      MKT[Marketplace]
+      POL[Policy Studio]
+      ENT[Enterprise]
     end
 
     subgraph Core["Intelligence core"]
       TEL[Telemetry]
-      POL[Policy Studio]
-      SAF[Safety]
-      DEC[Decision]
-      EXP[Explainability]
       GR[Resource Graph]
       REA[Reasoning]
-      TWIN[Digital Twin]
+      TWIN[Host Twin]
+      EXP[Explainability]
+      DEC[Decision]
     end
 
-    subgraph Ext["Extensibility"]
-      PLG[Plugin SDK]
-      MKT[Marketplace]
-      ENT[Enterprise RBAC]
-    end
-
+    Surfaces --> Horizon
+    Surfaces --> Nexus
+    Surfaces --> Core
+    Horizon --> Core
     TEL --> GR --> REA --> TWIN --> EXP --> DEC
-    DEC --> DASH
-    API --> SDK
-    PLG --> MKT
-    ENT --> API
 ```
 
-Deeper diagrams: [docs/architecture.md](docs/architecture.md) · [docs/architecture/](docs/architecture/)
+Deeper diagrams: [docs/architecture.md](docs/architecture.md) · [docs/architecture/](docs/architecture/) · [pipeline](docs/architecture/pipeline.md) · [generations](docs/architecture/generations.md) · [Horizon stack](docs/architecture/horizon-stack.md)
 
 ---
 
-## Screenshots & demo
+## Invariants (non-negotiable)
 
-> Terminal captures live under `docs/screenshots/`. Paths below are ready for GitHub rendering.
+1. **Observe before acting.**
+2. **Explain every recommendation.**
+3. **Simulation before intervention advice.**
+4. **Humans remain in control.**
+5. **Userspace only** — no kernel modules, no privileged mutation APIs in core paths.
 
-![Operator Dashboard](docs/screenshots/dashboard.gif)
-
-![Observatory](docs/screenshots/observatory.gif)
-
-![Cluster Overview](docs/screenshots/cluster.gif)
-
-![Predictive Intelligence](docs/screenshots/predictive.gif)
-
-**Demo GIF placeholder** — record a 8–12s loop of the Nexus dashboard and save as
-`docs/screenshots/demo.gif` (see [docs/screenshots/README.md](docs/screenshots/README.md)).
-
-![Demo (placeholder)](docs/screenshots/demo.gif)
+Feature gate: [CELESTRA charter](docs/CELESTRA.md)
 
 ---
 
-## Installation
+## Keyboard map (dashboard)
 
-Requires **Python 3.12+**. Supported on **Ubuntu**, **WSL2**, and **macOS**.
+| Key | Surface | Key | Surface |
+|-----|---------|-----|---------|
+| `?` | Help | `Q` | Quit |
+| `C` | Cloud Federation | `I` | Infrastructure Twin |
+| `K` | Global Knowledge Graph | `W` | Planetary Scheduler |
+| `O` | Observatory | `Y` / `R` / `V` | Graph / Reasoning / Twin |
+| `E` / `@` / `P` | Enterprise / Marketplace / Policy | `ESC` | Leave overlay |
 
-```bash
-git clone https://github.com/shouryaveggalam/AetherOS.git
-cd AetherOS
-
-python3.12 -m venv .venv
-source .venv/bin/activate   # macOS / Linux / WSL2
-
-pip install -U pip
-pip install -e ".[dev]"
-```
-
-### Quick start
-
-```bash
-# Rich operator dashboard
-python -m aetheros
-# or
-aetheros
-
-# Atlas presentation surface
-aetheros-atlas
-
-# Horizon Observatory (global infrastructure)
-aetheros-horizon
-
-# Public API (read-only)
-uvicorn aetheros.api.app:app --reload
-```
-
-Press `Q` to quit the dashboard. Press `?` for in-app help.
-
-### Python SDK
-
-```python
-from aetheros import AetherClient, __version__
-
-print(__version__)  # 5.0.0
-client = AetherClient(base_url="http://127.0.0.1:8000")
-health = client.health()
-```
-
-### Troubleshooting
-
-| Symptom | Fix |
-|---------|-----|
-| `python: command not found` | Use `python3.12` explicitly |
-| Blank / broken TUI in CI SSH | Run in a real TTY |
-| `PermissionError` from `psutil` on macOS | Grant Full Disk Access to the terminal |
-| No battery metrics | Expected on many desktops / VMs |
-| Import errors after pull | Re-run `pip install -e ".[dev]"` |
-| Coverage / CI red | `pytest --cov=aetheros --cov-fail-under=90` |
+Horizon Observatory (`aetheros-horizon`): **O C T K W D G R H** · **Q** quit.
 
 ---
 
-## Keyboard shortcuts
-
-| Key | Action |
-|-----|--------|
-| `Q` | Quit |
-| `?` | Help |
-| `I` | Infrastructure Twin |
-| `~` | Infinity (platform overview) |
-| `E` | Enterprise |
-| `@` | Extensions / Marketplace |
-| `P` | Policy Studio |
-| `#` | Predictive Intelligence |
-| `=` | Explainability |
-| `O` | Observatory |
-| `Y` | Resource Graph |
-| `R` | Graph Reasoning |
-| `V` | Digital Twin |
-| `X` | Research Intelligence |
-| `L` | Operational Memory |
-| `N` | Causal Knowledge Graph |
-| `J` | Multi-Agent Consensus |
-| `B` | Research Lab |
-| `U` | Federation Protocol |
-| `Z` | Cluster Topology |
-| `/` | Distributed Scheduler |
-| `F` | Fabric |
-| `S` | Sentinel |
-| `G` | Genesis |
-| `H` | Horizon |
-| `M` | Multi-Agent View |
-| `K` | Global Knowledge Graph |
-| `^` | Cognitive Graph |
-| `C` | Cloud Federation |
-| `;` | Cluster overview |
-| `W` | Worldwide / Planetary Scheduler |
-| `%` | Workload Planner |
-| `A` | Run autonomous research |
-| `D` | Developer / plugin console |
-| `1`–`6` | Switch intent profile |
-| `ESC` | Leave overlays |
-
----
-
-## Project structure
+## Project layout
 
 ```text
 AetherOS/
-├── aetheros/           # Core platform packages
-│   ├── api/ · sdk/     # Public API + AetherClient
-│   ├── enterprise/     # Orgs, RBAC, keys, audit
-│   ├── marketplace/    # Extension catalog
-│   ├── policy/         # Policy Studio
-│   ├── dashboard/      # Rich operator UI
-│   └── …               # telemetry → infinity stack
-├── plugins/            # Plugin SDK + examples
-├── services/           # CELESTRA GII cognition service
-├── labs/               # Aether Lab (research)
-├── docs/               # Architecture, modules, releases
+├── aetheros/           # Platform packages (telemetry → horizon)
+├── plugins/            # Plugin SDK examples
+├── services/           # Optional cognition service
+├── labs/               # Research labs
+├── docs/               # Architecture · modules · releases · paper
 ├── tests/
-├── .github/            # CI, templates, funding
+├── scripts/            # Benchmarks · import-cycle checks
+├── .github/            # CI · issue/PR templates
 └── pyproject.toml
 ```
 
 ---
 
-## Philosophy
+## Development
 
-Built by **CELESTRA** under a research- and enterprise-grade charter:
+```bash
+pip install -e ".[dev]"
+ruff check .
+black --check .
+python scripts/check_import_cycles.py
+pytest --cov=aetheros --cov-fail-under=90
+python scripts/run_benchmarks.py
+```
 
-1. **Observe before acting.**
-2. **Explain every recommendation.**
-3. **Simulation before intervention.**
-4. **Humans remain in control.**
-
-Every feature must be problem-backed, evidence-based, explainable, tested, and
-reproducible. Systems quality outranks flashy UI.
-
-Charter: [docs/CELESTRA.md](docs/CELESTRA.md)
+See [CONTRIBUTING.md](CONTRIBUTING.md) · [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) · [docs/benchmarks.md](docs/benchmarks.md)
 
 ---
 
@@ -295,33 +211,20 @@ Charter: [docs/CELESTRA.md](docs/CELESTRA.md)
 
 | Version | Focus |
 |---------|--------|
-| **v5.0.0 Nexus** | Plugin SDK · Public API · Marketplace · Policy Studio · Enterprise |
-| **v6.x (in progress)** | Cloud Federation · Infra Twin · Global Knowledge Graph · Planetary Scheduler · Horizon Observatory |
-| v4.x | Federation · Topology · Scheduler · Atlas |
-| v3.x | Cognition · Memory · Causal KG · Consensus · Research Lab |
-| v2.0 Intelligence | Resource Graph · Reasoning · Twin · Context · Research Intel |
-| **Horizon (next)** | Planetary overlays, recorded demos, optional read-only WS transport |
-
-See [docs/horizon.md](docs/horizon.md) and [CHANGELOG.md](CHANGELOG.md).
+| **v6.0 Horizon** | Cloud · Infra Twin · Global Graph · Planetary Scheduler · Observatory |
+| v5.0 Nexus | Plugins · API/SDK · Marketplace · Policy · Enterprise |
+| v4 Distributed | Federation · Topology · Scheduler · Atlas |
+| v3 Cognitive | Memory · Causal KG · Consensus · Research Lab |
+| v2 Intelligence | Resource Graph · Reasoning · Twin · Context |
 
 ---
 
-## Contributing
+## Community
 
-We welcome careful, well-tested contributions.
-
-1. Read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
-2. Open issues with the templates under [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE/).
-3. Keep PRs focused; preserve userspace / read-only / HITL invariants.
-
-```bash
-pip install -e ".[dev]"
-ruff check .
-black --check .
-pytest --cov=aetheros --cov-fail-under=90
-```
-
-Security reports: [SECURITY.md](SECURITY.md) (not public issues).
+- **Bugs / features** — [Issue templates](.github/ISSUE_TEMPLATE/)
+- **PRs** — [Pull request template](.github/PULL_REQUEST_TEMPLATE.md)
+- **Security** — [SECURITY.md](SECURITY.md) (private disclosure — not public issues)
+- **Conduct** — [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 
 ---
 

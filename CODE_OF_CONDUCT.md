@@ -1,4 +1,9 @@
-# Contributor Covenant Code of Conduct
+# Code of Conduct — AetherOS / CELESTRA
+
+This project follows the [Contributor Covenant](https://www.contributor-covenant.org/)
+so contributors can collaborate on explainable, human-centered operating
+intelligence in a safe environment. See also [CONTRIBUTING.md](CONTRIBUTING.md)
+and the [CELESTRA charter](docs/CELESTRA.md).
 
 ## Our Pledge
 

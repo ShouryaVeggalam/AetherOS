@@ -1,13 +1,15 @@
 name: Feature request
-description: Propose an additive, explainable, userspace capability
+description: Propose a capability that preserves CELESTRA invariants
 title: "[feat] "
 labels: ["enhancement", "needs-triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        Features must preserve **observe · reason · simulate · explain**, remain userspace/read-only, and keep humans in the loop.
-        Read the [CELESTRA charter](../../docs/CELESTRA.md) and [CONTRIBUTING.md](../../CONTRIBUTING.md).
+        Features must pass the [CELESTRA](../../docs/CELESTRA.md) gate:
+        problem · evidence · explainability · testability · reproducibility.
+
+        AetherOS remains **userspace / read-only / human-in-the-loop**.
   - type: textarea
     id: problem
     attributes:
@@ -19,36 +21,37 @@ body:
     id: proposal
     attributes:
       label: Proposal
-      description: Desired behavior (no host mutation paths).
+      description: Desired behavior (advice / simulation / presentation). Avoid actuation APIs.
     validations:
       required: true
-  - type: textarea
-    id: evidence
+  - type: dropdown
+    id: layer
     attributes:
-      label: Evidence & explainability
-      description: What inputs support the claim? How does an operator reconstruct why?
+      label: Likely layer
+      options:
+        - v6 Horizon (cloud / twin / graph / planetary / observatory)
+        - v5 Nexus (plugins / marketplace / policy / enterprise / API)
+        - v4 Distributed
+        - v3 Cognitive
+        - v2 Intelligence
+        - v1 Operating
+        - Docs / DX only
+        - Unsure
     validations:
       required: true
-  - type: textarea
-    id: alternatives
-    attributes:
-      label: Alternatives considered
-    validations:
-      required: false
   - type: checkboxes
     id: gate
     attributes:
       label: Acceptance gate
       options:
-        - label: Problem-backed
+        - label: I can describe measurable evidence inputs
           required: true
-        - label: Evidence-based
+        - label: A human could reconstruct why outputs appear
           required: true
-        - label: Explainable
+        - label: This does not require AetherOS to mutate the OS / cloud / Kubernetes
           required: true
-        - label: Testable in CI
-          required: true
-        - label: Reproducible from docs + code
-          required: true
-        - label: No shell / sudo / kernel / automatic OS mutation
-          required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Optional — other approaches or existing modules.

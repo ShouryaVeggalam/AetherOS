@@ -44,40 +44,55 @@ jobs:
       - name: Check distributions
         run: twine check dist/*
 
+      - name: Resolve release title
+        id: meta
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          if [[ "$TAG" == v6* ]]; then
+            NAME="AetherOS ${TAG} — Horizon"
+            NOTES="docs/releases/v6.0.0.md"
+          elif [[ "$TAG" == v5* ]]; then
+            NAME="AetherOS ${TAG} — Nexus"
+            NOTES="docs/releases/v5.0.0.md"
+          else
+            NAME="AetherOS ${TAG}"
+            NOTES="CHANGELOG.md"
+          fi
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "notes=$NOTES" >> "$GITHUB_OUTPUT"
+
       - name: Create DRAFT GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           draft: true
           generate_release_notes: true
-          name: AetherOS ${{ github.ref_name }} — Nexus
+          name: ${{ steps.meta.outputs.name }}
           files: |
             dist/*.whl
             dist/*.tar.gz
           body: |
-            # AetherOS ${{ github.ref_name }} — Nexus
+            # ${{ steps.meta.outputs.name }}
 
             Explainable Operating Intelligence Platform · **Observe · Reason · Simulate · Explain**
 
             This release was created as a **draft**. Human review required before publish.
-
-            ## What's new
-
-            - Plugin SDK · Public API / `AetherClient` · Marketplace · Policy Studio · Enterprise Edition
-            - Full notes: [docs/releases/v5.0.0.md](https://github.com/shouryaveggalam/AetherOS/blob/main/docs/releases/v5.0.0.md)
 
             ## Install
 
             ```bash
             pip install dist/aetheros-*.whl
             python -m aetheros
+            aetheros-horizon
             ```
 
             ## Docs
 
-            - [CHANGELOG.md](https://github.com/shouryaveggalam/AetherOS/blob/main/CHANGELOG.md)
-            - [Architecture](https://github.com/shouryaveggalam/AetherOS/blob/main/docs/architecture.md)
-            - [Benchmarks](https://github.com/shouryaveggalam/AetherOS/blob/main/docs/benchmarks.md)
-            - [SECURITY.md](https://github.com/shouryaveggalam/AetherOS/blob/main/SECURITY.md)
+            - Full notes: [`${{ steps.meta.outputs.notes }}`](https://github.com/ShouryaVeggalam/AetherOS/blob/${{ github.ref_name }}/${{ steps.meta.outputs.notes }})
+            - [CHANGELOG.md](https://github.com/ShouryaVeggalam/AetherOS/blob/${{ github.ref_name }}/CHANGELOG.md)
+            - [Installation](https://github.com/ShouryaVeggalam/AetherOS/blob/${{ github.ref_name }}/docs/installation.md)
+            - [Architecture](https://github.com/ShouryaVeggalam/AetherOS/blob/${{ github.ref_name }}/docs/architecture.md)
+            - [Benchmarks](https://github.com/ShouryaVeggalam/AetherOS/blob/${{ github.ref_name }}/docs/benchmarks.md)
+            - [SECURITY.md](https://github.com/ShouryaVeggalam/AetherOS/blob/${{ github.ref_name }}/SECURITY.md)
 
             Recommendation-only. Userspace. MIT License.
         env:

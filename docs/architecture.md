@@ -1,4 +1,4 @@
-# Architecture — AetherOS v5.0 Nexus
+# Architecture — AetherOS v6 Horizon
 
 AetherOS is an **Explainable Operating Intelligence Platform**. It is not an
 operating system, kernel, driver, or autonomous controller.
@@ -7,7 +7,8 @@ Engineering decisions follow the **CELESTRA** founding charter:
 [CELESTRA.md](CELESTRA.md) (human-centered, explainable, simulation-first,
 read-only, open architecture, enterprise-grade).
 
-**Release:** `v5.0.0` · **Codename:** Nexus · **License:** MIT
+**Release line:** `v6.0` · **Codename:** **Horizon** (extends **v5.0.0 Nexus**) · **License:** MIT  
+**Install:** [installation.md](installation.md) · **Release notes:** [releases/v6.0.0.md](releases/v6.0.0.md)
 
 ## Design invariants
 
@@ -25,6 +26,7 @@ read-only, open architecture, enterprise-grade).
 |---------|------|
 | Intelligence pipeline | [architecture/pipeline.md](architecture/pipeline.md) |
 | Platform stack (Nexus) | [architecture/platform-stack.md](architecture/platform-stack.md) |
+| **Horizon stack (v6)** | [architecture/horizon-stack.md](architecture/horizon-stack.md) |
 | Extensibility & enterprise | [architecture/extensibility.md](architecture/extensibility.md) |
 | Generation map | [architecture/generations.md](architecture/generations.md) |
 

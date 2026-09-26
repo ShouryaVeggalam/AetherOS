@@ -1,4 +1,4 @@
-# Continuous integration for AetherOS v5.0 Nexus
+# Continuous integration for AetherOS (Horizon / Nexus)
 name: CI
 
 on:
@@ -58,6 +58,39 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-xml
+          name: coverage-xml-${{ matrix.python-version }}
           path: coverage.xml
           if-no-files-found: ignore
+
+  docs-surface:
+    name: Docs surface check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Required launch docs exist
+        run: |
+          set -euo pipefail
+          for f in \
+            README.md \
+            CONTRIBUTING.md \
+            CODE_OF_CONDUCT.md \
+            SECURITY.md \
+            LICENSE \
+            docs/installation.md \
+            docs/architecture.md \
+            docs/architecture/horizon-stack.md \
+            docs/benchmarks.md \
+            docs/releases/v6.0.0.md \
+            docs/MODULES.md \
+            docs/screenshots/README.md \
+            .github/PULL_REQUEST_TEMPLATE.md \
+            .github/ISSUE_TEMPLATE/bug_report.yml \
+            .github/ISSUE_TEMPLATE/feature_request.yml \
+            .github/ISSUE_TEMPLATE/documentation.yml \
+            .github/ISSUE_TEMPLATE/config.yml
+          do
+            test -f "$f" || { echo "missing $f"; exit 1; }
+          done
+          echo "Launch documentation surface OK"

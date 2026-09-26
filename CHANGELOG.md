@@ -9,10 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [6.0.0] — 2026-09-26 — Horizon
+
+Open-source launch of the **Horizon** line: planetary observation and advice without actuation.
+Full notes: [docs/releases/v6.0.0.md](docs/releases/v6.0.0.md).
+
+### Added
+
 - v6.0 P5 Horizon Observatory — `aetheros.horizon` presentation layer (Rich · read-only)
 - Entry: `aetheros-horizon` · pages Overview / Cloud / Topology / Knowledge / Scheduler / Twin / Consensus / Research / Health
 - Docs: `docs/horizon_observatory.md`
-- Research paper draft: `docs/papers/aetheros_explainable_operating_intelligence.md`
+- Research paper draft: `docs/papers/aetheros_explainable_operating_intelligence.md` (+ PDF)
 - v6.0 P4 Planetary Scheduler — `aetheros.planetary` (constraints · scoring · twin sim · top-5)
 - Dashboard **W** → Worldwide Scheduler (Map / Regions / Candidates / Trade-offs / Simulation); **%** → Workload Planner
 - Docs: `docs/planetary_scheduler.md`
@@ -25,8 +36,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - v6.0 P1 Cloud Federation Engine — `aetheros.cloud` (AWS · Azure · GCP · Kubernetes · Docker · Edge)
 - Dashboard **C** → Cloud Federation (Providers / Regions / Resources / Health / Snapshots); **;** → Cluster overview
 - Docs: `docs/cloud_federation.md`
+- Open-source launch packaging: rewritten README, `docs/installation.md`, Horizon architecture diagram, demo GIF placeholders, Contributing / Security / CoC, issue & PR templates, CI docs-surface job, release workflow Horizon titles, `docs/benchmarks.md` Horizon placeholders
 
 ### Changed
+
+- Root README repositioned for v6 Horizon (quick start, demo gallery, architecture mermaid)
+- CI: docs-surface job validates launch documentation files exist
+- Release workflow: `v6*` tags draft as **Horizon** with notes link to `docs/releases/v6.0.0.md`
 
 ### Fixed
 

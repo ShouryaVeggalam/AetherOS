@@ -1,8 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Security vulnerability
-    url: https://github.com/shouryaveggalam/AetherOS/security/advisories/new
-    about: Report security issues privately — do not open a public issue.
+  - name: Security disclosure
+    url: https://github.com/ShouryaVeggalam/AetherOS/security/advisories/new
+    about: Report vulnerabilities privately (see SECURITY.md). Do not file public issues.
   - name: CELESTRA charter
-    url: https://github.com/shouryaveggalam/AetherOS/blob/main/docs/CELESTRA.md
-    about: Read the founding engineering charter before proposing features.
+    url: https://github.com/ShouryaVeggalam/AetherOS/blob/main/docs/CELESTRA.md
+    about: Engineering principles for AetherOS contributions.
+  - name: Installation guide
+    url: https://github.com/ShouryaVeggalam/AetherOS/blob/main/docs/installation.md
+    about: Setup help before opening a bug.

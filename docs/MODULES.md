@@ -3,6 +3,7 @@
 Every first-class package under `aetheros/` with its role and doc entry point.
 
 Engineering charter: [CELESTRA.md](CELESTRA.md).  
+Install: [installation.md](installation.md) · Release: [releases/v6.0.0.md](releases/v6.0.0.md) · Architecture: [architecture/horizon-stack.md](architecture/horizon-stack.md).  
 Research paper draft: [papers/aetheros_explainable_operating_intelligence.md](papers/aetheros_explainable_operating_intelligence.md).
 
 | Package | Docs | Notes |

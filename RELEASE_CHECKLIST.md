@@ -65,6 +65,7 @@ Tag `v5.0.0` points at release commit `788fbd9`. Do not mark the GitHub Release 
 
 ## Post-tag
 
-- [ ] Confirm draft release assets (wheel + sdist)
+- [x] Confirm draft release assets (wheel + sdist) — draft **AetherOS v5.0.0 — Nexus** created; Release workflow green
 - [ ] Verify README badges and links on GitHub
 - [ ] Optional: announce Horizon roadmap follow-ups
+- [ ] Human publish of draft GitHub Release (maintainer)

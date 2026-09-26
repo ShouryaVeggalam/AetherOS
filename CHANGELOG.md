@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- v4.0 P1 Federation Protocol — `aetheros.federation` (immutable snapshots + heartbeats)
+- Dashboard **U** → Federation Protocol (Nodes / Registry / Heartbeats / Protocol); **F** stays Fabric
+- Docs: `docs/federation_protocol.md`
 - CELESTRA X **Aether Lab** Modules 2–4 — Decomposition (DAG), Planning, Reflection, Critique
 - Cognition orchestrator (`POST /aether/cognition`) runs attention → decompose → plan
 - Observatory Task Graph / Reflection / Critique / Cognition pages (Next.js 16)

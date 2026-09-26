@@ -327,6 +327,7 @@ class HelpPanel:
             "[bold]G[/bold]  Genesis (research intelligence)\n"
             "[bold]S[/bold]  Sentinel (resilience intelligence)\n"
             "[bold]F[/bold]  Fabric (universal intelligence)\n"
+            "[bold]U[/bold]  Federation Protocol (node snapshots)\n"
             "[bold]I[/bold]  Infinity (∞ platform overview)\n"
             "[bold]Y[/bold]  Resource Graph (host intelligence)\n"
             "[bold]R[/bold]  Graph Reasoning (causal paths)\n"

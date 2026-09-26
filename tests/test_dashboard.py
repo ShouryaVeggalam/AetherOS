@@ -231,6 +231,11 @@ def test_render_frame_has_regions() -> None:
         research_lab_rejected=(),
         research_lab_journal=(),
         research_lab_view="discoveries",
+        show_federation=False,
+        federation_registry=None,
+        federation_heartbeats=(),
+        federation_view="nodes",
+        federation_last_sync=None,
     )
     layout = render_frame(frame)
     assert layout["header"] is not None

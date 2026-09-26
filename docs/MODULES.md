@@ -23,6 +23,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `edge` | [horizon.md](horizon.md) | Edge inventory |
 | `explainability` | [explainability.md](explainability.md) | Evidence chains |
 | `fabric` | [fabric.md](fabric.md) | Universal federation |
+| `federation` | [federation_protocol.md](federation_protocol.md) | v4.0 P1 Federation Protocol (read-only node snapshots) |
 | `genesis` | [genesis.md](genesis.md) | Research knowledge |
 | `graph` | [resource_graph.md](resource_graph.md) · [sentinel.md](sentinel.md) | Resource Graph Engine + Sentinel deps |
 | `reasoning` | [reasoning.md](reasoning.md) · [cognition.md](cognition.md) | Graph Reasoning Engine + cognitive helpers |

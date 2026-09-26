@@ -34,6 +34,8 @@ from aetheros.dashboard.widgets import (
 )
 from aetheros.explainability import ExplainabilityPanel, Explanation
 from aetheros.fabric import FabricPanel, FabricReport
+from aetheros.federation import FederationPanel
+from aetheros.federation.models import Heartbeat, RegistryView
 from aetheros.genesis import GenesisPanel, GenesisReport
 from aetheros.graph import ResourceGraph, ResourceGraphPanel
 from aetheros.horizon import HorizonPanel, HorizonReport
@@ -186,6 +188,11 @@ class DashboardFrame:
     research_lab_rejected: tuple[ResearchLabDiscovery, ...]
     research_lab_journal: tuple[JournalEntry, ...]
     research_lab_view: str
+    show_federation: bool
+    federation_registry: RegistryView | None
+    federation_heartbeats: tuple[Heartbeat, ...]
+    federation_view: str
+    federation_last_sync: object | None
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -213,7 +220,16 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_research_lab:
+    if frame.show_federation:
+        layout["center"].update(
+            FederationPanel(
+                registry=frame.federation_registry,
+                heartbeats=frame.federation_heartbeats,
+                view=frame.federation_view,
+                last_sync=frame.federation_last_sync,  # type: ignore[arg-type]
+            )
+        )
+    elif frame.show_research_lab:
         layout["center"].update(
             ResearchLabPanel(
                 questions=frame.research_lab_questions,

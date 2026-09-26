@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- v4.0 P2 Cluster Topology Engine — `aetheros.topology` (World → Regions → DCs → Clusters → Nodes)
+- Dashboard **Z** → Cluster Topology (Tree / World / Regions / Clusters / Health); **T** stays graph toggle
+- Docs: `docs/cluster_topology.md`
 - v4.0 P1 Federation Protocol — `aetheros.federation` (immutable snapshots + heartbeats)
 - Dashboard **U** → Federation Protocol (Nodes / Registry / Heartbeats / Protocol); **F** stays Fabric
 - Docs: `docs/federation_protocol.md`

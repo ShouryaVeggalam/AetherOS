@@ -236,6 +236,9 @@ def test_render_frame_has_regions() -> None:
         federation_heartbeats=(),
         federation_view="nodes",
         federation_last_sync=None,
+        show_topology=False,
+        topology_graph=None,
+        topology_view="tree",
     )
     layout = render_frame(frame)
     assert layout["header"] is not None

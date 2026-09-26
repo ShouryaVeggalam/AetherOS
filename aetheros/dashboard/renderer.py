@@ -37,6 +37,7 @@ from aetheros.fabric import FabricPanel, FabricReport
 from aetheros.federation import FederationPanel
 from aetheros.federation.models import Heartbeat, RegistryView
 from aetheros.genesis import GenesisPanel, GenesisReport
+from aetheros.topology import TopologyGraph, TopologyPanel
 from aetheros.graph import ResourceGraph, ResourceGraphPanel
 from aetheros.horizon import HorizonPanel, HorizonReport
 from aetheros.infinity import InfinityPanel, InfinityReport
@@ -193,6 +194,9 @@ class DashboardFrame:
     federation_heartbeats: tuple[Heartbeat, ...]
     federation_view: str
     federation_last_sync: object | None
+    show_topology: bool
+    topology_graph: TopologyGraph | None
+    topology_view: str
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -220,7 +224,14 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_federation:
+    if frame.show_topology:
+        layout["center"].update(
+            TopologyPanel(
+                graph=frame.topology_graph,
+                view=frame.topology_view,
+            )
+        )
+    elif frame.show_federation:
         layout["center"].update(
             FederationPanel(
                 registry=frame.federation_registry,

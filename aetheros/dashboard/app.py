@@ -98,6 +98,11 @@ from aetheros.research.models import SystemResearchReport
 from aetheros.research_ai import (
     AutonomousResearchEngine,
 )
+from aetheros.topology import (
+    TopologyGraph,
+    build_topology,
+    demo_topology_metadata,
+)
 from aetheros.federation import (
     FederationRegistry,
     Heartbeat,
@@ -424,6 +429,28 @@ class FederationViewState:
 
 
 
+@dataclass
+class TopologyViewState:
+    """UI state for v4 P2 Cluster Topology panel (shortcut Z)."""
+
+    visible: bool = False
+    graph: TopologyGraph | None = None
+    seeded: bool = False
+    view_index: int = 0
+    views: tuple[str, ...] = (
+        "tree",
+        "world",
+        "regions",
+        "clusters",
+        "health",
+    )
+
+    @property
+    def view(self) -> str:
+        return self.views[self.view_index % len(self.views)]
+
+
+
 def max_cooldown_seconds(engine: DecisionEngine) -> float:
     """Return the longest active cooldown across known categories."""
 
@@ -514,6 +541,7 @@ def build_frame(
     consensus: ConsensusViewState | None = None,
     research_lab: ResearchLabViewState | None = None,
     federation: FederationViewState | None = None,
+    topology: TopologyViewState | None = None,
 ) -> DashboardFrame:
     """Map pipeline output into a DashboardFrame for the renderer."""
 
@@ -620,6 +648,7 @@ def build_frame(
     show_consensus = bool(consensus and consensus.visible)
     show_research_lab = bool(research_lab and research_lab.visible)
     show_federation = bool(federation and federation.visible)
+    show_topology = bool(topology and topology.visible)
     overlay = (
         show_explain
         or show_predict
@@ -641,6 +670,7 @@ def build_frame(
         or show_consensus
         or show_research_lab
         or show_federation
+        or show_topology
     )
     ai_explanation: Explanation | None = None
     if show_explain and explainability is not None:
@@ -941,6 +971,34 @@ def build_frame(
         federation_heartbeats = federation.heartbeats
         federation_last_sync = federation.last_sync
 
+    topology_graph = None
+    topology_view = "tree"
+    if show_topology and topology is not None:
+        topology_view = topology.view
+        if not topology.seeded:
+            # Prefer live federation registry when available; else seed demos.
+            if federation is not None:
+                if not federation.seeded:
+                    from aetheros.federation import seed_demo_federation
+                    from aetheros.policy_engine.models import TelemetrySnapshot
+
+                    snap = TelemetrySnapshot.from_system_snapshot(system)
+                    seed_demo_federation(federation.registry, local_telemetry=snap)
+                    federation.seeded = True
+                federation.registry.refresh_statuses()
+                topology.graph = build_topology(
+                    federation.registry,
+                    metadata=demo_topology_metadata(),
+                )
+            else:
+                from aetheros.federation import FederationRegistry, seed_demo_federation
+
+                reg = FederationRegistry()
+                seed_demo_federation(reg)
+                topology.graph = build_topology(reg, metadata=demo_topology_metadata())
+            topology.seeded = True
+        topology_graph = topology.graph
+
     return DashboardFrame(
         version=__version__,
         cpu_percent=snapshot.cpu_percent,
@@ -1006,7 +1064,8 @@ def build_frame(
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         explanation=ai_explanation,
         show_predictive=show_predict
         and not show_cognitive
@@ -1024,7 +1083,8 @@ def build_frame(
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         predictive_report=predictive_report,
         show_cluster=show_cluster
         and not show_cognitive
@@ -1042,7 +1102,8 @@ def build_frame(
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         cluster_snapshot=cluster_snapshot,
         cluster_online_ids=cluster_online,
         show_orchestrator=show_orchestrator
@@ -1061,7 +1122,8 @@ def build_frame(
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         execution_plan=execution_plan,
         selected_workload=selected_workload,
         show_cognitive=show_cognitive
@@ -1079,7 +1141,8 @@ def build_frame(
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         cognitive_report=cognitive_report,
         show_multi_agent=show_multi_agent
         and not show_horizon
@@ -1095,7 +1158,8 @@ def build_frame(
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         agentic_report=agentic_report,
         show_horizon=show_horizon
         and not show_genesis
@@ -1110,7 +1174,8 @@ def build_frame(
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         horizon_report=horizon_report,
         show_genesis=show_genesis
         and not show_sentinel
@@ -1124,7 +1189,8 @@ def build_frame(
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         genesis_report=genesis_report,
         show_sentinel=show_sentinel
         and not show_fabric
@@ -1137,7 +1203,8 @@ def build_frame(
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         sentinel_report=sentinel_report,
         show_fabric=show_fabric
         and not show_infinity
@@ -1149,7 +1216,8 @@ def build_frame(
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         fabric_report=fabric_report,
         show_infinity=show_infinity
         and not show_resource_graph
@@ -1160,7 +1228,8 @@ def build_frame(
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         infinity_report=infinity_report,
         show_resource_graph=show_resource_graph
         and not show_graph_reasoning
@@ -1170,7 +1239,8 @@ def build_frame(
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         resource_graph=resource_graph_report,
         show_graph_reasoning=show_graph_reasoning
         and not show_digital_twin
@@ -1179,7 +1249,8 @@ def build_frame(
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         graph_reasoning=graph_reasoning_report,
         graph_reasoning_observation=graph_reasoning_observation,
         show_digital_twin=show_digital_twin
@@ -1188,7 +1259,8 @@ def build_frame(
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         digital_twin_report=digital_twin_report,
         digital_twin_scenario=digital_twin_scenario,
         digital_twin_baseline=digital_twin_baseline,
@@ -1197,31 +1269,36 @@ def build_frame(
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         research_intel_report=research_intel_report,
         research_intel_view=research_intel_view,
         show_op_memory=show_op_memory
         and not show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         op_memory_verified=op_memory_verified,
         op_memory_patterns=op_memory_patterns,
         op_memory_view=op_memory_view,
         show_causal_knowledge=show_causal_knowledge
         and not show_consensus
         and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         causal_knowledge_graph=causal_knowledge_graph,
         causal_knowledge_view=causal_knowledge_view,
         show_consensus=show_consensus and not show_research_lab
-        and not show_federation,
+        and not show_federation
+        and not show_topology,
         consensus_decision=consensus_decision,
         consensus_findings=consensus_findings,
         consensus_conflicts=consensus_conflicts,
         consensus_bus_events=consensus_bus_events,
         consensus_view=consensus_view,
-        show_research_lab=show_research_lab and not show_federation,
+        show_research_lab=show_research_lab and not show_federation
+        and not show_topology,
         research_lab_questions=research_lab_questions,
         research_lab_experiments=research_lab_experiments,
         research_lab_results=research_lab_results,
@@ -1229,7 +1306,10 @@ def build_frame(
         research_lab_rejected=research_lab_rejected,
         research_lab_journal=research_lab_journal,
         research_lab_view=research_lab_view,
-        show_federation=show_federation,
+        show_federation=show_federation and not show_topology,
+        show_topology=show_topology,
+        topology_graph=topology_graph,
+        topology_view=topology_view,
         federation_registry=federation_registry,
         federation_heartbeats=federation_heartbeats,
         federation_view=federation_view,
@@ -1387,6 +1467,7 @@ def run_dashboard(
     consensus_view_state = ConsensusViewState(visible=False)
     research_lab_view_state = ResearchLabViewState(visible=False)
     federation_view_state = FederationViewState(visible=False)
+    topology_view_state = TopologyViewState(visible=False)
     core = AetherCore()
     core.registry.state_path = Path("data/plugin_state.json")
     core.bootstrap()
@@ -1447,6 +1528,7 @@ def run_dashboard(
             consensus=consensus_view_state,
             research_lab=research_lab_view_state,
             federation=federation_view_state,
+            topology=topology_view_state,
         )
 
     frame = make_frame()
@@ -1485,6 +1567,7 @@ def run_dashboard(
                         consensus_view_state.visible = False
                         research_lab_view_state.visible = False
                         federation_view_state.visible = False
+                        topology_view_state.visible = False
                         show_help = False
                         show_developer = False
                     elif key == "?" or lowered == "?":
@@ -1512,6 +1595,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "h":
                         horizon_view.visible = not horizon_view.visible
                         if horizon_view.visible:
@@ -1537,6 +1621,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "d":
                         show_developer = not show_developer
                         if show_developer:
@@ -1562,6 +1647,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "m":
                         multi_agent.visible = not multi_agent.visible
                         if multi_agent.visible:
@@ -1587,6 +1673,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "g":
                         genesis_view.visible = not genesis_view.visible
                         if genesis_view.visible:
@@ -1612,6 +1699,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "s":
                         sentinel_view.visible = not sentinel_view.visible
                         if sentinel_view.visible:
@@ -1637,6 +1725,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "f":
                         fabric_view.visible = not fabric_view.visible
                         if fabric_view.visible:
@@ -1662,6 +1751,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "i":
                         infinity_view.visible = not infinity_view.visible
                         if infinity_view.visible:
@@ -1688,6 +1778,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "y":
                         resource_graph_view.visible = not resource_graph_view.visible
                         if resource_graph_view.visible:
@@ -1713,6 +1804,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "r":
                         graph_reasoning_view.visible = not graph_reasoning_view.visible
                         if graph_reasoning_view.visible:
@@ -1738,6 +1830,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "v":
                         digital_twin_view.visible = not digital_twin_view.visible
                         if digital_twin_view.visible:
@@ -1763,6 +1856,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "x":
                         research_intel_view.visible = not research_intel_view.visible
                         if research_intel_view.visible:
@@ -1788,6 +1882,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
 
                     elif lowered == "l":
                         op_memory_view.visible = not op_memory_view.visible
@@ -1814,6 +1909,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
 
                     elif lowered == "n":
                         causal_knowledge_view.visible = (
@@ -1842,6 +1938,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
 
                     elif lowered == "j":
                         consensus_view_state.visible = not consensus_view_state.visible
@@ -1868,6 +1965,7 @@ def run_dashboard(
                             causal_knowledge_view.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
 
                     elif lowered == "b":
                         research_lab_view_state.visible = (
@@ -1897,12 +1995,14 @@ def run_dashboard(
                             causal_knowledge_view.visible = False
                             consensus_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "u":
                         federation_view_state.visible = (
                             not federation_view_state.visible
                         )
                         if federation_view_state.visible:
                             federation_view_state.seeded = False
+                            topology_view_state.visible = False
                             show_help = False
                             show_developer = False
                             observatory.visible = False
@@ -1950,6 +2050,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "w":
                         orchestrator.visible = not orchestrator.visible
                         if orchestrator.visible:
@@ -1975,8 +2076,11 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "]":
-                        if federation_view_state.visible:
+                        if topology_view_state.visible:
+                            topology_view_state.view_index += 1
+                        elif federation_view_state.visible:
                             federation_view_state.view_index += 1
                         elif research_lab_view_state.visible:
                             research_lab_view_state.view_index += 1
@@ -2019,6 +2123,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "p":
                         predictive.visible = not predictive.visible
                         if predictive.visible:
@@ -2044,6 +2149,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "e":
                         explainability.visible = not explainability.visible
                         if explainability.visible:
@@ -2069,6 +2175,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif lowered == "o":
                         observatory.visible = not observatory.visible
                         if observatory.visible:
@@ -2094,6 +2201,7 @@ def run_dashboard(
                             consensus_view_state.visible = False
                             research_lab_view_state.visible = False
                             federation_view_state.visible = False
+                            topology_view_state.visible = False
                     elif key == "LEFT":
                         observatory.history_offset = min(
                             max(0, len(observatory.recorder) - 1),
@@ -2105,6 +2213,33 @@ def run_dashboard(
                             0, observatory.history_offset - 5
                         )
                         observatory.timeline.scroll(-1)
+                    elif lowered == "z":
+                        topology_view_state.visible = not topology_view_state.visible
+                        if topology_view_state.visible:
+                            topology_view_state.seeded = False
+                            show_help = False
+                            show_developer = False
+                            observatory.visible = False
+                            explainability.visible = False
+                            predictive.visible = False
+                            cluster.visible = False
+                            orchestrator.visible = False
+                            cognition.visible = False
+                            multi_agent.visible = False
+                            horizon_view.visible = False
+                            genesis_view.visible = False
+                            sentinel_view.visible = False
+                            fabric_view.visible = False
+                            infinity_view.visible = False
+                            resource_graph_view.visible = False
+                            graph_reasoning_view.visible = False
+                            digital_twin_view.visible = False
+                            research_intel_view.visible = False
+                            op_memory_view.visible = False
+                            causal_knowledge_view.visible = False
+                            consensus_view_state.visible = False
+                            research_lab_view_state.visible = False
+                            federation_view_state.visible = False
                     elif lowered == "t":
                         order: tuple[GraphMetric, ...] = ("cpu", "memory", "disk")
                         idx = order.index(observatory.metric)

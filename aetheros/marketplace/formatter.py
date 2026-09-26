@@ -32,7 +32,7 @@ class MarketplacePanel:
                     "EXTENSION MARKETPLACE idle.\n"
                     "Discover · install · verify · enable sandboxed plugins.\n"
                     "No WRITE permissions · Plugin SDK sandbox by default.\n"
-                    "E opens this page · = remains Explainability.\n"
+                    "@ opens this page · E opens Enterprise · = remains Explainability.\n"
                     "Status: Read-only catalog",
                     style="dim",
                 ),

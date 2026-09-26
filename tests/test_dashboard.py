@@ -255,6 +255,16 @@ def test_render_frame_has_regions() -> None:
         policy_studio_impact=None,
         policy_studio_selected=None,
         policy_studio_view="active",
+        show_enterprise=False,
+        enterprise_organization=None,
+        enterprise_workspaces=(),
+        enterprise_members=(),
+        enterprise_api_keys=(),
+        enterprise_audit_events=(),
+        enterprise_audit_count=0,
+        enterprise_compliance_status="SOC2 Ready",
+        enterprise_metrics=None,
+        enterprise_view="organizations",
     )
     layout = render_frame(frame)
     assert layout["header"] is not None

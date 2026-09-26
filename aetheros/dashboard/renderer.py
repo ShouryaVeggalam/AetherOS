@@ -32,6 +32,23 @@ from aetheros.dashboard.widgets import (
     SafetyPanel,
     TelemetryPanel,
 )
+from aetheros.enterprise import (
+    APIKey as EnterpriseAPIKey,
+)
+from aetheros.enterprise import (
+    AuditEvent as EnterpriseAuditEvent,
+)
+from aetheros.enterprise import (
+    EnterprisePanel,
+    Organization,
+    UsageMetrics,
+)
+from aetheros.enterprise import (
+    Member as EnterpriseMember,
+)
+from aetheros.enterprise import (
+    Workspace as EnterpriseWorkspace,
+)
 from aetheros.explainability import ExplainabilityPanel, Explanation
 from aetheros.fabric import FabricPanel, FabricReport
 from aetheros.federation import FederationPanel
@@ -228,6 +245,16 @@ class DashboardFrame:
     policy_studio_impact: SimulationImpact | None
     policy_studio_selected: StudioPolicy | None
     policy_studio_view: str
+    show_enterprise: bool
+    enterprise_organization: Organization | None
+    enterprise_workspaces: tuple[EnterpriseWorkspace, ...]
+    enterprise_members: tuple[EnterpriseMember, ...]
+    enterprise_api_keys: tuple[EnterpriseAPIKey, ...]
+    enterprise_audit_events: tuple[EnterpriseAuditEvent, ...]
+    enterprise_audit_count: int
+    enterprise_compliance_status: str
+    enterprise_metrics: UsageMetrics | None
+    enterprise_view: str
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -255,7 +282,21 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_policy_studio:
+    if frame.show_enterprise:
+        layout["center"].update(
+            EnterprisePanel(
+                organization=frame.enterprise_organization,
+                workspaces=frame.enterprise_workspaces,
+                members=frame.enterprise_members,
+                api_keys=frame.enterprise_api_keys,
+                audit_events=frame.enterprise_audit_events,
+                audit_count=frame.enterprise_audit_count,
+                compliance_status=frame.enterprise_compliance_status,
+                metrics=frame.enterprise_metrics,
+                view=frame.enterprise_view,
+            )
+        )
+    elif frame.show_policy_studio:
         layout["center"].update(
             PolicyStudioPanel(
                 policies=frame.policy_studio_policies,

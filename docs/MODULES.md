@@ -21,6 +21,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `dashboard` | README | Rich Live UI |
 | `decision` | architecture | Prioritizer |
 | `edge` | [horizon.md](horizon.md) | Edge inventory |
+| `enterprise` | [enterprise.md](enterprise.md) | v5.0 P5 Enterprise Edition (RBAC · API keys · audit · compliance) |
 | `explainability` | [explainability.md](explainability.md) | Evidence chains |
 | `fabric` | [fabric.md](fabric.md) | Universal federation |
 | `federation` | [federation_protocol.md](federation_protocol.md) | v4.0 P1 Federation Protocol (read-only node snapshots) |

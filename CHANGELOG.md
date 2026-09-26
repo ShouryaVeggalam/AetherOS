@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- v5.0 P5 Enterprise Edition — `aetheros.enterprise` (orgs · RBAC · API keys · audit · compliance)
+- Dashboard **E** → Enterprise (Orgs / Workspaces / Roles / Keys / Audit / Compliance / Analytics); **@** → Extensions
+- Docs: `docs/enterprise.md`
 - v5.0 P4 Policy Studio — `aetheros.policy` (rules · versions · simulate · advisory only)
 - Dashboard **P** → Policies (Active / Versions / Builder / Evaluation / Simulation); **#** → Predictive
 - Docs: `docs/policy_studio.md`

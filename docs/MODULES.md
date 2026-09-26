@@ -9,7 +9,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `agent` | [cluster.md](cluster.md) | Cluster node publisher (**not** multi-agent) |
 | `agents` | [agents.md](agents.md) · [multi_agent_consensus.md](multi_agent_consensus.md) | Multi-agent specialists + v3 P4 consensus |
 | `advice` | [architecture.md](architecture.md) | Shared Decision contract (cycle-neutral) |
-| `api` | OpenAPI `/docs` | Read-only FastAPI surface |
+| `api` | [public_api.md](public_api.md) · OpenAPI `/docs` | Read-only FastAPI surface + v5.0 P2 `/api/v1` |
 | `atlas` | [architecture.md](architecture.md) | v5 facade → Horizon/Twin |
 | `cli` | README | Demo CLIs |
 | `cluster` | [cluster.md](cluster.md) | Multi-device registry |
@@ -51,7 +51,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `robotics` | [horizon.md](horizon.md) | Fleet inventory |
 | `runtime` | [agents.md](agents.md) | Agentic runtime |
 | `safety` | architecture | Audit + cooldown |
-| `sdk` / `plugins` | [sdk README](../aetheros/sdk/README.md) | Sandboxed plugins (load-time trust) |
+| `sdk` / `plugins` | [python_sdk.md](python_sdk.md) · [sdk README](../aetheros/sdk/README.md) | v5.0 P2 `AetherClient` + sandboxed plugin host |
 | `sentinel` | [sentinel.md](sentinel.md) | Resilience fabric |
 | `simulation` | [simulation.md](simulation.md) | Host strategy what-if |
 | `storage` | [architecture.md](architecture.md) | Shared SQLite helpers |

@@ -1,4 +1,4 @@
-"""AetherOS Kernel Intelligence SDK — safe plugin platform."""
+"""AetherOS Kernel Intelligence SDK — plugin platform + public API client."""
 
 from aetheros.sdk.api import (
     DashboardAPI,
@@ -7,6 +7,9 @@ from aetheros.sdk.api import (
     SimulationAPI,
     TelemetryAPI,
 )
+from aetheros.sdk.client import AetherClient
+from aetheros.sdk.context import ContextResource
+from aetheros.sdk.graph import GraphResource
 from aetheros.sdk.loader import LoadedPlugin, PluginLoader, RejectedPlugin
 from aetheros.sdk.plugin import (
     AetherPlugin,
@@ -16,12 +19,18 @@ from aetheros.sdk.plugin import (
     PluginSimulationModel,
     PluginTelemetrySample,
 )
+from aetheros.sdk.reasoning import ReasoningResource
 from aetheros.sdk.registry import PluginRecord, PluginRegistry
+from aetheros.sdk.research import ResearchResource
 from aetheros.sdk.sandbox import PluginSandbox, SandboxResult
+from aetheros.sdk.twin import TwinResource
 
 __all__ = [
+    "AetherClient",
     "AetherPlugin",
+    "ContextResource",
     "DashboardAPI",
+    "GraphResource",
     "HistoryAPI",
     "LoadedPlugin",
     "PluginAPI",
@@ -34,8 +43,11 @@ __all__ = [
     "PluginSandbox",
     "PluginSimulationModel",
     "PluginTelemetrySample",
+    "ReasoningResource",
     "RejectedPlugin",
+    "ResearchResource",
     "SandboxResult",
     "SimulationAPI",
     "TelemetryAPI",
+    "TwinResource",
 ]

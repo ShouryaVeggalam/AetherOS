@@ -92,6 +92,9 @@ def create_app(
 
     app.include_router(gii_v9_router)
     app.include_router(aether_router)
+    from aetheros.api.routes import api_v1_router
+
+    app.include_router(api_v1_router)
     runtime = CognitiveRuntime(
         memory=CognitiveMemory(memory_db or Path("data/cognition_memory.db"))
     )

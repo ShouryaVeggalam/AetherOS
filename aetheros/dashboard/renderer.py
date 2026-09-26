@@ -37,8 +37,6 @@ from aetheros.fabric import FabricPanel, FabricReport
 from aetheros.federation import FederationPanel
 from aetheros.federation.models import Heartbeat, RegistryView
 from aetheros.genesis import GenesisPanel, GenesisReport
-from aetheros.topology import TopologyGraph, TopologyPanel
-from aetheros.scheduler import ScheduleResult, SchedulerPanel, Workload
 from aetheros.graph import ResourceGraph, ResourceGraphPanel
 from aetheros.horizon import HorizonPanel, HorizonReport
 from aetheros.infinity import InfinityPanel, InfinityReport
@@ -72,7 +70,9 @@ from aetheros.research_ai import (
     Result as ResearchLabResult,
 )
 from aetheros.runtime import AgenticReport
+from aetheros.scheduler import ScheduleResult, SchedulerPanel, Workload
 from aetheros.sentinel import SentinelPanel, SentinelReport
+from aetheros.topology import TopologyGraph, TopologyPanel
 from aetheros.twin import (
     DigitalTwinPanel,
     DigitalTwinReport,

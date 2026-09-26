@@ -116,7 +116,6 @@ def test_serialize_heartbeat_roundtrip_deterministic() -> None:
             source_node_id="n1",
         )
     )
-    raw2 = encode_message(decode_message(raw1))
     # Re-encode decoded message payload path
     msg = decode_message(raw1)
     assert msg.kind == "heartbeat"
@@ -124,6 +123,7 @@ def test_serialize_heartbeat_roundtrip_deterministic() -> None:
     assert decoded.cpu == 11.0
     assert dumps_canonical({"b": 1, "a": 2}) == '{"a":2,"b":1}'
     assert raw1 == encode_message(msg)
+    assert raw1 == encode_message(decode_message(raw1))
 
 
 def test_serialize_snapshot_roundtrip() -> None:

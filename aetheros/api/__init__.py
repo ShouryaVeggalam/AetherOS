@@ -87,8 +87,8 @@ def create_app(
             },
         ],
     )
-    from services.intelligence.api.router import router as gii_v9_router
     from labs.aether.api import router as aether_router
+    from services.intelligence.api.router import router as gii_v9_router
 
     app.include_router(gii_v9_router)
     app.include_router(aether_router)

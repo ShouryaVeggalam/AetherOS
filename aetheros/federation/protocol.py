@@ -87,14 +87,14 @@ def current_version() -> str:
 
 
 def build_snapshot(
-    node: "NodeIdentity",
+    node: NodeIdentity,
     *,
     telemetry: Mapping[str, float | None],
     context: Mapping[str, Any] | None = None,
     graph_hash: str,
     version: str | None = None,
     published_at: datetime | None = None,
-) -> "FederationSnapshot":
+) -> FederationSnapshot:
     """Construct an immutable federation snapshot (read-only publish unit)."""
 
     from aetheros.federation.models import FederationSnapshot

@@ -53,6 +53,11 @@ from aetheros.decision import DecisionEngine, DecisionReport
 from aetheros.decision.models import Decision, utc_now
 from aetheros.explainability import ExplainabilityEngine, Explanation
 from aetheros.fabric import FabricReport, FabricRuntime
+from aetheros.federation import (
+    FederationRegistry,
+    Heartbeat,
+    seed_demo_federation,
+)
 from aetheros.genesis import GenesisReport, GenesisRuntime
 from aetheros.graph import ResourceGraph, build_resource_graph
 from aetheros.horizon import HorizonReport, HorizonRuntime
@@ -98,11 +103,8 @@ from aetheros.research.models import SystemResearchReport
 from aetheros.research_ai import (
     AutonomousResearchEngine,
 )
-from aetheros.topology import (
-    TopologyGraph,
-    build_topology,
-    demo_topology_metadata,
-)
+from aetheros.runtime import AgenticReport, AgenticRuntime
+from aetheros.safety import AuditLogger, CooldownManager, SafetyValidator
 from aetheros.scheduler import (
     ScheduleConstraint,
     ScheduleResult,
@@ -111,18 +113,15 @@ from aetheros.scheduler import (
     demo_workload,
     run_scheduler,
 )
-from aetheros.federation import (
-    FederationRegistry,
-    Heartbeat,
-    RegistryView,
-    seed_demo_federation,
-)
-from aetheros.runtime import AgenticReport, AgenticRuntime
-from aetheros.safety import AuditLogger, CooldownManager, SafetyValidator
 from aetheros.sdk import PluginRecord
 from aetheros.sentinel import SentinelReport, SentinelRuntime
 from aetheros.telemetry import TelemetryCollector
 from aetheros.telemetry.models import SystemSnapshot
+from aetheros.topology import (
+    TopologyGraph,
+    build_topology,
+    demo_topology_metadata,
+)
 from aetheros.twin import (
     DigitalTwinReport,
     DigitalTwinSimulator,
@@ -1013,7 +1012,6 @@ def build_frame(
             if federation is not None:
                 if not federation.seeded:
                     from aetheros.federation import seed_demo_federation
-                    from aetheros.policy_engine.models import TelemetrySnapshot
 
                     snap = TelemetrySnapshot.from_system_snapshot(system)
                     seed_demo_federation(federation.registry, local_telemetry=snap)

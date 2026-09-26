@@ -20,7 +20,6 @@ from aetheros.federation.models import (
 )
 from aetheros.federation.protocol import require_compatible
 
-
 DEFAULT_ONLINE_TTL_SEC = 15.0
 
 

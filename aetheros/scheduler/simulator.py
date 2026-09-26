@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 
-from aetheros.scheduler.models import NodeCapacity, SchedulePlan, Workload
+from aetheros.scheduler.models import NodeCapacity, SchedulePlan
 from aetheros.twin.evaluator import evaluate
 from aetheros.twin.models import SimulationResult, TwinSnapshot
 from aetheros.twin.scenario import apply_scenario, builtin_scenario

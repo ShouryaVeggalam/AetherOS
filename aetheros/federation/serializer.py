@@ -10,10 +10,10 @@ from datetime import UTC, datetime
 from typing import Any
 
 from aetheros.federation.models import (
+    PROTOCOL_VERSION,
     FederationSnapshot,
     Heartbeat,
     NodeIdentity,
-    PROTOCOL_VERSION,
 )
 from aetheros.federation.protocol import (
     ProtocolMessage,

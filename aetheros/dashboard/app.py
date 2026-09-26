@@ -109,14 +109,6 @@ from aetheros.infra_twin import (
     demo_snapshot as infra_demo_snapshot,
 )
 from aetheros.intent import IntentEngine, IntentStorage
-from aetheros.planetary import (
-    GlobalWorkload,
-    ScheduleDecision as PlanetaryDecision,
-    demo_constraints as planetary_demo_constraints,
-    demo_sites as planetary_demo_sites,
-    demo_workload as planetary_demo_workload,
-    plan_placements as planetary_plan,
-)
 from aetheros.knowledge import (
     CausalKnowledgeGraph,
     build_knowledge_graph,
@@ -148,6 +140,24 @@ from aetheros.orchestrator import (
     WorkloadProfile,
     get_workload,
     next_workload,
+)
+from aetheros.planetary import (
+    GlobalWorkload,
+)
+from aetheros.planetary import (
+    ScheduleDecision as PlanetaryDecision,
+)
+from aetheros.planetary import (
+    demo_constraints as planetary_demo_constraints,
+)
+from aetheros.planetary import (
+    demo_sites as planetary_demo_sites,
+)
+from aetheros.planetary import (
+    demo_workload as planetary_demo_workload,
+)
+from aetheros.planetary import (
+    plan_placements as planetary_plan,
 )
 from aetheros.policy import (
     EvaluationResult,
@@ -1946,7 +1956,9 @@ def build_frame(
         cloud_records=cloud_records,
         cloud_age=cloud_age,
         cloud_view=cloud_view,
-        show_infra_twin=show_infra_twin and not show_global_graph and not show_planetary,
+        show_infra_twin=show_infra_twin
+        and not show_global_graph
+        and not show_planetary,
         infra_twin_snapshot=infra_twin_snapshot,
         infra_twin_scenarios=infra_twin_scenarios,
         infra_twin_run=infra_twin_run,
@@ -2939,9 +2951,7 @@ def run_dashboard(
                             global_graph_view_state.visible = False
                             planetary_view_state.visible = False
                     elif lowered == "w":
-                        planetary_view_state.visible = (
-                            not planetary_view_state.visible
-                        )
+                        planetary_view_state.visible = not planetary_view_state.visible
                         if planetary_view_state.visible:
                             planetary_view_state.seeded = False
                             show_help = False

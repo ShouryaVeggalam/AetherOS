@@ -185,7 +185,13 @@ class PlacementSimulation:
             raise ValueError("site_id must be non-empty")
         if self.latency_ms < 0.0:
             raise ValueError("latency_ms must be non-negative")
-        for name in ("availability", "cpu", "memory", "failure_resilience", "twin_confidence"):
+        for name in (
+            "availability",
+            "cpu",
+            "memory",
+            "failure_resilience",
+            "twin_confidence",
+        ):
             value = float(getattr(self, name))
             if not 0.0 <= value <= 100.0:
                 raise ValueError(f"{name} must be in [0, 100]")

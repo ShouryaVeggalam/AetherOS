@@ -81,7 +81,9 @@ def refine_score_with_simulation(
     # Small, bounded adjustment — twin informs, does not invent winners.
     latency_adj = max(-3.0, min(3.0, (30.0 - simulation.latency_ms) / 20.0))
     resilience_adj = max(-2.0, min(2.0, (simulation.failure_resilience - 80.0) / 20.0))
-    new_score = round(max(0.0, min(100.0, candidate.score + latency_adj + resilience_adj)), 2)
+    new_score = round(
+        max(0.0, min(100.0, candidate.score + latency_adj + resilience_adj)), 2
+    )
     return Candidate(
         region=candidate.region,
         datacenter=candidate.datacenter,

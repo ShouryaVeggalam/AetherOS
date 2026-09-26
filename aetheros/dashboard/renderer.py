@@ -96,7 +96,11 @@ from aetheros.orchestrator import (
 )
 from aetheros.planetary import (
     GlobalWorkload as PlanetaryWorkload,
+)
+from aetheros.planetary import (
     PlanetarySchedulerPanel,
+)
+from aetheros.planetary import (
     ScheduleDecision as PlanetaryDecision,
 )
 from aetheros.policy import (

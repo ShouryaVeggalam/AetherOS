@@ -588,7 +588,5 @@ def test_formatter_empty_decision() -> None:
     )
     console = Console(record=True, width=80)
     for view in ("map", "regions", "candidates", "tradeoffs", "simulation"):
-        console.print(
-            PlanetarySchedulerPanel(workload=wl, decision=empty, view=view)
-        )
+        console.print(PlanetarySchedulerPanel(workload=wl, decision=empty, view=view))
     assert "PLANETARY SCHEDULER" in console.export_text()

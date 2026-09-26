@@ -71,7 +71,11 @@ def _apply_one(
             return False, f"REGION_LOCK requires {region}"
         return True, "ok"
     if kind == "LATENCY_MAX":
-        limit = float(constraint.value) if constraint.value != "" else workload.latency_target
+        limit = (
+            float(constraint.value)
+            if constraint.value != ""
+            else workload.latency_target
+        )
         if site.latency_ms > limit + 1e-9:
             return False, f"LATENCY_MAX exceeded ({site.latency_ms:.1f}>{limit:.1f})"
         return True, "ok"

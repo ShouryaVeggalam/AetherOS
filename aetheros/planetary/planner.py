@@ -63,9 +63,11 @@ def plan_placements(
     )
     sim_map = {s.site_id: s for s in simulations}
     refined = tuple(
-        refine_score_with_simulation(c, sim_map[c.site_id])
-        if c.site_id in sim_map
-        else c
+        (
+            refine_score_with_simulation(c, sim_map[c.site_id])
+            if c.site_id in sim_map
+            else c
+        )
         for c in candidates
     )
     ranked = optimize_placements(refined, sites=accepted, top_n=top_n)

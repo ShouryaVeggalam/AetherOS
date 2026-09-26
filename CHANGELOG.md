@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- v6.0 P3 Global Knowledge Graph — `aetheros.global_graph` (ontology · evidence · traversal)
+- Dashboard **K** → Global Graph (World / Regions / Clusters / Knowledge / Discoveries / Evidence); **^** → Cognitive
+- Docs: `docs/global_knowledge_graph.md`
 - v6.0 P2 Infrastructure Digital Twin — `aetheros.infra_twin` (clone · scenarios · evaluate · diff)
 - Dashboard **I** → Infrastructure Twin (Snapshot / Library / Simulation / Diff / Availability); **~** → Infinity
 - Docs: `docs/infrastructure_twin.md`

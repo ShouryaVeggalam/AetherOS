@@ -60,6 +60,12 @@ from aetheros.fabric import FabricPanel, FabricReport
 from aetheros.federation import FederationPanel
 from aetheros.federation.models import Heartbeat, RegistryView
 from aetheros.genesis import GenesisPanel, GenesisReport
+from aetheros.global_graph import (
+    EvidenceIndex,
+    GlobalKnowledgeGraph,
+    GlobalKnowledgePanel,
+)
+from aetheros.global_graph.validator import ValidationReport
 from aetheros.graph import ResourceGraph, ResourceGraphPanel
 from aetheros.horizon import HorizonPanel, HorizonReport
 from aetheros.infinity import InfinityPanel, InfinityReport
@@ -282,6 +288,11 @@ class DashboardFrame:
     infra_twin_scenarios: tuple[InfraTwinScenario, ...]
     infra_twin_run: TwinRun | None
     infra_twin_view: str
+    show_global_graph: bool
+    global_graph_graph: GlobalKnowledgeGraph | None
+    global_graph_evidence: EvidenceIndex | None
+    global_graph_validation: ValidationReport | None
+    global_graph_view: str
 
 
 def render_frame(frame: DashboardFrame) -> Layout:
@@ -309,7 +320,16 @@ def render_frame(frame: DashboardFrame) -> Layout:
             efficiency_weight=frame.intent_efficiency,
         )
     )
-    if frame.show_infra_twin:
+    if frame.show_global_graph:
+        layout["center"].update(
+            GlobalKnowledgePanel(
+                graph=frame.global_graph_graph,
+                evidence=frame.global_graph_evidence,
+                validation=frame.global_graph_validation,
+                view=frame.global_graph_view,
+            )
+        )
+    elif frame.show_infra_twin:
         layout["center"].update(
             InfrastructureTwinPanel(
                 snapshot=frame.infra_twin_snapshot,

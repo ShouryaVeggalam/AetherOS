@@ -276,6 +276,11 @@ def test_render_frame_has_regions() -> None:
         infra_twin_scenarios=(),
         infra_twin_run=None,
         infra_twin_view="snapshot",
+        show_global_graph=False,
+        global_graph_graph=None,
+        global_graph_evidence=None,
+        global_graph_validation=None,
+        global_graph_view="world",
     )
     layout = render_frame(frame)
     assert layout["header"] is not None

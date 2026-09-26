@@ -236,7 +236,8 @@ health = client.health()
 | `G` | Genesis |
 | `H` | Horizon |
 | `M` | Multi-Agent View |
-| `K` | Cognitive Graph |
+| `K` | Global Knowledge Graph |
+| `^` | Cognitive Graph |
 | `C` | Cloud Federation |
 | `;` | Cluster overview |
 | `W` | Workload Planner |
@@ -290,7 +291,7 @@ Charter: [docs/CELESTRA.md](docs/CELESTRA.md)
 | Version | Focus |
 |---------|--------|
 | **v5.0.0 Nexus** | Plugin SDK · Public API · Marketplace · Policy Studio · Enterprise |
-| **v6.x (in progress)** | Cloud Federation · Infrastructure Digital Twin |
+| **v6.x (in progress)** | Cloud Federation · Infra Twin · Global Knowledge Graph |
 | v4.x | Federation · Topology · Scheduler · Atlas |
 | v3.x | Cognition · Memory · Causal KG · Consensus · Research Lab |
 | v2.0 Intelligence | Resource Graph · Reasoning · Twin · Context · Research Intel |

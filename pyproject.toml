@@ -70,6 +70,7 @@ aetheros-intent = "aetheros.cli.intent_demo:main"
 aetheros-research = "aetheros.cli.research_demo:main"
 aetheros-sdk = "aetheros.cli.sdk_demo:main"
 aetheros-atlas = "aetheros.atlas.app:main"
+aetheros-horizon = "aetheros.horizon.app:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -87,6 +88,7 @@ omit = [
     "aetheros/**/__main__.py",
     "aetheros/dashboard/app.py",
     "aetheros/atlas/app.py",
+    "aetheros/horizon/app.py",
     "aetheros/api/app.py",
 ]
 

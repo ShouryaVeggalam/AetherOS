@@ -37,7 +37,7 @@ Engineering charter: [CELESTRA.md](CELESTRA.md).
 | `graph` | [resource_graph.md](resource_graph.md) · [sentinel.md](sentinel.md) | Resource Graph Engine + Sentinel deps |
 | `reasoning` | [reasoning.md](reasoning.md) · [cognition.md](cognition.md) | Graph Reasoning Engine + cognitive helpers |
 | `bridge` | [graph_bridge.md](graph_bridge.md) | Graph Intelligence Bridge (P5) |
-| `horizon` | [horizon.md](horizon.md) | Planetary intelligence |
+| `horizon` | [horizon.md](horizon.md) · [horizon_observatory.md](horizon_observatory.md) | Planetary intelligence + v6.0 P5 Horizon Observatory |
 | `infinity` | [infinity.md](infinity.md) | ∞ unifying layer |
 | `infra_twin` | [infrastructure_twin.md](infrastructure_twin.md) | v6.0 P2 Infrastructure Digital Twin (simulation only) |
 | `intent` | architecture | Operator profiles |

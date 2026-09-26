@@ -71,6 +71,7 @@ hosts without explanation create risk. AetherOS sits in between:
 | **Cognition & Consensus** | Cognition core, causal knowledge, multi-agent consensus |
 | **Federation & Topology** | Protocol snapshots, world→cluster topology, distributed scheduler advice |
 | **Atlas Dashboard** | Presentation-layer Rich observatory (`aetheros-atlas`) |
+| **Horizon Observatory** | Global Rich observatory (`aetheros-horizon`) |
 | **Plugin SDK** | YAML manifests, capabilities, sandbox, Rich inspector |
 | **Public API & SDK** | FastAPI `/api/v1` + `AetherClient` |
 | **Marketplace** | Catalog · install · verify · enable (userspace) |
@@ -176,6 +177,9 @@ aetheros
 
 # Atlas presentation surface
 aetheros-atlas
+
+# Horizon Observatory (global infrastructure)
+aetheros-horizon
 
 # Public API (read-only)
 uvicorn aetheros.api.app:app --reload
@@ -292,7 +296,7 @@ Charter: [docs/CELESTRA.md](docs/CELESTRA.md)
 | Version | Focus |
 |---------|--------|
 | **v5.0.0 Nexus** | Plugin SDK · Public API · Marketplace · Policy Studio · Enterprise |
-| **v6.x (in progress)** | Cloud Federation · Infra Twin · Global Knowledge Graph · Planetary Scheduler |
+| **v6.x (in progress)** | Cloud Federation · Infra Twin · Global Knowledge Graph · Planetary Scheduler · Horizon Observatory |
 | v4.x | Federation · Topology · Scheduler · Atlas |
 | v3.x | Cognition · Memory · Causal KG · Consensus · Research Lab |
 | v2.0 Intelligence | Resource Graph · Reasoning · Twin · Context · Research Intel |

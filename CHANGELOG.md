@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- v5.0 P1 Plugin SDK — `plugins/sdk` (YAML manifest, capabilities, events, sandbox, loader, Rich inspector)
+- Example plugin: `plugins/examples/hello_insight`
+- Docs: `docs/plugin_sdk.md`
 - v4.0 P5 Atlas Dashboard — `aetheros.atlas` Rich observatory (O/F/T/S/G/D/R/H navigation)
 - Entry: `aetheros-atlas` / `python -m aetheros.atlas` (presentation only, read-only)
 - Docs: `docs/atlas_dashboard.md`

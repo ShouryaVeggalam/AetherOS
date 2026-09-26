@@ -1,0 +1,16 @@
+id: hello-insight
+name: Hello Insight
+version: 0.1.0
+author: AetherOS Examples
+description: Example sandboxed insight plugin for the v5 Plugin SDK.
+sdk: ">=5.0.0,<6"
+entry: plugin.py
+enabled: true
+capabilities:
+  - graph.read
+  - context.read
+  - events.subscribe
+  - dashboard.contribute
+events:
+  - telemetry.tick
+  - graph.updated

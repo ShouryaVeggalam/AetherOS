@@ -32,6 +32,7 @@ dependencies = [
     "uvicorn[standard]>=0.30.0",
     "httpx>=0.27.0",
     "networkx>=3.2",
+    "pyyaml>=6.0.0",
 ]
 
 [project.urls]
@@ -63,7 +64,7 @@ aetheros-atlas = "aetheros.atlas.app:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["aetheros*", "services*", "labs*"]
+include = ["aetheros*", "services*", "labs*", "plugins*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "services/intelligence/tests", "labs/aether/tests"]
